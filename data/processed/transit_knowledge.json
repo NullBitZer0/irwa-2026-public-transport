@@ -1,0 +1,48 @@
+[
+  {
+    "doc_id": "NTC-POLICY-001",
+    "title": "National Transport Commission Passenger Rights and Refund Policy",
+    "content": "Under NTC regulations, passengers who cancel a reserved seat ticket more than 24 hours before departure are entitled to a 75% refund of the base fare. Cancellations made between 2 and 24 hours before departure receive a 50% refund. No refund is available for cancellations within 2 hours of departure. Reserved seat tickets are non-transferable. In the event of a cancellation caused by the operator (service disruption, derailment, or extreme weather), passengers are entitled to a full 100% refund or a free rebooking on the next available service."
+  },
+  {
+    "doc_id": "NTC-POLICY-002",
+    "title": "SLTB Southern Expressway Highway Bus Baggage Policy",
+    "content": "Each passenger on SLTB and licensed private highway express coaches on the Southern Expressway (E01) is permitted to carry one piece of cabin baggage (max 7 kg) stored under the seat, and one piece of hold baggage (max 20 kg) loaded in the undercarriage. Oversized items such as bicycles, surfboards, or musical instruments must be pre-booked with the bus operator at least 24 hours in advance and may attract an additional surcharge of LKR 150–500 depending on size. Animals are not permitted on any SLTB service."
+  },
+  {
+    "doc_id": "NTC-POLICY-003",
+    "title": "Sri Lanka Railways Reserved Seat Baggage Allowance",
+    "content": "Sri Lanka Railways (SLR) permits each reserved seat passenger to carry personal items up to 35 kg in total (cabin and overhead combined) at no additional cost. Bicycles are transported in the designated luggage van and must be booked at the station counter. Live animals require a veterinary health certificate and must be transported in the designated animal compartment. No animals are allowed in passenger coaches."
+  },
+  {
+    "doc_id": "HUB-GUIDE-001",
+    "title": "Makumbura Multimodal Center (MMC) Transfer Guide",
+    "content": "Makumbura Multimodal Center (MMC) in Maharagama is the primary southern bus terminus in the Greater Colombo area. It serves as the main departure hub for all SLTB and private luxury coaches operating on the Southern Expressway toward Galle, Matara, and Hambantota. Passengers connecting from Colombo Fort or Maradana can reach Makumbura via the Sri Lanka Railway suburban services to Maharagama station (15-minute walk) or via tuk-tuk/PickMe from Colombo city centre (approximately 30-40 minutes during peak hours). The facility has ticketing counters, food vendors, and waiting lounges."
+  },
+  {
+    "doc_id": "HUB-GUIDE-002",
+    "title": "Colombo Fort Station Transfer and Connectivity Guide",
+    "content": "Colombo Fort Railway Station is Sri Lanka's main railway hub and serves all long-distance intercity services operated by Sri Lanka Railways (SLR). The station is directly adjacent to the Colombo Fort Bus Stand (Bastian Mawatha), which connects passengers to SLTB services toward Kandy, Anuradhapura, Jaffna, and the North Western Province. The Fort station also connects to the Sri Lanka Railways commuter network serving Maradana, Ragama, and the Kelani Valley Line. Taxi, PickMe, and three-wheeler services are available at the main entrance on Olcott Mawatha."
+  },
+  {
+    "doc_id": "HUB-GUIDE-003",
+    "title": "Kadawatha Bus Junction and Interchange",
+    "content": "Kadawatha is a major bus junction north of Colombo city, connecting services on the A1 Colombo–Kandy road with the outer ring road. Passengers heading to Kandy, Kurunegala, Anuradhapura, or Polonnaruwa can change at Kadawatha from Colombo metro buses to express coaches. The junction is served frequently by SLTB services from Colombo Bastian Mawatha with an average frequency of one service every 10–15 minutes during peak morning hours (06:00–09:00)."
+  },
+  {
+    "doc_id": "FARE-GUIDE-001",
+    "title": "NTC Bus Fare Stage System and Pricing Structure",
+    "content": "Bus fares in Sri Lanka are regulated by the National Transport Commission (NTC) using a stage-based pricing system. Ordinary bus fares are calculated at approximately LKR 12–15 per stage (approximately 1.5 km). Semi-luxury services carry a 30% premium over ordinary fares. Air-conditioned luxury coaches carry a 60–80% premium. Highway express services operating on the Southern Expressway (E01) and other toll expressways charge a flat fee approved by the NTC, typically ranging from LKR 800–1,800 depending on distance. Concessions of 50% are available for school children and registered disabled persons on SLTB services upon presentation of valid identification."
+  },
+  {
+    "doc_id": "FARE-GUIDE-002",
+    "title": "Sri Lanka Railways Fare Classes and Booking Rules",
+    "content": "Sri Lanka Railways operates three passenger fare classes. 1st Class Reserved: Air-conditioned, reclining seats, reserved numbered seating. Tickets must be purchased in advance. Fares are approximately 3x the 3rd class base rate. 2nd Class Reserved: Cushioned reserved seating, fans, moderate comfort. Approximately 2x the 3rd class base rate. Reservations are strongly recommended for intercity routes during peak seasons. 3rd Class Unreserved: Open seating, no reservations. Calculated at the base fare per kilometre. Intercity Express and special trains may not offer 3rd class service. Reservations for 1st and 2nd class can be made up to 30 days in advance online at the SLR Seat Reservation portal or at any major station counter."
+  },
+  {
+    "doc_id": "DISRUPTION-GUIDE-001",
+    "title": "Transit Disruption Response Procedures for Sri Lanka Railways",
+    "content": "When a Sri Lanka Railways service is disrupted due to a derailment, landslide, flooding, or industrial action (strike), the following procedures apply: (1) SLR will make an official announcement via their website (railway.gov.lk) and public address systems at affected stations. (2) Passengers with reserved seat tickets on disrupted services will be contacted via the mobile number registered at booking. (3) Disrupted train passengers may travel on any subsequent available service on the same route at no additional cost by presenting their original ticket. (4) Full refunds are processed within 14 working days to the original payment method. Common disruption seasons include the South-West Monsoon (May–September) which can cause landslides on the Upcountry Main Line near Ohiya and Pattipola."
+  }
+]
+

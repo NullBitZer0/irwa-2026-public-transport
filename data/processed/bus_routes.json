@@ -1,0 +1,107 @@
+[
+  {
+    "route_id": "BUS-EX1-32",
+    "service_name": "Southern Expressway Luxury",
+    "provider": "SLTB",
+    "origin": "Makumbura MMC",
+    "destination": "Galle",
+    "departure_time": "06:00",
+    "arrival_time": "07:15",
+    "stops": ["Makumbura MMC", "Dodangoda", "Gelanigama", "Kurundugahahetekma", "Galle Central"],
+    "classes": ["Air Conditioned Luxury"],
+    "base_fare_lkr": 980.0,
+    "transit_type": "HIGHWAY_BUS"
+  },
+  {
+    "route_id": "BUS-EX1-33",
+    "service_name": "Southern Expressway Luxury (Evening)",
+    "provider": "SLTB",
+    "origin": "Makumbura MMC",
+    "destination": "Galle",
+    "departure_time": "17:00",
+    "arrival_time": "18:15",
+    "stops": ["Makumbura MMC", "Dodangoda", "Gelanigama", "Galle Central"],
+    "classes": ["Air Conditioned Luxury"],
+    "base_fare_lkr": 980.0,
+    "transit_type": "HIGHWAY_BUS"
+  },
+  {
+    "route_id": "BUS-EX1-34",
+    "service_name": "Southern Express Matara",
+    "provider": "SLTB",
+    "origin": "Makumbura MMC",
+    "destination": "Matara",
+    "departure_time": "06:30",
+    "arrival_time": "08:15",
+    "stops": ["Makumbura MMC", "Dodangoda", "Gelanigama", "Kurundugahahetekma", "Galle Central", "Matara"],
+    "classes": ["Air Conditioned Luxury", "Semi-Luxury"],
+    "base_fare_lkr": 1200.0,
+    "transit_type": "HIGHWAY_BUS"
+  },
+  {
+    "route_id": "BUS-NC1-12",
+    "service_name": "Kandy Express",
+    "provider": "SLTB",
+    "origin": "Colombo Bastian Mawatha",
+    "destination": "Kandy",
+    "departure_time": "06:00",
+    "arrival_time": "08:30",
+    "stops": ["Colombo Bastian Mawatha", "Kadawatha", "Gampaha", "Nittambuwa", "Kandy"],
+    "classes": ["Semi-Luxury", "Ordinary"],
+    "base_fare_lkr": 350.0,
+    "transit_type": "EXPRESS_BUS"
+  },
+  {
+    "route_id": "BUS-NC1-13",
+    "service_name": "Kandy Semi-Luxury (Morning)",
+    "provider": "PRIVATE_HIGHWAY",
+    "origin": "Colombo Bastian Mawatha",
+    "destination": "Kandy",
+    "departure_time": "07:00",
+    "arrival_time": "09:15",
+    "stops": ["Colombo Bastian Mawatha", "Kadawatha", "Gampaha", "Nittambuwa", "Peradeniya", "Kandy"],
+    "classes": ["Air Conditioned Semi-Luxury"],
+    "base_fare_lkr": 550.0,
+    "transit_type": "HIGHWAY_BUS"
+  },
+  {
+    "route_id": "BUS-NW1-08",
+    "service_name": "Anuradhapura Express",
+    "provider": "SLTB",
+    "origin": "Colombo Bastian Mawatha",
+    "destination": "Anuradhapura",
+    "departure_time": "06:15",
+    "arrival_time": "10:00",
+    "stops": ["Colombo Bastian Mawatha", "Kadawatha", "Kurunegala", "Kekirawa", "Anuradhapura"],
+    "classes": ["Semi-Luxury", "Ordinary"],
+    "base_fare_lkr": 480.0,
+    "transit_type": "EXPRESS_BUS"
+  },
+  {
+    "route_id": "BUS-NE1-22",
+    "service_name": "Jaffna Highway Express",
+    "provider": "PRIVATE_HIGHWAY",
+    "origin": "Colombo Bastian Mawatha",
+    "destination": "Jaffna",
+    "departure_time": "18:30",
+    "arrival_time": "02:30",
+    "stops": ["Colombo Bastian Mawatha", "Kadawatha", "Kurunegala", "Anuradhapura", "Vavuniya", "Killinochchi", "Jaffna"],
+    "classes": ["Air Conditioned Luxury"],
+    "base_fare_lkr": 1800.0,
+    "transit_type": "HIGHWAY_BUS"
+  },
+  {
+    "route_id": "BUS-EX2-05",
+    "service_name": "Makumbura–Galle (Private Luxury)",
+    "provider": "PRIVATE_HIGHWAY",
+    "origin": "Makumbura MMC",
+    "destination": "Galle",
+    "departure_time": "07:30",
+    "arrival_time": "08:45",
+    "stops": ["Makumbura MMC", "Gelanigama", "Galle Central"],
+    "classes": ["Air Conditioned Super Luxury"],
+    "base_fare_lkr": 1100.0,
+    "transit_type": "HIGHWAY_BUS"
+  }
+]
+

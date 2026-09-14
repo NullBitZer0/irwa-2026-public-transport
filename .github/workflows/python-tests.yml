@@ -1,0 +1,29 @@
+name: Python Checks
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install lint & test deps
+        run: pip install ruff mypy pydantic pytest pytest-asyncio
+
+      - name: Lint with ruff
+        run: ruff check src/
+
+      - name: Type check with mypy
+        run: mypy src/orchestrator/ --ignore-missing-imports
+
+      - name: Run security tests
+        env:
+          GROQ_API_KEY: "test-key"
+        run: pytest evaluation/test_security.py -v
+
