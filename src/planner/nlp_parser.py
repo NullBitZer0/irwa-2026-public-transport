@@ -174,24 +174,3 @@ def extract_transit_intent_llm(user_query: str) -> ParsedTransitQuery:
         print(f"[nlp_parser] Groq extraction failed ({e}), using rule-based fallback")
         return extract_transit_intent(user_query)
 
-if __name__ == "__main__":
-    print("--- Testing rule-based extraction ---")
-    test_queries = [
-        "Heta ude 6ta Kandy indan Galle yanna train thiyeda?",
-        "Early morning train from Colombo Fort to Ella",
-        "What is the refund policy if I cancel my ticket?",
-    ]
-    for q in test_queries:
-        result = extract_transit_intent(q)
-        print(f"\nQuery: {q}")
-        print(f"Extracted: {result.model_dump()}")
-
-    print("\n--- Testing Groq-backed extraction ---")
-    groq_result = extract_transit_intent_llm("Heta ude 6ta Kandy indan Galle yanna train thiyeda?")
-    print(groq_result.model_dump())
-
-    print("\n--- Available Groq models for your account ---")
-    client = Groq(api_key=os.getenv("GROQ_API_KEY"))
-    models = client.models.list()
-    for m in models.data:
-        print(m.id)

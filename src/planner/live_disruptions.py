@@ -67,8 +67,3 @@ def has_disruption_for_route(route_id: str, alerts: list[dict[str, Any]]) -> boo
             return True
     return False
 
-if __name__ == "__main__":
-    alerts = fetch_live_transit_alerts()
-    print(f"Found {len(alerts)} transit-related alerts")
-    for a in alerts:
-        print(f"- {a['headline']}")

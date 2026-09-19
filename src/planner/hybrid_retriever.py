@@ -128,10 +128,3 @@ class HybridTransitRetriever:
         return results if results else self.schedules[:top_k]
 
 
-if __name__ == "__main__":
-    retriever = HybridTransitRetriever()
-    print(f"\nDense (embedding) search enabled: {retriever.dense_enabled}\n")
-
-    results = retriever.retrieve_candidates(query="train from Kandy to Galle", top_k=3)
-    for r in results:
-        print(f"{r['route_id']} | {r['service_name']} | score={r['rrf_score']}")
