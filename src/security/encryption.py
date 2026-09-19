@@ -18,12 +18,14 @@ choice over CBC mode (which has no built-in integrity check).
 
 from __future__ import annotations
 
-import base64 # Converts encrypted binary data into a storable text format.
-import os # Used to generate a random nonce.
+import base64  # Converts encrypted binary data into a storable text format.
+import os  # Used to generate a random nonce.
 
 # Imports AES-GCM encryption from the cryptography library.
 try:
-  from cryptography.hazmat.primitives.ciphers.aead import AESGCM  # type: ignore[reportMissingImports]
+  from cryptography.hazmat.primitives.ciphers.aead import (
+    AESGCM,  # type: ignore[reportMissingImports]
+  )
 except ImportError as exc:
   raise ImportError(
     "The 'cryptography' package is required. Install it with "

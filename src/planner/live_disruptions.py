@@ -11,8 +11,9 @@ RSS_FEEDS: list[str] = [
 ]
 
 TRANSIT_KEYWORDS: list[str] = [
-    "train", "railway", "bus", "strike", "delay", "derailment",
+    "train", "railway", "rail", "bus", "strike", "delay", "derailment",
     "expressway", "sltb", "slr", "blocked", "cancelled", "landslide",
+    "traffic", "road", "flood", "transport", "commut", "station",
 ]
 
 # Simple in-memory cache so we don't hit the RSS feed on every single query,

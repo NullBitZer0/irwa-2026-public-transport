@@ -81,10 +81,18 @@ class AgentDispatchBridge:
             f"→ Booking Agent | route={payload.route_id}"
             f" seats={payload.seat_count} token={payload.passenger_token[:12]}…"
         )
+        # Only send fields the booking agent's HoldRequest schema accepts
+        hold_payload = {
+            "route_id": payload.route_id,
+            "provider": payload.provider,
+            "passenger_token": payload.passenger_token,
+            "seat_count": payload.seat_count,
+            "fare_lkr": payload.fare_lkr or 0.0,
+        }
         async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
             res = await client.post(
                 f"{self.booking_url}/mcp/hold_seat",
-                json=payload.model_dump(),
+                json=hold_payload,
             )
             res.raise_for_status()
             data = res.json()

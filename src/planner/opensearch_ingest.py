@@ -1,4 +1,5 @@
 import json
+
 from opensearchpy import OpenSearch, helpers
 from sentence_transformers import SentenceTransformer
 

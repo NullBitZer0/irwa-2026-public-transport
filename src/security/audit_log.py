@@ -17,9 +17,9 @@ the very data you're supposed to protect would defeat the purpose.
 
 from __future__ import annotations
 
-import json # Used to store log information in JSON format
+import json  # Used to store log information in JSON format
 from datetime import datetime, timezone  # Used to record the event time
-from pathlib import Path # Used to create and manage file paths
+from pathlib import Path  # Used to create and manage file paths
 
 # Set the location of the security audit log file
 LOG_PATH = Path(__file__).resolve().parents[2] / "evaluation" / "security_audit_log.jsonl"
