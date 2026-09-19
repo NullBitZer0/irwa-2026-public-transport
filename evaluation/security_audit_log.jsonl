@@ -26,3 +26,16 @@
 {"timestamp": "2026-09-18T11:11:07.755913+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
 {"timestamp": "2026-09-18T11:11:07.811764+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=55"}
 {"timestamp": "2026-09-18T11:15:15.850745+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=50"}
+{"timestamp": "2026-09-19T08:05:35.129515+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-09-19T08:05:35.144869+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
+{"timestamp": "2026-09-19T08:05:35.163632+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-09-19T08:05:35.174412+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
+{"timestamp": "2026-09-19T08:05:35.189649+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-09-19T08:05:35.211539+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=57"}
+{"timestamp": "2026-09-19T08:05:35.223895+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='set\\\\s+fare\\\\s+to\\\\s+0' input_length=34"}
+{"timestamp": "2026-09-19T08:05:35.229359+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='<script[\\\\s>]' input_length=29"}
+{"timestamp": "2026-09-19T08:05:35.245121+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='drop\\\\s+table' input_length=43"}
+{"timestamp": "2026-09-19T08:05:35.254061+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='grant\\\\s+admin\\\\s+access' input_length=22"}
+{"timestamp": "2026-09-19T08:05:35.309626+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-09-19T08:05:35.321757+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-09-19T08:05:35.424283+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=55"}
