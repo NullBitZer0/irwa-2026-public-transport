@@ -8,17 +8,16 @@ Run:
 
 from __future__ import annotations
 
-import sys
 import os
+import sys
 
 import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
+from src.booking.state_machine import BookingState, BookingStateMachine
+from src.security.guardrails import is_safe, sanitize_user_input
 from src.security.pii_masker import PIITokenizer
-from src.security.guardrails import sanitize_user_input, is_safe
-from src.booking.state_machine import BookingStateMachine, BookingState
-
 
 # ── PII Masking Tests ─────────────────────────────────────────────────────────
 
@@ -176,6 +175,7 @@ class TestPassportAndEncryption:
     def test_tampered_ciphertext_is_rejected(self):
         """AES-GCM must detect tampering and refuse to decrypt."""
         import base64
+
         from src.security.encryption import FieldEncryptor
 
         enc = FieldEncryptor()
