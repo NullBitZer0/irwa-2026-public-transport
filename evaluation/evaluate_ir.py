@@ -12,8 +12,8 @@ from __future__ import annotations
 
 import json
 import math
-import sys
 import os
+import sys
 
 # Allow imports from src/
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))

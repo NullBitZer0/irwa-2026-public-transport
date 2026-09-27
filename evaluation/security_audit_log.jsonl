@@ -65,3 +65,43 @@
 {"timestamp": "2026-09-19T19:15:35.579666+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
 {"timestamp": "2026-09-19T19:15:35.582202+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
 {"timestamp": "2026-09-19T19:15:35.600891+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=55"}
+{"timestamp": "2026-09-27T09:02:09.519983+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=32"}
+{"timestamp": "2026-09-27T09:02:09.520359+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='system\\\\s+override' input_length=15"}
+{"timestamp": "2026-09-27T09:02:09.520549+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='set\\\\s+fare\\\\s+to\\\\s+0' input_length=13"}
+{"timestamp": "2026-09-27T09:02:09.520691+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='<script[\\\\s>]' input_length=25"}
+{"timestamp": "2026-09-27T10:54:37.005202+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=32"}
+{"timestamp": "2026-09-27T10:54:37.005635+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='system\\\\s+override' input_length=15"}
+{"timestamp": "2026-09-27T10:54:37.005894+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='set\\\\s+fare\\\\s+to\\\\s+0' input_length=13"}
+{"timestamp": "2026-09-27T10:54:37.006091+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='<script[\\\\s>]' input_length=25"}
+{"timestamp": "2026-09-27T10:54:37.071990+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=56"}
+{"timestamp": "2026-09-27T10:57:04.657428+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=32"}
+{"timestamp": "2026-09-27T10:57:04.657744+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='system\\\\s+override' input_length=15"}
+{"timestamp": "2026-09-27T10:57:04.657944+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='set\\\\s+fare\\\\s+to\\\\s+0' input_length=13"}
+{"timestamp": "2026-09-27T10:57:04.658120+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='<script[\\\\s>]' input_length=25"}
+{"timestamp": "2026-09-27T10:57:04.725467+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=56"}
+{"timestamp": "2026-09-27T11:01:34.904520+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-09-27T11:01:34.907349+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
+{"timestamp": "2026-09-27T11:01:34.910402+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-09-27T11:01:34.912979+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
+{"timestamp": "2026-09-27T11:01:34.915501+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-09-27T11:01:34.920315+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=57"}
+{"timestamp": "2026-09-27T11:01:34.921989+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='set\\\\s+fare\\\\s+to\\\\s+0' input_length=34"}
+{"timestamp": "2026-09-27T11:01:34.923673+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='<script[\\\\s>]' input_length=29"}
+{"timestamp": "2026-09-27T11:01:34.925529+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='drop\\\\s+table' input_length=43"}
+{"timestamp": "2026-09-27T11:01:34.927540+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='grant\\\\s+admin\\\\s+access' input_length=22"}
+{"timestamp": "2026-09-27T11:01:34.939123+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-09-27T11:01:34.941386+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-09-27T11:01:34.958148+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=55"}
+{"timestamp": "2026-09-27T11:01:45.698487+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-09-27T11:01:45.701965+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
+{"timestamp": "2026-09-27T11:01:45.705051+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-09-27T11:01:45.708295+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
+{"timestamp": "2026-09-27T11:01:45.711511+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-09-27T11:01:45.718551+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=57"}
+{"timestamp": "2026-09-27T11:01:45.720556+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='set\\\\s+fare\\\\s+to\\\\s+0' input_length=34"}
+{"timestamp": "2026-09-27T11:01:45.722330+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='<script[\\\\s>]' input_length=29"}
+{"timestamp": "2026-09-27T11:01:45.724206+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='drop\\\\s+table' input_length=43"}
+{"timestamp": "2026-09-27T11:01:45.726015+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='grant\\\\s+admin\\\\s+access' input_length=22"}
+{"timestamp": "2026-09-27T11:01:45.738041+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-09-27T11:01:45.741317+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-09-27T11:01:45.762661+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=55"}
