@@ -193,7 +193,6 @@ class HybridTransitRetriever:
 
         # Filter by mode
         if mode in ("TRAIN", "BUS"):
-            provider_filter = "SLR" if mode == "TRAIN" else ("SLTB", "PRIVATE_HIGHWAY")
             if mode == "TRAIN":
                 sparse_hits = [h for h in sparse_hits if h.get("provider") == "SLR"]
                 dense_hits = [h for h in dense_hits if h.get("provider") == "SLR"]

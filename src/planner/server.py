@@ -63,8 +63,10 @@ async def plan_route(payload: PlanRouteRequest) -> dict:
 
     return {
         "status": "SUCCESS",
-        "parsed_entities": parsed.model_dump(),
-        "route_options": candidates,
+        "data": {
+            "parsed_entities": parsed.model_dump(),
+            "route_options": candidates,
+        },
         "message": f"Retrieved {len(candidates)} route option(s). [STUB — Member 2 implementing full NLP+IR]",
     }
 

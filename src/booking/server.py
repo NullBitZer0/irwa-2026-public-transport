@@ -116,7 +116,9 @@ async def hold_seat(req: HoldRequest) -> dict:
 
     return {
         "status": "SUCCESS",
-        "transaction": txn.model_dump(mode="json"),
+        "data": {
+            "transaction": txn.model_dump(mode="json"),
+        },
         "message": f"Seat held for 10 minutes. Transaction: {txn_id}",
     }
 
