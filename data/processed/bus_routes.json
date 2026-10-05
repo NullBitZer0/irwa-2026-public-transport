@@ -17,8 +17,10 @@
     "classes": [
       "Air Conditioned Luxury"
     ],
-    "base_fare_lkr": 980.0,
-    "transit_type": "HIGHWAY_BUS"
+    "base_fare_lkr": 930.0,
+    "transit_type": "HIGHWAY_BUS",
+    "ntc_route_no": "EX01",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "BUS-EX1-33",
@@ -37,8 +39,10 @@
     "classes": [
       "Air Conditioned Luxury"
     ],
-    "base_fare_lkr": 980.0,
-    "transit_type": "HIGHWAY_BUS"
+    "base_fare_lkr": 930.0,
+    "transit_type": "HIGHWAY_BUS",
+    "ntc_route_no": "EX01",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "BUS-EX1-34",
@@ -60,8 +64,10 @@
       "Air Conditioned Luxury",
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1200.0,
-    "transit_type": "HIGHWAY_BUS"
+    "base_fare_lkr": 1170.0,
+    "transit_type": "HIGHWAY_BUS",
+    "ntc_route_no": "EX01-001",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "BUS-NC1-12",
@@ -82,8 +88,10 @@
       "Semi-Luxury",
       "Ordinary"
     ],
-    "base_fare_lkr": 350.0,
-    "transit_type": "EXPRESS_BUS"
+    "base_fare_lkr": 1230.0,
+    "transit_type": "EXPRESS_BUS",
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "BUS-NC1-13",
@@ -104,8 +112,10 @@
     "classes": [
       "Air Conditioned Semi-Luxury"
     ],
-    "base_fare_lkr": 550.0,
-    "transit_type": "HIGHWAY_BUS"
+    "base_fare_lkr": 1230.0,
+    "transit_type": "HIGHWAY_BUS",
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "BUS-NW1-08",
@@ -126,8 +136,10 @@
       "Semi-Luxury",
       "Ordinary"
     ],
-    "base_fare_lkr": 480.0,
-    "transit_type": "EXPRESS_BUS"
+    "base_fare_lkr": 896.0,
+    "transit_type": "EXPRESS_BUS",
+    "ntc_route_no": "57",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "BUS-NE1-22",
@@ -149,9 +161,11 @@
     "classes": [
       "Air Conditioned Luxury"
     ],
-    "base_fare_lkr": 1800.0,
+    "base_fare_lkr": 1733.0,
     "transit_type": "HIGHWAY_BUS",
-    "arrival_next_day": true
+    "arrival_next_day": true,
+    "ntc_route_no": "57/87",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "BUS-EX2-05",
@@ -169,8 +183,10 @@
     "classes": [
       "Air Conditioned Super Luxury"
     ],
-    "base_fare_lkr": 1100.0,
-    "transit_type": "HIGHWAY_BUS"
+    "base_fare_lkr": 930.0,
+    "transit_type": "HIGHWAY_BUS",
+    "ntc_route_no": "EX01",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-COLO-KAND-0510",
@@ -193,13 +209,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-COLO-KAND-0615",
@@ -222,13 +240,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-COLO-KAND-0700",
@@ -251,13 +271,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-COLO-KAND-0745",
@@ -280,13 +302,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-COLO-KAND-0830",
@@ -309,13 +333,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-COLO-KAND-0915",
@@ -338,13 +364,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-COLO-KAND-1000",
@@ -367,13 +395,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-COLO-KAND-1045",
@@ -396,13 +426,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-COLO-KAND-1130",
@@ -425,13 +457,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-COLO-KAND-1215",
@@ -454,13 +488,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-COLO-KAND-1300",
@@ -483,13 +519,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-COLO-KAND-1345",
@@ -512,13 +550,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-COLO-KAND-1430",
@@ -541,13 +581,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-COLO-KAND-1515",
@@ -570,13 +612,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-COLO-KAND-1600",
@@ -599,13 +643,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-COLO-KAND-1645",
@@ -628,13 +674,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-COLO-KAND-1730",
@@ -657,13 +705,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-COLO-KAND-1815",
@@ -686,13 +736,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-KAND-COLO-0510",
@@ -715,13 +767,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-KAND-COLO-0615",
@@ -744,13 +798,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-KAND-COLO-0700",
@@ -773,13 +829,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-KAND-COLO-0745",
@@ -802,13 +860,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-KAND-COLO-0830",
@@ -831,13 +891,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-KAND-COLO-0915",
@@ -860,13 +922,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-KAND-COLO-1000",
@@ -889,13 +953,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-KAND-COLO-1045",
@@ -918,13 +984,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-KAND-COLO-1130",
@@ -947,13 +1015,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-KAND-COLO-1215",
@@ -976,13 +1046,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-KAND-COLO-1300",
@@ -1005,13 +1077,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-KAND-COLO-1345",
@@ -1034,13 +1108,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-KAND-COLO-1430",
@@ -1063,13 +1139,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-KAND-COLO-1515",
@@ -1092,13 +1170,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-KAND-COLO-1600",
@@ -1121,13 +1201,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-KAND-COLO-1645",
@@ -1150,13 +1232,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-KAND-COLO-1730",
@@ -1179,13 +1263,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-1-KAND-COLO-1815",
@@ -1208,13 +1294,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 1150.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "1",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-1-COLO-GALL-0600",
@@ -1237,14 +1325,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 800.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2-1",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-1-COLO-GALL-0700",
@@ -1267,14 +1357,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 800.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2-1",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-1-COLO-GALL-0800",
@@ -1297,14 +1389,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 800.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2-1",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-1-COLO-GALL-0900",
@@ -1327,14 +1421,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 800.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2-1",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-1-COLO-GALL-1000",
@@ -1357,14 +1453,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 800.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2-1",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-1-COLO-GALL-1100",
@@ -1387,14 +1485,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 800.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2-1",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-1-COLO-GALL-1200",
@@ -1417,14 +1517,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 800.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2-1",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-1-COLO-GALL-1300",
@@ -1447,14 +1549,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 800.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2-1",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-1-COLO-GALL-1400",
@@ -1477,14 +1581,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 800.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2-1",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-1-COLO-GALL-1500",
@@ -1507,14 +1613,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 800.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2-1",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-1-COLO-GALL-1600",
@@ -1537,14 +1645,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 800.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2-1",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-1-COLO-GALL-1700",
@@ -1567,14 +1677,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 800.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2-1",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-1-COLO-GALL-1800",
@@ -1597,14 +1709,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 800.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2-1",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-1-GALL-COLO-0600",
@@ -1627,14 +1741,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 800.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2-1",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-1-GALL-COLO-0700",
@@ -1657,14 +1773,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 800.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2-1",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-1-GALL-COLO-0800",
@@ -1687,14 +1805,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 800.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2-1",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-1-GALL-COLO-0900",
@@ -1717,14 +1837,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 800.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2-1",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-1-GALL-COLO-1000",
@@ -1747,14 +1869,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 800.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2-1",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-1-GALL-COLO-1100",
@@ -1777,14 +1901,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 800.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2-1",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-1-GALL-COLO-1200",
@@ -1807,14 +1933,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 800.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2-1",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-1-GALL-COLO-1300",
@@ -1837,14 +1965,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 800.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2-1",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-1-GALL-COLO-1400",
@@ -1867,14 +1997,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 800.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2-1",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-1-GALL-COLO-1500",
@@ -1897,14 +2029,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 800.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2-1",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-1-GALL-COLO-1600",
@@ -1927,14 +2061,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 800.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2-1",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-1-GALL-COLO-1700",
@@ -1957,14 +2093,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 800.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2-1",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-1-GALL-COLO-1800",
@@ -1987,14 +2125,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 800.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2-1",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-COLO-MATA-0630",
@@ -2015,14 +2155,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 797.0,
+    "base_fare_lkr": 1320.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX 1-18",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-COLO-MATA-0800",
@@ -2043,14 +2185,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 797.0,
+    "base_fare_lkr": 1320.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX 1-18",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-COLO-MATA-0930",
@@ -2071,14 +2215,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 797.0,
+    "base_fare_lkr": 1320.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX 1-18",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-COLO-MATA-1100",
@@ -2099,14 +2245,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 797.0,
+    "base_fare_lkr": 1320.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX 1-18",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-COLO-MATA-1230",
@@ -2127,14 +2275,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 797.0,
+    "base_fare_lkr": 1320.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX 1-18",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-COLO-MATA-1400",
@@ -2155,14 +2305,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 797.0,
+    "base_fare_lkr": 1320.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX 1-18",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-COLO-MATA-1530",
@@ -2183,14 +2335,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 797.0,
+    "base_fare_lkr": 1320.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX 1-18",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-COLO-MATA-1700",
@@ -2211,14 +2365,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 797.0,
+    "base_fare_lkr": 1320.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX 1-18",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-MATA-COLO-0630",
@@ -2239,14 +2395,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 797.0,
+    "base_fare_lkr": 1320.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX 1-18",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-MATA-COLO-0800",
@@ -2267,14 +2425,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 797.0,
+    "base_fare_lkr": 1320.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX 1-18",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-MATA-COLO-0930",
@@ -2295,14 +2455,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 797.0,
+    "base_fare_lkr": 1320.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX 1-18",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-MATA-COLO-1100",
@@ -2323,14 +2485,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 797.0,
+    "base_fare_lkr": 1320.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX 1-18",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-MATA-COLO-1230",
@@ -2351,14 +2515,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 797.0,
+    "base_fare_lkr": 1320.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX 1-18",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-MATA-COLO-1400",
@@ -2379,14 +2545,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 797.0,
+    "base_fare_lkr": 1320.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX 1-18",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-MATA-COLO-1530",
@@ -2407,14 +2575,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 797.0,
+    "base_fare_lkr": 1320.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX 1-18",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-2-MATA-COLO-1700",
@@ -2435,14 +2605,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 797.0,
+    "base_fare_lkr": 1320.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "2",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "EX 1-18",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-8-COLO-MATA-0600",
@@ -2462,14 +2634,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 990.0,
+    "base_fare_lkr": 632.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "8",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "8",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-8-COLO-MATA-0800",
@@ -2489,14 +2663,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 990.0,
+    "base_fare_lkr": 632.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "8",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "8",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-8-COLO-MATA-1000",
@@ -2516,14 +2692,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 990.0,
+    "base_fare_lkr": 632.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "8",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "8",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-8-COLO-MATA-1200",
@@ -2543,14 +2721,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 990.0,
+    "base_fare_lkr": 632.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "8",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "8",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-8-COLO-MATA-1400",
@@ -2570,14 +2750,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 990.0,
+    "base_fare_lkr": 632.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "8",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "8",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-8-COLO-MATA-1600",
@@ -2597,14 +2779,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 990.0,
+    "base_fare_lkr": 632.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "8",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "8",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-8-MATA-COLO-0600",
@@ -2624,14 +2808,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 990.0,
+    "base_fare_lkr": 632.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "8",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "8",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-8-MATA-COLO-0800",
@@ -2651,14 +2837,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 990.0,
+    "base_fare_lkr": 632.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "8",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "8",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-8-MATA-COLO-1000",
@@ -2678,14 +2866,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 990.0,
+    "base_fare_lkr": 632.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "8",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "8",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-8-MATA-COLO-1200",
@@ -2705,14 +2895,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 990.0,
+    "base_fare_lkr": 632.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "8",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "8",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-8-MATA-COLO-1400",
@@ -2732,14 +2924,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 990.0,
+    "base_fare_lkr": 632.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "8",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "8",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-8-MATA-COLO-1600",
@@ -2759,14 +2953,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 990.0,
+    "base_fare_lkr": 632.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "8",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "8",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-4-3-COLO-ANUR-0615",
@@ -2788,14 +2984,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 990.0,
+    "base_fare_lkr": 896.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "4-3",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "57",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-4-3-COLO-ANUR-0815",
@@ -2817,14 +3015,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 990.0,
+    "base_fare_lkr": 896.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "4-3",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "57",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-4-3-COLO-ANUR-1015",
@@ -2846,14 +3046,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 990.0,
+    "base_fare_lkr": 896.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "4-3",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "57",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-4-3-COLO-ANUR-1215",
@@ -2875,14 +3077,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 990.0,
+    "base_fare_lkr": 896.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "4-3",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "57",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-4-3-COLO-ANUR-1415",
@@ -2904,14 +3108,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 990.0,
+    "base_fare_lkr": 896.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "4-3",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "57",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-4-3-COLO-ANUR-1615",
@@ -2933,14 +3139,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 990.0,
+    "base_fare_lkr": 896.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "4-3",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "57",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-4-3-COLO-ANUR-1815",
@@ -2962,14 +3170,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 990.0,
+    "base_fare_lkr": 896.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "4-3",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "57",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-4-3-ANUR-COLO-0615",
@@ -2991,14 +3201,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 990.0,
+    "base_fare_lkr": 896.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "4-3",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "57",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-4-3-ANUR-COLO-0815",
@@ -3020,14 +3232,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 990.0,
+    "base_fare_lkr": 896.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "4-3",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "57",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-4-3-ANUR-COLO-1015",
@@ -3049,14 +3263,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 990.0,
+    "base_fare_lkr": 896.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "4-3",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "57",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-4-3-ANUR-COLO-1215",
@@ -3078,14 +3294,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 990.0,
+    "base_fare_lkr": 896.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "4-3",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "57",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-4-3-ANUR-COLO-1415",
@@ -3107,14 +3325,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 990.0,
+    "base_fare_lkr": 896.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "4-3",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "57",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-4-3-ANUR-COLO-1615",
@@ -3136,14 +3356,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 990.0,
+    "base_fare_lkr": 896.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "4-3",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "57",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-4-3-ANUR-COLO-1815",
@@ -3165,14 +3387,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 990.0,
+    "base_fare_lkr": 896.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "4-3",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "57",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-4-COLO-MANN-0630",
@@ -3193,14 +3417,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 1506.0,
+    "base_fare_lkr": 1325.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "4",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "4",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-4-COLO-MANN-0930",
@@ -3221,14 +3447,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 1506.0,
+    "base_fare_lkr": 1325.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "4",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "4",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-4-COLO-MANN-1230",
@@ -3249,14 +3477,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 1506.0,
+    "base_fare_lkr": 1325.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "4",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "4",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-4-COLO-MANN-1530",
@@ -3277,14 +3507,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 1506.0,
+    "base_fare_lkr": 1325.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "4",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "4",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-4-COLO-MANN-1830",
@@ -3305,7 +3537,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 1506.0,
+    "base_fare_lkr": 1325.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "4",
     "arrival_next_day": true,
@@ -3313,7 +3545,9 @@
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "4",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-4-MANN-COLO-0630",
@@ -3334,14 +3568,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 1506.0,
+    "base_fare_lkr": 1325.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "4",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "4",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-4-MANN-COLO-0930",
@@ -3362,14 +3598,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 1506.0,
+    "base_fare_lkr": 1325.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "4",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "4",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-4-MANN-COLO-1230",
@@ -3390,14 +3628,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 1506.0,
+    "base_fare_lkr": 1325.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "4",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "4",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-4-MANN-COLO-1530",
@@ -3418,14 +3658,16 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 1506.0,
+    "base_fare_lkr": 1325.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "4",
     "synthetic": true,
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "4",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-4-MANN-COLO-1830",
@@ -3446,7 +3688,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 1506.0,
+    "base_fare_lkr": 1325.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "4",
     "arrival_next_day": true,
@@ -3454,7 +3696,9 @@
     "synthetic_fields": [
       "departure_time",
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "4",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-87-COLO-JAFF-0545",
@@ -3478,13 +3722,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 2552.0,
+    "base_fare_lkr": 2600.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "87",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "57/87",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-87-COLO-JAFF-0800",
@@ -3508,13 +3754,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 2552.0,
+    "base_fare_lkr": 2600.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "87",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "57/87",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-87-COLO-JAFF-1410",
@@ -3538,13 +3786,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 2552.0,
+    "base_fare_lkr": 2600.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "87",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "57/87",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-87-COLO-JAFF-1550",
@@ -3568,13 +3818,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 2552.0,
+    "base_fare_lkr": 2600.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "87",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "57/87",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-87-COLO-JAFF-1730",
@@ -3598,14 +3850,16 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 2552.0,
+    "base_fare_lkr": 2600.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "87",
     "arrival_next_day": true,
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "57/87",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-87-COLO-JAFF-2200",
@@ -3629,14 +3883,16 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 2552.0,
+    "base_fare_lkr": 2600.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "87",
     "arrival_next_day": true,
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "57/87",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-87-JAFF-COLO-0545",
@@ -3660,13 +3916,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 2552.0,
+    "base_fare_lkr": 2600.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "87",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "57/87",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-87-JAFF-COLO-0800",
@@ -3690,13 +3948,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 2552.0,
+    "base_fare_lkr": 2600.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "87",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "57/87",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-87-JAFF-COLO-1410",
@@ -3720,13 +3980,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 2552.0,
+    "base_fare_lkr": 2600.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "87",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "57/87",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-87-JAFF-COLO-1550",
@@ -3750,13 +4012,15 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 2552.0,
+    "base_fare_lkr": 2600.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "87",
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "57/87",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-87-JAFF-COLO-1730",
@@ -3780,14 +4044,16 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 2552.0,
+    "base_fare_lkr": 2600.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "87",
     "arrival_next_day": true,
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "57/87",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "SLTB-87-JAFF-COLO-2200",
@@ -3811,14 +4077,16 @@
     "classes": [
       "Semi-Luxury"
     ],
-    "base_fare_lkr": 2552.0,
+    "base_fare_lkr": 2600.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "87",
     "arrival_next_day": true,
     "synthetic": true,
     "synthetic_fields": [
       "arrival_time"
-    ]
+    ],
+    "ntc_route_no": "57/87",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX11-MAKUMB-MATARA-0630",
@@ -3835,7 +4103,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1170.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-1",
     "synthetic": true,
@@ -3844,7 +4112,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX01-001",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX11-MAKUMB-MATARA-1315",
@@ -3861,7 +4130,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1170.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-1",
     "synthetic": true,
@@ -3870,7 +4139,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX01-001",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX11-MAKUMB-MATARA-1945",
@@ -3887,7 +4157,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1170.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-1",
     "arrival_next_day": true,
@@ -3897,7 +4167,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX01-001",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX11-MATARA-MAKUMB-0630",
@@ -3914,7 +4185,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1170.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-1",
     "synthetic": true,
@@ -3923,7 +4194,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX01-001",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX11-MATARA-MAKUMB-1315",
@@ -3940,7 +4212,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1170.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-1",
     "synthetic": true,
@@ -3949,7 +4221,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX01-001",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX11-MATARA-MAKUMB-1945",
@@ -3966,7 +4239,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1170.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-1",
     "arrival_next_day": true,
@@ -3976,7 +4249,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX01-001",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX001-MAKUMB-GALLE-0630",
@@ -3993,7 +4267,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 930.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX001",
     "synthetic": true,
@@ -4002,7 +4276,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX01",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX001-MAKUMB-GALLE-1315",
@@ -4019,7 +4294,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 930.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX001",
     "synthetic": true,
@@ -4028,7 +4303,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX01",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX001-MAKUMB-GALLE-1945",
@@ -4045,7 +4321,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 930.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX001",
     "arrival_next_day": true,
@@ -4055,7 +4331,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX01",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX001-GALLE-MAKUMB-0630",
@@ -4072,7 +4349,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 930.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX001",
     "synthetic": true,
@@ -4081,7 +4358,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX01",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX001-GALLE-MAKUMB-1315",
@@ -4098,7 +4376,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 930.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX001",
     "synthetic": true,
@@ -4107,7 +4385,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX01",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX001-GALLE-MAKUMB-1945",
@@ -4124,7 +4403,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 930.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX001",
     "arrival_next_day": true,
@@ -4134,7 +4413,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX01",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX12-KADUWE-MATARA-0630",
@@ -4151,7 +4431,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1270.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-2",
     "synthetic": true,
@@ -4160,7 +4440,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX 1-2",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX12-KADUWE-MATARA-1315",
@@ -4177,7 +4458,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1270.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-2",
     "synthetic": true,
@@ -4186,7 +4467,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX 1-2",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX12-KADUWE-MATARA-1945",
@@ -4203,7 +4485,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1270.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-2",
     "arrival_next_day": true,
@@ -4213,7 +4495,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX 1-2",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX12-MATARA-KADUWE-0630",
@@ -4230,7 +4513,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1270.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-2",
     "synthetic": true,
@@ -4239,7 +4522,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX 1-2",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX12-MATARA-KADUWE-1315",
@@ -4256,7 +4540,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1270.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-2",
     "synthetic": true,
@@ -4265,7 +4549,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX 1-2",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX12-MATARA-KADUWE-1945",
@@ -4282,7 +4567,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1270.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-2",
     "arrival_next_day": true,
@@ -4292,7 +4577,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX 1-2",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX121-KADAWA-GALLE-0630",
@@ -4309,7 +4595,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1070.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-21",
     "synthetic": true,
@@ -4318,7 +4604,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX 1-21",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX121-KADAWA-GALLE-1315",
@@ -4335,7 +4622,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1070.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-21",
     "synthetic": true,
@@ -4344,7 +4631,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX 1-21",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX121-KADAWA-GALLE-1945",
@@ -4361,7 +4649,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1070.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-21",
     "arrival_next_day": true,
@@ -4371,7 +4659,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX 1-21",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX121-GALLE-KADAWA-0630",
@@ -4388,7 +4677,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1070.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-21",
     "synthetic": true,
@@ -4397,7 +4686,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX 1-21",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX121-GALLE-KADAWA-1315",
@@ -4414,7 +4704,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1070.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-21",
     "synthetic": true,
@@ -4423,7 +4713,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX 1-21",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX121-GALLE-KADAWA-1945",
@@ -4440,7 +4731,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1070.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-21",
     "arrival_next_day": true,
@@ -4450,7 +4741,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX 1-21",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX122-KADAWA-MATARA-0630",
@@ -4467,7 +4759,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1320.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-22",
     "synthetic": true,
@@ -4476,7 +4768,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX 1-22",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX122-KADAWA-MATARA-1315",
@@ -4493,7 +4786,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1320.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-22",
     "synthetic": true,
@@ -4502,7 +4795,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX 1-22",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX122-KADAWA-MATARA-1945",
@@ -4519,7 +4813,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1320.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-22",
     "arrival_next_day": true,
@@ -4529,7 +4823,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX 1-22",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX122-MATARA-KADAWA-0630",
@@ -4546,7 +4841,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1320.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-22",
     "synthetic": true,
@@ -4555,7 +4850,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX 1-22",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX122-MATARA-KADAWA-1315",
@@ -4572,7 +4868,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1320.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-22",
     "synthetic": true,
@@ -4581,7 +4877,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX 1-22",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX122-MATARA-KADAWA-1945",
@@ -4598,7 +4895,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1320.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-22",
     "arrival_next_day": true,
@@ -4608,7 +4905,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX 1-22",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX123-KADUWE-GALLE-0630",
@@ -4625,7 +4923,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1020.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-23",
     "synthetic": true,
@@ -4634,7 +4932,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX 1-23",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX123-KADUWE-GALLE-1315",
@@ -4651,7 +4950,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1020.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-23",
     "synthetic": true,
@@ -4660,7 +4959,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX 1-23",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX123-KADUWE-GALLE-1945",
@@ -4677,7 +4977,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1020.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-23",
     "arrival_next_day": true,
@@ -4687,7 +4987,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX 1-23",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX123-GALLE-KADUWE-0630",
@@ -4704,7 +5005,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1020.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-23",
     "synthetic": true,
@@ -4713,7 +5014,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX 1-23",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX123-GALLE-KADUWE-1315",
@@ -4730,7 +5032,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1020.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-23",
     "synthetic": true,
@@ -4739,7 +5041,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX 1-23",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-EX123-GALLE-KADUWE-1945",
@@ -4756,7 +5059,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1020.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "EX 1-23",
     "arrival_next_day": true,
@@ -4766,7 +5069,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX 1-23",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-02-COLOMB-GALLE-0630",
@@ -4783,7 +5087,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "02",
     "synthetic": true,
@@ -4792,7 +5096,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-02-COLOMB-GALLE-1315",
@@ -4809,7 +5114,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "02",
     "synthetic": true,
@@ -4818,7 +5123,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-02-COLOMB-GALLE-1945",
@@ -4835,7 +5141,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "02",
     "arrival_next_day": true,
@@ -4845,7 +5151,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-02-GALLE-COLOMB-0630",
@@ -4862,7 +5169,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "02",
     "synthetic": true,
@@ -4871,7 +5178,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-02-GALLE-COLOMB-1315",
@@ -4888,7 +5196,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "02",
     "synthetic": true,
@@ -4897,7 +5205,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-02-GALLE-COLOMB-1945",
@@ -4914,7 +5223,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 496.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "02",
     "arrival_next_day": true,
@@ -4924,7 +5233,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "2-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-ABAY-MARADA-AKKARA-0630",
@@ -5099,7 +5409,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "01",
     "synthetic": true,
@@ -5108,7 +5418,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-01-COLOMB-KANDY-1315",
@@ -5125,7 +5436,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "01",
     "synthetic": true,
@@ -5134,7 +5445,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-01-COLOMB-KANDY-1945",
@@ -5151,7 +5463,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "01",
     "arrival_next_day": true,
@@ -5161,7 +5473,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-01-KANDY-COLOMB-0630",
@@ -5178,7 +5491,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "01",
     "synthetic": true,
@@ -5187,7 +5500,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-01-KANDY-COLOMB-1315",
@@ -5204,7 +5518,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "01",
     "synthetic": true,
@@ -5213,7 +5527,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-01-KANDY-COLOMB-1945",
@@ -5230,7 +5545,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1230.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "01",
     "arrival_next_day": true,
@@ -5240,7 +5555,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "EX03/EX04/602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-03-BASTIA-KATARA-0630",
@@ -6205,7 +6521,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 640.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "09",
     "synthetic": true,
@@ -6214,7 +6530,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "9",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-09-COLOMB-TELDEN-1315",
@@ -6231,7 +6548,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 640.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "09",
     "synthetic": true,
@@ -6240,7 +6557,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "9",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-09-COLOMB-TELDEN-1945",
@@ -6257,7 +6575,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 640.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "09",
     "arrival_next_day": true,
@@ -6267,7 +6585,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "9",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-09-TELDEN-COLOMB-0630",
@@ -6284,7 +6603,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 640.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "09",
     "synthetic": true,
@@ -6293,7 +6612,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "9",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-09-TELDEN-COLOMB-1315",
@@ -6310,7 +6630,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 640.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "09",
     "synthetic": true,
@@ -6319,7 +6639,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "9",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-09-TELDEN-COLOMB-1945",
@@ -6336,7 +6657,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 640.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "09",
     "arrival_next_day": true,
@@ -6346,7 +6667,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "9",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-091-COLOMB-WATTEG-0630",
@@ -6363,7 +6685,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 582.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "09/1",
     "synthetic": true,
@@ -6372,7 +6694,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "9-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-091-COLOMB-WATTEG-1315",
@@ -6389,7 +6712,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 582.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "09/1",
     "synthetic": true,
@@ -6398,7 +6721,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "9-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-091-COLOMB-WATTEG-1945",
@@ -6415,7 +6739,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 582.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "09/1",
     "arrival_next_day": true,
@@ -6425,7 +6749,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "9-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-091-WATTEG-COLOMB-0630",
@@ -6442,7 +6767,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 582.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "09/1",
     "synthetic": true,
@@ -6451,7 +6776,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "9-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-091-WATTEG-COLOMB-1315",
@@ -6468,7 +6794,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 582.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "09/1",
     "synthetic": true,
@@ -6477,7 +6803,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "9-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-091-WATTEG-COLOMB-1945",
@@ -6494,7 +6821,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 582.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "09/1",
     "arrival_next_day": true,
@@ -6504,7 +6831,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "9-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-092-COLOMB-DIGANA-0630",
@@ -6521,7 +6849,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 598.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "09/2",
     "synthetic": true,
@@ -6530,7 +6858,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "9-2",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-092-COLOMB-DIGANA-1315",
@@ -6547,7 +6876,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 598.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "09/2",
     "synthetic": true,
@@ -6556,7 +6885,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "9-2",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-092-COLOMB-DIGANA-1945",
@@ -6573,7 +6903,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 598.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "09/2",
     "arrival_next_day": true,
@@ -6583,7 +6913,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "9-2",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-092-DIGANA-COLOMB-0630",
@@ -6600,7 +6931,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 598.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "09/2",
     "synthetic": true,
@@ -6609,7 +6940,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "9-2",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-092-DIGANA-COLOMB-1315",
@@ -6626,7 +6958,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 598.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "09/2",
     "synthetic": true,
@@ -6635,7 +6967,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "9-2",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-092-DIGANA-COLOMB-1945",
@@ -6652,7 +6985,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 598.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "09/2",
     "arrival_next_day": true,
@@ -6662,7 +6995,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "9-2",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-10-KATARA-KANDY-0630",
@@ -6679,7 +7013,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1197.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "10",
     "synthetic": true,
@@ -6688,7 +7022,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "10",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-10-KATARA-KANDY-1315",
@@ -6705,7 +7040,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1197.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "10",
     "synthetic": true,
@@ -6714,7 +7049,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "10",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-10-KATARA-KANDY-1945",
@@ -6731,7 +7067,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1197.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "10",
     "arrival_next_day": true,
@@ -6741,7 +7077,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "10",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-10-KANDY-KATARA-0630",
@@ -6758,7 +7095,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1197.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "10",
     "synthetic": true,
@@ -6767,7 +7104,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "10",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-10-KANDY-KATARA-1315",
@@ -6784,7 +7122,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1197.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "10",
     "synthetic": true,
@@ -6793,7 +7131,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "10",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-10-KANDY-KATARA-1945",
@@ -6810,7 +7149,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 1197.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "10",
     "arrival_next_day": true,
@@ -6820,7 +7159,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "10",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-11-MATARA-RATNAP-0630",
@@ -6837,7 +7177,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 750.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "11",
     "synthetic": true,
@@ -6846,7 +7186,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "11",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-11-MATARA-RATNAP-1315",
@@ -6863,7 +7204,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 750.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "11",
     "synthetic": true,
@@ -6872,7 +7213,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "11",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-11-MATARA-RATNAP-1945",
@@ -6889,7 +7231,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 750.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "11",
     "arrival_next_day": true,
@@ -6899,7 +7241,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "11",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-11-RATNAP-MATARA-0630",
@@ -6916,7 +7259,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 750.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "11",
     "synthetic": true,
@@ -6925,7 +7268,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "11",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-11-RATNAP-MATARA-1315",
@@ -6942,7 +7286,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 750.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "11",
     "synthetic": true,
@@ -6951,7 +7295,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "11",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-11-RATNAP-MATARA-1945",
@@ -6968,7 +7313,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 750.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "11",
     "arrival_next_day": true,
@@ -6978,7 +7323,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "11",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-13-COLOMB-DAYAGA-0630",
@@ -6995,7 +7341,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 750.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "13",
     "synthetic": true,
@@ -7004,7 +7350,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "13-2",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-13-COLOMB-DAYAGA-1315",
@@ -7021,7 +7368,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 750.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "13",
     "synthetic": true,
@@ -7030,7 +7377,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "13-2",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-13-COLOMB-DAYAGA-1945",
@@ -7047,7 +7395,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 750.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "13",
     "arrival_next_day": true,
@@ -7057,7 +7405,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "13-2",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-13-DAYAGA-COLOMB-0630",
@@ -7074,7 +7423,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 750.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "13",
     "synthetic": true,
@@ -7083,7 +7432,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "13-2",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-13-DAYAGA-COLOMB-1315",
@@ -7100,7 +7450,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 750.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "13",
     "synthetic": true,
@@ -7109,7 +7459,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "13-2",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-13-DAYAGA-COLOMB-1945",
@@ -7126,7 +7477,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 750.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "13",
     "arrival_next_day": true,
@@ -7136,7 +7487,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "13-2",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-14-KANDY-MONARA-0630",
@@ -7153,7 +7505,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 758.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "14",
     "synthetic": true,
@@ -7162,7 +7514,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "14",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-14-KANDY-MONARA-1315",
@@ -7179,7 +7532,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 758.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "14",
     "synthetic": true,
@@ -7188,7 +7541,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "14",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-14-KANDY-MONARA-1945",
@@ -7205,7 +7559,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 758.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "14",
     "arrival_next_day": true,
@@ -7215,7 +7569,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "14",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-14-MONARA-KANDY-0630",
@@ -7232,7 +7587,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 758.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "14",
     "synthetic": true,
@@ -7241,7 +7596,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "14",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-14-MONARA-KANDY-1315",
@@ -7258,7 +7614,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 758.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "14",
     "synthetic": true,
@@ -7267,7 +7623,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "14",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-14-MONARA-KANDY-1945",
@@ -7284,7 +7641,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 758.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "14",
     "arrival_next_day": true,
@@ -7294,7 +7651,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "14",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-15-BASTIA-ANURAD-0630",
@@ -7469,7 +7827,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 632.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "16",
     "synthetic": true,
@@ -7478,7 +7836,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "16",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-16-COLOMB-NAWALA-1315",
@@ -7495,7 +7854,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 632.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "16",
     "synthetic": true,
@@ -7504,7 +7863,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "16",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-16-COLOMB-NAWALA-1945",
@@ -7521,7 +7881,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 632.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "16",
     "arrival_next_day": true,
@@ -7531,7 +7891,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "16",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-16-NAWALA-COLOMB-0630",
@@ -7548,7 +7909,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 632.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "16",
     "synthetic": true,
@@ -7557,7 +7918,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "16",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-16-NAWALA-COLOMB-1315",
@@ -7574,7 +7936,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 632.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "16",
     "synthetic": true,
@@ -7583,7 +7945,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "16",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-16-NAWALA-COLOMB-1945",
@@ -7600,7 +7963,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 632.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "16",
     "arrival_next_day": true,
@@ -7610,7 +7973,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "16",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-17-KANDY-PANADU-0630",
@@ -7627,7 +7991,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 648.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "17",
     "synthetic": true,
@@ -7636,7 +8000,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "17/255",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-17-KANDY-PANADU-1315",
@@ -7653,7 +8018,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 648.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "17",
     "synthetic": true,
@@ -7662,7 +8027,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "17/255",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-17-KANDY-PANADU-1945",
@@ -7679,7 +8045,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 648.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "17",
     "arrival_next_day": true,
@@ -7689,7 +8055,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "17/255",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-17-PANADU-KANDY-0630",
@@ -7706,7 +8073,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 648.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "17",
     "synthetic": true,
@@ -7715,7 +8082,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "17/255",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-17-PANADU-KANDY-1315",
@@ -7732,7 +8100,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 648.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "17",
     "synthetic": true,
@@ -7741,7 +8109,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "17/255",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-17-PANADU-KANDY-1945",
@@ -7758,7 +8127,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 648.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "17",
     "arrival_next_day": true,
@@ -7768,7 +8137,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "17/255",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-18-FORT-HATTON-0630",
@@ -7943,7 +8313,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 590.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "21",
     "synthetic": true,
@@ -7952,7 +8322,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "21",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-21-KANDY-BADULL-1315",
@@ -7969,7 +8340,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 590.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "21",
     "synthetic": true,
@@ -7978,7 +8349,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "21",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-21-KANDY-BADULL-1945",
@@ -7995,7 +8367,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 590.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "21",
     "arrival_next_day": true,
@@ -8005,7 +8377,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "21",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-21-BADULL-KANDY-0630",
@@ -8022,7 +8395,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 590.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "21",
     "synthetic": true,
@@ -8031,7 +8404,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "21",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-21-BADULL-KANDY-1315",
@@ -8048,7 +8422,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 590.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "21",
     "synthetic": true,
@@ -8057,7 +8431,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "21",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-21-BADULL-KANDY-1945",
@@ -8074,7 +8449,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 590.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "21",
     "arrival_next_day": true,
@@ -8084,7 +8459,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "21",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-22-KANDY-AMPARA-0630",
@@ -8101,7 +8477,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 939.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "22",
     "synthetic": true,
@@ -8110,7 +8486,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "22/75",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-22-KANDY-AMPARA-1315",
@@ -8127,7 +8504,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 939.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "22",
     "synthetic": true,
@@ -8136,7 +8513,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "22/75",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-22-KANDY-AMPARA-1945",
@@ -8153,7 +8531,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 939.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "22",
     "arrival_next_day": true,
@@ -8163,7 +8541,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "22/75",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-22-AMPARA-KANDY-0630",
@@ -8180,7 +8559,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 939.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "22",
     "synthetic": true,
@@ -8189,7 +8568,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "22/75",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-22-AMPARA-KANDY-1315",
@@ -8206,7 +8586,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 939.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "22",
     "synthetic": true,
@@ -8215,7 +8595,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "22/75",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-22-AMPARA-KANDY-1945",
@@ -8232,7 +8613,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 939.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "22",
     "arrival_next_day": true,
@@ -8242,7 +8623,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "22/75",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-31-MATARA-BANDAR-0630",
@@ -8259,7 +8641,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 930.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "31",
     "synthetic": true,
@@ -8268,7 +8650,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "31",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-31-MATARA-BANDAR-1315",
@@ -8285,7 +8668,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 930.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "31",
     "synthetic": true,
@@ -8294,7 +8677,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "31",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-31-MATARA-BANDAR-1945",
@@ -8311,7 +8695,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 930.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "31",
     "arrival_next_day": true,
@@ -8321,7 +8705,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "31",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-31-BANDAR-MATARA-0630",
@@ -8338,7 +8723,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 930.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "31",
     "synthetic": true,
@@ -8347,7 +8732,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "31",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-31-BANDAR-MATARA-1315",
@@ -8364,7 +8750,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 930.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "31",
     "synthetic": true,
@@ -8373,7 +8759,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "31",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-31-BANDAR-MATARA-1945",
@@ -8390,7 +8777,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 930.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "31",
     "arrival_next_day": true,
@@ -8400,7 +8787,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "31",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-32-BASTIA-KATARA-0630",
@@ -8733,7 +9121,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 615.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "41",
     "synthetic": true,
@@ -8742,7 +9130,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "41-2",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-41-KANDY-KADURU-1315",
@@ -8759,7 +9148,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 615.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "41",
     "synthetic": true,
@@ -8768,7 +9157,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "41-2",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-41-KANDY-KADURU-1945",
@@ -8785,7 +9175,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 615.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "41",
     "arrival_next_day": true,
@@ -8795,7 +9185,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "41-2",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-41-KADURU-KANDY-0630",
@@ -8812,7 +9203,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 615.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "41",
     "synthetic": true,
@@ -8821,7 +9212,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "41-2",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-41-KADURU-KANDY-1315",
@@ -8838,7 +9230,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 615.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "41",
     "synthetic": true,
@@ -8847,7 +9239,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "41-2",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-41-KADURU-KANDY-1945",
@@ -8864,7 +9257,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 615.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "41",
     "arrival_next_day": true,
@@ -8874,7 +9267,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "41-2",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-45-KANDY-TRINCO-0630",
@@ -8891,7 +9285,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 775.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "45",
     "synthetic": true,
@@ -8900,7 +9294,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "45",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-45-KANDY-TRINCO-1315",
@@ -8917,7 +9312,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 775.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "45",
     "synthetic": true,
@@ -8926,7 +9321,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "45",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-45-KANDY-TRINCO-1945",
@@ -8943,7 +9339,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 775.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "45",
     "arrival_next_day": true,
@@ -8953,7 +9349,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "45",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-45-TRINCO-KANDY-0630",
@@ -8970,7 +9367,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 775.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "45",
     "synthetic": true,
@@ -8979,7 +9376,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "45",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-45-TRINCO-KANDY-1315",
@@ -8996,7 +9394,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 775.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "45",
     "synthetic": true,
@@ -9005,7 +9403,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "45",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-45-TRINCO-KANDY-1945",
@@ -9022,7 +9421,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 775.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "45",
     "arrival_next_day": true,
@@ -9032,7 +9431,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "45",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-48-BASTIA-KALMUN-0630",
@@ -20267,7 +20667,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 170.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "401/1",
     "synthetic": true,
@@ -20276,7 +20676,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "401-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-4011-ELPITI-ALUTHG-1315",
@@ -20293,7 +20694,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 170.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "401/1",
     "synthetic": true,
@@ -20302,7 +20703,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "401-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-4011-ELPITI-ALUTHG-1945",
@@ -20319,7 +20721,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 170.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "401/1",
     "arrival_next_day": true,
@@ -20329,7 +20731,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "401-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-4011-ALUTHG-ELPITI-0630",
@@ -20346,7 +20749,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 170.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "401/1",
     "synthetic": true,
@@ -20355,7 +20758,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "401-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-4011-ALUTHG-ELPITI-1315",
@@ -20372,7 +20776,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 170.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "401/1",
     "synthetic": true,
@@ -20381,7 +20785,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "401-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-4011-ALUTHG-ELPITI-1945",
@@ -20398,7 +20803,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 170.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "401/1",
     "arrival_next_day": true,
@@ -20408,7 +20813,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "401-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-4012-ELPITI-GOLUWA-0630",
@@ -20741,7 +21147,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 170.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "401/4",
     "synthetic": true,
@@ -20750,7 +21156,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "401-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-4014-ELPITI-ALUTHG-1315",
@@ -20767,7 +21174,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 170.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "401/4",
     "synthetic": true,
@@ -20776,7 +21183,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "401-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-4014-ELPITI-ALUTHG-1945",
@@ -20793,7 +21201,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 170.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "401/4",
     "arrival_next_day": true,
@@ -20803,7 +21211,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "401-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-4014-ALUTHG-ELPITI-0630",
@@ -20820,7 +21229,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 170.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "401/4",
     "synthetic": true,
@@ -20829,7 +21238,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "401-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-4014-ALUTHG-ELPITI-1315",
@@ -20846,7 +21256,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 170.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "401/4",
     "synthetic": true,
@@ -20855,7 +21265,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "401-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-4014-ALUTHG-ELPITI-1945",
@@ -20872,7 +21283,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 170.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "401/4",
     "arrival_next_day": true,
@@ -20882,7 +21293,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "401-1",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-430-MATHUG-PETTAH-0630",
@@ -21057,7 +21469,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 323.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "450",
     "synthetic": true,
@@ -21066,7 +21478,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "450",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-450-PANADU-RATNAP-1315",
@@ -21083,7 +21496,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 323.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "450",
     "synthetic": true,
@@ -21092,7 +21505,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "450",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-450-PANADU-RATNAP-1945",
@@ -21109,7 +21523,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 323.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "450",
     "arrival_next_day": true,
@@ -21119,7 +21533,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "450",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-450-RATNAP-PANADU-0630",
@@ -21136,7 +21551,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 323.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "450",
     "synthetic": true,
@@ -21145,7 +21560,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "450",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-450-RATNAP-PANADU-1315",
@@ -21162,7 +21578,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 323.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "450",
     "synthetic": true,
@@ -21171,7 +21587,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "450",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-450-RATNAP-PANADU-1945",
@@ -21188,7 +21605,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 323.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "450",
     "arrival_next_day": true,
@@ -21198,7 +21615,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "450",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-602-KANDY-KURUNE-0630",
@@ -21215,7 +21633,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 223.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "602",
     "synthetic": true,
@@ -21224,7 +21642,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-602-KANDY-KURUNE-1315",
@@ -21241,7 +21660,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 223.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "602",
     "synthetic": true,
@@ -21250,7 +21669,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-602-KANDY-KURUNE-1945",
@@ -21267,7 +21687,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 223.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "602",
     "arrival_next_day": true,
@@ -21277,7 +21697,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-602-KURUNE-KANDY-0630",
@@ -21294,7 +21715,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 223.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "602",
     "synthetic": true,
@@ -21303,7 +21724,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-602-KURUNE-KANDY-1315",
@@ -21320,7 +21742,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 223.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "602",
     "synthetic": true,
@@ -21329,7 +21751,8 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   },
   {
     "route_id": "RM-602-KURUNE-KANDY-1945",
@@ -21346,7 +21769,7 @@
     "classes": [
       "Ordinary"
     ],
-    "base_fare_lkr": 0.0,
+    "base_fare_lkr": 223.0,
     "transit_type": "EXPRESS_BUS",
     "route_number": "602",
     "arrival_next_day": true,
@@ -21356,6 +21779,7 @@
       "arrival_time",
       "duration_estimate"
     ],
-    "fare_unknown": true
+    "ntc_route_no": "602",
+    "fare_source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
   }
 ]

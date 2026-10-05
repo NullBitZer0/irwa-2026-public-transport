@@ -1,0 +1,6162 @@
+{
+  "akkaraipattu|aluthgama": {
+    "from_fare": 1669.0,
+    "luxury": null,
+    "normal": 1669.0,
+    "route_no": "482/98",
+    "semi": 2504.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "akkaraipattu|colombo": {
+    "from_fare": 1597.0,
+    "luxury": 3048.0,
+    "normal": 1597.0,
+    "route_no": "48-12",
+    "semi": 2396.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "akkaraipattu|kandy": {
+    "from_fare": 1031.0,
+    "luxury": null,
+    "normal": 1031.0,
+    "route_no": "22-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "akkaraipattu|makumbura": {
+    "expressway": 3330.0,
+    "from_fare": 3330.0,
+    "route_no": "EX 1-78/35/881",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "akkaraipattu|sungavila": {
+    "from_fare": 793.0,
+    "luxury": null,
+    "normal": 793.0,
+    "route_no": "48-12/962",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "akkaraipattu|vavuniya": {
+    "from_fare": 1293.0,
+    "luxury": null,
+    "normal": 1293.0,
+    "route_no": "89-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "akuressa|colombo": {
+    "expressway": 1440.0,
+    "from_fare": 1440.0,
+    "route_no": "EX 1-85/360",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "aluthgama|akkaraipattu": {
+    "from_fare": 1669.0,
+    "luxury": null,
+    "normal": 1669.0,
+    "route_no": "482/98",
+    "semi": 2504.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "aluthgama|elpitiya": {
+    "from_fare": 170.0,
+    "luxury": null,
+    "normal": 170.0,
+    "route_no": "401-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ambagaswewa|colombo": {
+    "from_fare": 1075.0,
+    "luxury": null,
+    "normal": 1075.0,
+    "route_no": "48-20",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ambagaswewa|kandy": {
+    "from_fare": 724.0,
+    "luxury": null,
+    "normal": 724.0,
+    "route_no": "52-6",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ambalangoda|ampara": {
+    "from_fare": 1573.0,
+    "luxury": null,
+    "normal": 1573.0,
+    "route_no": "35-7",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ambalangoda|colombo": {
+    "expressway": 890.0,
+    "from_fare": 890.0,
+    "route_no": "EX 1-41",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ambalangoda|kadawatha": {
+    "expressway": 860.0,
+    "from_fare": 860.0,
+    "route_no": "EX 1-48",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ampara|ambalangoda": {
+    "from_fare": 1573.0,
+    "luxury": null,
+    "normal": 1573.0,
+    "route_no": "35-7",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ampara|anuradhapura": {
+    "from_fare": 1416.0,
+    "luxury": null,
+    "normal": 1416.0,
+    "route_no": "22/218/75",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ampara|aralaganwila": {
+    "from_fare": 810.0,
+    "luxury": null,
+    "normal": 810.0,
+    "route_no": "218/22",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ampara|badulla": {
+    "from_fare": 665.0,
+    "luxury": null,
+    "normal": 665.0,
+    "route_no": "75-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ampara|colombo": {
+    "expressway": 3430.0,
+    "from_fare": 3430.0,
+    "route_no": "EX 1-51/35",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ampara|dehiattakandiya": {
+    "from_fare": 698.0,
+    "luxury": null,
+    "normal": 698.0,
+    "route_no": "217/022-004",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ampara|galle": {
+    "from_fare": 1450.0,
+    "luxury": null,
+    "normal": 1450.0,
+    "route_no": "35",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ampara|kandy": {
+    "from_fare": 939.0,
+    "luxury": null,
+    "normal": 939.0,
+    "route_no": "22/75",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ampara|kurunegala": {
+    "from_fare": 1100.0,
+    "luxury": null,
+    "normal": 1100.0,
+    "route_no": "22/756/48",
+    "semi": 1650.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ampara|mahiyanganaya": {
+    "from_fare": 521.0,
+    "luxury": null,
+    "normal": 521.0,
+    "route_no": "22-4",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ampara|makumbura": {
+    "expressway": 3260.0,
+    "from_fare": 3260.0,
+    "route_no": "EX 1-77/35",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ampara|matara": {
+    "from_fare": 1285.0,
+    "luxury": null,
+    "normal": 1285.0,
+    "route_no": "35-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ampara|monaragala": {
+    "from_fare": 421.0,
+    "luxury": null,
+    "normal": 421.0,
+    "route_no": "909",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ampara|mullaitivu": {
+    "from_fare": 1813.0,
+    "luxury": 3471.0,
+    "normal": 1813.0,
+    "route_no": "82/580/22",
+    "semi": 2720.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ampara|nuwara": {
+    "from_fare": 1057.0,
+    "luxury": null,
+    "normal": 1057.0,
+    "route_no": "311/488/98",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ampara|panadura": {
+    "from_fare": 1441.0,
+    "luxury": null,
+    "normal": 1441.0,
+    "route_no": "64/98",
+    "semi": 2162.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ampara|vavuniya": {
+    "from_fare": 1533.0,
+    "luxury": 2928.0,
+    "normal": 1533.0,
+    "route_no": "86/218/22",
+    "semi": 2300.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "anamaduwa|colombo": {
+    "from_fare": 530.0,
+    "luxury": 1034.0,
+    "normal": 530.0,
+    "route_no": "4-9",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "angunakolapelessa|colombo": {
+    "expressway": 1720.0,
+    "from_fare": 1720.0,
+    "route_no": "EX 1-72",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "angunakolapelessa|makumbura": {
+    "expressway": 1540.0,
+    "from_fare": 1540.0,
+    "route_no": "EX 1-87",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "anuradhapura|ampara": {
+    "from_fare": 1416.0,
+    "luxury": null,
+    "normal": 1416.0,
+    "route_no": "22/218/75",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "anuradhapura|badulla": {
+    "from_fare": 1109.0,
+    "luxury": null,
+    "normal": 1109.0,
+    "route_no": "314/580/42",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "anuradhapura|colombo": {
+    "from_fare": 896.0,
+    "luxury": 1715.0,
+    "normal": 896.0,
+    "route_no": "57",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "anuradhapura|embilipitiya": {
+    "from_fare": 1450.0,
+    "luxury": null,
+    "normal": 1450.0,
+    "route_no": "69/15-8",
+    "semi": 2175.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "anuradhapura|kaluthara": {
+    "from_fare": 1075.0,
+    "luxury": null,
+    "normal": 1075.0,
+    "route_no": "57/221/420",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "anuradhapura|kandy": {
+    "from_fare": 606.0,
+    "luxury": 1178.0,
+    "normal": 606.0,
+    "route_no": "43",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "anuradhapura|kegalle": {
+    "from_fare": 640.0,
+    "luxury": null,
+    "normal": 640.0,
+    "route_no": "57-9",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "anuradhapura|kurunegala": {
+    "from_fare": 496.0,
+    "luxury": null,
+    "normal": 496.0,
+    "route_no": "57-5",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "anuradhapura|makumbura": {
+    "expressway": 1810.0,
+    "from_fare": 1810.0,
+    "route_no": "EX02/EX03/04-03",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "anuradhapura|matara": {
+    "from_fare": 1517.0,
+    "luxury": null,
+    "normal": 1517.0,
+    "route_no": "2/4-3",
+    "semi": 2276.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "anuradhapura|matugama": {
+    "from_fare": 1213.0,
+    "luxury": null,
+    "normal": 1213.0,
+    "route_no": "285/6/15-12",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "anuradhapura|panadura": {
+    "from_fare": 1075.0,
+    "luxury": null,
+    "normal": 1075.0,
+    "route_no": "17/15-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "anuradhapura|pulmoddai": {
+    "from_fare": 487.0,
+    "luxury": null,
+    "normal": 487.0,
+    "route_no": "842",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "anuradhapura|thanamalwila": {
+    "from_fare": 1565.0,
+    "luxury": null,
+    "normal": 1565.0,
+    "route_no": "27/218/75",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "anuradhapura|trincomalee": {
+    "from_fare": 496.0,
+    "luxury": null,
+    "normal": 496.0,
+    "route_no": "835",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "anuradhapura|vavuniya": {
+    "from_fare": 261.0,
+    "luxury": null,
+    "normal": 261.0,
+    "route_no": "857",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "anuradhapura|wellawaya": {
+    "from_fare": 1349.0,
+    "luxury": null,
+    "normal": 1349.0,
+    "route_no": "27/218/58",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "aralaganwila|ampara": {
+    "from_fare": 810.0,
+    "luxury": null,
+    "normal": 810.0,
+    "route_no": "218/22",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "arunapura|kandy": {
+    "from_fare": 802.0,
+    "luxury": null,
+    "normal": 802.0,
+    "route_no": "41-11",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "avissawella|bulathkohupitiya": {
+    "from_fare": 185.0,
+    "luxury": null,
+    "normal": 185.0,
+    "route_no": "677-4",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "avissawella|eheliyagoda": {
+    "from_fare": 108.0,
+    "luxury": null,
+    "normal": 108.0,
+    "route_no": "470",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "avissawella|kandy": {
+    "from_fare": 406.0,
+    "luxury": 797.0,
+    "normal": 406.0,
+    "route_no": "69-4",
+    "semi": 609.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "avissawella|kegalle": {
+    "from_fare": 253.0,
+    "luxury": null,
+    "normal": 253.0,
+    "route_no": "674-3",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "avissawella|kitulgala": {
+    "from_fare": 207.0,
+    "luxury": null,
+    "normal": 207.0,
+    "route_no": "23",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "avissawella|ratnapura": {
+    "from_fare": 223.0,
+    "luxury": null,
+    "normal": 223.0,
+    "route_no": "470-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "badalkumbura|colombo": {
+    "from_fare": 1125.0,
+    "luxury": null,
+    "normal": 1125.0,
+    "route_no": "98-11",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "baddegama|colombo": {
+    "expressway": 910.0,
+    "from_fare": 910.0,
+    "route_no": "EX 1-42",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "badulla|ampara": {
+    "from_fare": 665.0,
+    "luxury": null,
+    "normal": 665.0,
+    "route_no": "75-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "badulla|anuradhapura": {
+    "from_fare": 1109.0,
+    "luxury": null,
+    "normal": 1109.0,
+    "route_no": "314/580/42",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "badulla|colombo": {
+    "from_fare": 1100.0,
+    "luxury": null,
+    "normal": 1100.0,
+    "route_no": "21-6",
+    "semi": 1650.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "badulla|jaffna": {
+    "from_fare": 1845.0,
+    "luxury": 3535.0,
+    "normal": 1845.0,
+    "route_no": "314/580/87",
+    "semi": 2768.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "badulla|kaduruwela": {
+    "from_fare": 724.0,
+    "luxury": null,
+    "normal": 724.0,
+    "route_no": "218/314",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "badulla|kandy": {
+    "from_fare": 590.0,
+    "luxury": null,
+    "normal": 590.0,
+    "route_no": "21",
+    "semi": 885.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "badulla|katunayake": {
+    "from_fare": 1057.0,
+    "luxury": 2019.0,
+    "normal": 1057.0,
+    "route_no": "21/1/245",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "badulla|makumbura": {
+    "expressway": 2700.0,
+    "from_fare": 2700.0,
+    "route_no": "EX 1-74/31-2",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "badulla|matara": {
+    "from_fare": 989.0,
+    "luxury": null,
+    "normal": 989.0,
+    "route_no": "31-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "badulla|siripura": {
+    "from_fare": 547.0,
+    "luxury": null,
+    "normal": 547.0,
+    "route_no": "218-6",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "badulla|trincomalee": {
+    "from_fare": 1277.0,
+    "luxury": null,
+    "normal": 1277.0,
+    "route_no": "76/218/314",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "badulla|weheragala": {
+    "from_fare": 598.0,
+    "luxury": null,
+    "normal": 598.0,
+    "route_no": "218-4",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "balangoda|bandarawela": {
+    "from_fare": 338.0,
+    "luxury": null,
+    "normal": 338.0,
+    "route_no": "226",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "balangoda|colombo": {
+    "from_fare": 656.0,
+    "luxury": null,
+    "normal": 656.0,
+    "route_no": "99-4",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "balangoda|hatton": {
+    "from_fare": 346.0,
+    "luxury": null,
+    "normal": 346.0,
+    "route_no": "488",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "bandarawela|balangoda": {
+    "from_fare": 338.0,
+    "luxury": null,
+    "normal": 338.0,
+    "route_no": "226",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "bandarawela|matara": {
+    "from_fare": 930.0,
+    "luxury": null,
+    "normal": 930.0,
+    "route_no": "31",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "bandarawela|vavuniya": {
+    "from_fare": 1365.0,
+    "luxury": null,
+    "normal": 1365.0,
+    "route_no": "314/580/15-7",
+    "semi": 2048.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "battaramulla|galle": {
+    "expressway": 1020.0,
+    "from_fare": 1020.0,
+    "route_no": "EX 1-37/174",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "battaramulla|kurunegala": {
+    "from_fare": 413.0,
+    "luxury": null,
+    "normal": 413.0,
+    "route_no": "17/6",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "batticaloa|colombo": {
+    "from_fare": 1341.0,
+    "luxury": 2575.0,
+    "normal": 1341.0,
+    "route_no": "48-1",
+    "semi": 2012.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "batticaloa|galle": {
+    "from_fare": 1677.0,
+    "luxury": null,
+    "normal": 1677.0,
+    "route_no": "35/935",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "batticaloa|gampola": {
+    "from_fare": 1100.0,
+    "luxury": null,
+    "normal": 1100.0,
+    "route_no": "41-12/48",
+    "semi": 1650.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "batticaloa|jaffna": {
+    "from_fare": 1661.0,
+    "luxury": null,
+    "normal": 1661.0,
+    "route_no": "86",
+    "semi": 2492.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "batticaloa|kaduruwela": {
+    "from_fare": 406.0,
+    "luxury": null,
+    "normal": 406.0,
+    "route_no": "48-10",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "batticaloa|kandy": {
+    "from_fare": 1006.0,
+    "luxury": null,
+    "normal": 1006.0,
+    "route_no": "41/48",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "batticaloa|puttalam": {
+    "from_fare": 1325.0,
+    "luxury": null,
+    "normal": 1325.0,
+    "route_no": "81/48",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "batticaloa|vavuniya": {
+    "from_fare": 1040.0,
+    "luxury": null,
+    "normal": 1040.0,
+    "route_no": "86-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "beliattakumbura|colombo": {
+    "from_fare": 853.0,
+    "luxury": null,
+    "normal": 853.0,
+    "route_no": "42/384-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "beliatta|embilipitiya": {
+    "from_fare": 261.0,
+    "luxury": null,
+    "normal": 261.0,
+    "route_no": "493-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "bibila|colombo": {
+    "from_fare": 1083.0,
+    "luxury": 2067.0,
+    "normal": 1083.0,
+    "route_no": "38",
+    "semi": 1625.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "bibila|kaduruwela": {
+    "from_fare": 573.0,
+    "luxury": null,
+    "normal": 573.0,
+    "route_no": "301/218",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "bimpokuna|kandy": {
+    "from_fare": 758.0,
+    "luxury": null,
+    "normal": 758.0,
+    "route_no": "41-2/686",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "bogaswewa|colombo": {
+    "from_fare": 1229.0,
+    "luxury": null,
+    "normal": 1229.0,
+    "route_no": "87/903-1",
+    "semi": 1844.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "bogawantalawa|colombo": {
+    "from_fare": 656.0,
+    "luxury": null,
+    "normal": 656.0,
+    "route_no": "18-6",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "buddhayaya|kandy": {
+    "from_fare": 615.0,
+    "luxury": null,
+    "normal": 615.0,
+    "route_no": "41-3",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "bulathkohupitiya|avissawella": {
+    "from_fare": 185.0,
+    "luxury": null,
+    "normal": 185.0,
+    "route_no": "677-4",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "bulathkohupitiya|colombo": {
+    "from_fare": 353.0,
+    "luxury": null,
+    "normal": 353.0,
+    "route_no": "677",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "bulnewa|kurunegala": {
+    "from_fare": 398.0,
+    "luxury": null,
+    "normal": 398.0,
+    "route_no": "15-5/544-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "chilaw|colombo": {
+    "from_fare": 346.0,
+    "luxury": 677.0,
+    "normal": 346.0,
+    "route_no": "4-11",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "chilaw|negombo": {
+    "from_fare": 215.0,
+    "luxury": 422.0,
+    "normal": 215.0,
+    "route_no": "907",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|akkaraipattu": {
+    "from_fare": 1597.0,
+    "luxury": 3048.0,
+    "normal": 1597.0,
+    "route_no": "48-12",
+    "semi": 2396.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|akuressa": {
+    "expressway": 1440.0,
+    "from_fare": 1440.0,
+    "route_no": "EX 1-85/360",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|ambagaswewa": {
+    "from_fare": 1075.0,
+    "luxury": null,
+    "normal": 1075.0,
+    "route_no": "48-20",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|ambalangoda": {
+    "expressway": 890.0,
+    "from_fare": 890.0,
+    "route_no": "EX 1-41",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|ampara": {
+    "expressway": 3430.0,
+    "from_fare": 3430.0,
+    "route_no": "EX 1-51/35",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|anamaduwa": {
+    "from_fare": 530.0,
+    "luxury": 1034.0,
+    "normal": 530.0,
+    "route_no": "4-9",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|angunakolapelessa": {
+    "expressway": 1720.0,
+    "from_fare": 1720.0,
+    "route_no": "EX 1-72",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|anuradhapura": {
+    "from_fare": 896.0,
+    "luxury": 1715.0,
+    "normal": 896.0,
+    "route_no": "57",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|badalkumbura": {
+    "from_fare": 1125.0,
+    "luxury": null,
+    "normal": 1125.0,
+    "route_no": "98-11",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|baddegama": {
+    "expressway": 910.0,
+    "from_fare": 910.0,
+    "route_no": "EX 1-42",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|badulla": {
+    "from_fare": 1100.0,
+    "luxury": null,
+    "normal": 1100.0,
+    "route_no": "21-6",
+    "semi": 1650.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|balangoda": {
+    "from_fare": 656.0,
+    "luxury": null,
+    "normal": 656.0,
+    "route_no": "99-4",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|batticaloa": {
+    "from_fare": 1341.0,
+    "luxury": 2575.0,
+    "normal": 1341.0,
+    "route_no": "48-1",
+    "semi": 2012.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|beliattakumbura": {
+    "from_fare": 853.0,
+    "luxury": null,
+    "normal": 853.0,
+    "route_no": "42/384-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|bibila": {
+    "from_fare": 1083.0,
+    "luxury": 2067.0,
+    "normal": 1083.0,
+    "route_no": "38",
+    "semi": 1625.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|bogaswewa": {
+    "from_fare": 1229.0,
+    "luxury": null,
+    "normal": 1229.0,
+    "route_no": "87/903-1",
+    "semi": 1844.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|bogawantalawa": {
+    "from_fare": 656.0,
+    "luxury": null,
+    "normal": 656.0,
+    "route_no": "18-6",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|bulathkohupitiya": {
+    "from_fare": 353.0,
+    "luxury": null,
+    "normal": 353.0,
+    "route_no": "677",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|chilaw": {
+    "from_fare": 346.0,
+    "luxury": 677.0,
+    "normal": 346.0,
+    "route_no": "4-11",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|dayagama": {
+    "from_fare": 750.0,
+    "luxury": null,
+    "normal": 750.0,
+    "route_no": "13-2",
+    "semi": 1125.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|dehiattakandiya": {
+    "from_fare": 1173.0,
+    "luxury": null,
+    "normal": 1173.0,
+    "route_no": "48/218",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|deiyandara": {
+    "expressway": 1630.0,
+    "from_fare": 1630.0,
+    "route_no": "EX 1-13/353",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|deniyaya": {
+    "expressway": 1670.0,
+    "from_fare": 1670.0,
+    "route_no": "EX 1-14/60",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|derangala": {
+    "from_fare": 741.0,
+    "luxury": null,
+    "normal": 741.0,
+    "route_no": "60/369",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|digana": {
+    "from_fare": 598.0,
+    "luxury": null,
+    "normal": 598.0,
+    "route_no": "9-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|diyasenpura": {
+    "from_fare": 1006.0,
+    "luxury": null,
+    "normal": 1006.0,
+    "route_no": "48-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|dutuwewa": {
+    "from_fare": 972.0,
+    "luxury": null,
+    "normal": 972.0,
+    "route_no": "15/825",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|elpitiya": {
+    "expressway": 830.0,
+    "from_fare": 830.0,
+    "route_no": "EX 1-16",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|eluwankulam": {
+    "from_fare": 681.0,
+    "luxury": null,
+    "normal": 681.0,
+    "route_no": "4-10",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|embilipitiya": {
+    "expressway": 1910.0,
+    "from_fare": 1910.0,
+    "route_no": "EX 1-83/493",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|galapitamada": {
+    "from_fare": 315.0,
+    "luxury": null,
+    "normal": 315.0,
+    "route_no": "1-4",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|galenbindunuwewa": {
+    "from_fare": 905.0,
+    "luxury": null,
+    "normal": 905.0,
+    "route_no": "15-6",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|galgamuwa": {
+    "from_fare": 698.0,
+    "luxury": null,
+    "normal": 698.0,
+    "route_no": "57-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|galle": {
+    "from_fare": 496.0,
+    "luxury": 970.0,
+    "normal": 496.0,
+    "route_no": "2-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|galnewa": {
+    "from_fare": 853.0,
+    "luxury": null,
+    "normal": 853.0,
+    "route_no": "15-4",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|gampola": {
+    "from_fare": 555.0,
+    "luxury": 1082.0,
+    "normal": 555.0,
+    "route_no": "19-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|girandurukotte": {
+    "from_fare": 1269.0,
+    "luxury": null,
+    "normal": 1269.0,
+    "route_no": "48/218-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|hakmana": {
+    "expressway": 1530.0,
+    "from_fare": 1530.0,
+    "route_no": "EX 1-5/26",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|hambantota": {
+    "from_fare": 1040.0,
+    "luxury": 1987.0,
+    "normal": 1040.0,
+    "route_no": "32-1",
+    "semi": 1560.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|hatton": {
+    "from_fare": 547.0,
+    "luxury": 1066.0,
+    "normal": 547.0,
+    "route_no": "18-2",
+    "semi": 821.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|horowpothana": {
+    "from_fare": 1117.0,
+    "luxury": null,
+    "normal": 1117.0,
+    "route_no": "15/835",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|jaffna": {
+    "from_fare": 1733.0,
+    "luxury": null,
+    "normal": 1733.0,
+    "route_no": "57/87",
+    "semi": 2600.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|janakapura": {
+    "from_fare": 1501.0,
+    "luxury": 2868.0,
+    "normal": 1501.0,
+    "route_no": "15-11",
+    "semi": 2252.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|kaduruwela": {
+    "from_fare": 963.0,
+    "luxury": 1843.0,
+    "normal": 963.0,
+    "route_no": "48-3",
+    "semi": 1445.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|kala": {
+    "from_fare": 896.0,
+    "luxury": null,
+    "normal": 896.0,
+    "route_no": "57/978",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|kalahagala": {
+    "from_fare": 1057.0,
+    "luxury": null,
+    "normal": 1057.0,
+    "route_no": "48-33",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|kalawana": {
+    "from_fare": 479.0,
+    "luxury": null,
+    "normal": 479.0,
+    "route_no": "473/7",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|kalmunai": {
+    "from_fare": 1509.0,
+    "luxury": 2883.0,
+    "normal": 1509.0,
+    "route_no": "48",
+    "semi": 2264.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|kalpitiya": {
+    "from_fare": 707.0,
+    "luxury": 1365.0,
+    "normal": 707.0,
+    "route_no": "7",
+    "semi": 1061.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|kamburupitiya": {
+    "expressway": 1480.0,
+    "from_fare": 1480.0,
+    "route_no": "EX 1-29/353",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|kandy": {
+    "expressway": 1230.0,
+    "from_fare": 1230.0,
+    "route_no": "EX03/EX04/602",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|kankesanthurai": {
+    "from_fare": 1757.0,
+    "luxury": 3365.0,
+    "normal": 1757.0,
+    "route_no": "87/769",
+    "semi": 2636.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|kataragama": {
+    "expressway": 2340.0,
+    "from_fare": 2340.0,
+    "route_no": "EX 1-12/32",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|kattankudy": {
+    "from_fare": 1373.0,
+    "luxury": null,
+    "normal": 1373.0,
+    "route_no": "48-14",
+    "semi": 2060.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|kegalle": {
+    "from_fare": 361.0,
+    "luxury": null,
+    "normal": 361.0,
+    "route_no": "1-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|kilinochchi": {
+    "from_fare": 1407.0,
+    "luxury": null,
+    "normal": 1407.0,
+    "route_no": "87-6-1",
+    "semi": 2111.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|kinniya": {
+    "from_fare": 1109.0,
+    "luxury": 2115.0,
+    "normal": 1109.0,
+    "route_no": "49/866",
+    "semi": 1664.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|kirinda": {
+    "from_fare": 802.0,
+    "luxury": null,
+    "normal": 802.0,
+    "route_no": "2-12",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|kokkaddicholai": {
+    "from_fare": 1441.0,
+    "luxury": 2757.0,
+    "normal": 1441.0,
+    "route_no": "48-31",
+    "semi": 2162.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|kolonna": {
+    "from_fare": 836.0,
+    "luxury": null,
+    "normal": 836.0,
+    "route_no": "3/461-5",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|kotiyakumbura": {
+    "from_fare": 338.0,
+    "luxury": null,
+    "normal": 338.0,
+    "route_no": "674-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|kuchchaveli": {
+    "from_fare": 1269.0,
+    "luxury": null,
+    "normal": 1269.0,
+    "route_no": "49/900",
+    "semi": 1904.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|kuliyapitiya": {
+    "from_fare": 391.0,
+    "luxury": null,
+    "normal": 391.0,
+    "route_no": "92/929",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|kurunegala": {
+    "expressway": 930.0,
+    "from_fare": 930.0,
+    "route_no": "EX03/EX04",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|lunugala": {
+    "from_fare": 1317.0,
+    "luxury": null,
+    "normal": 1317.0,
+    "route_no": "99-9",
+    "semi": 1976.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|lunugamvehera": {
+    "from_fare": 1205.0,
+    "luxury": null,
+    "normal": 1205.0,
+    "route_no": "32-2",
+    "semi": 1808.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|madolsima": {
+    "from_fare": 1277.0,
+    "luxury": null,
+    "normal": 1277.0,
+    "route_no": "99/318",
+    "semi": 1916.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|maduru": {
+    "from_fare": 1181.0,
+    "luxury": null,
+    "normal": 1181.0,
+    "route_no": "48-16",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|mahiyanganaya": {
+    "from_fare": 913.0,
+    "luxury": 1747.0,
+    "normal": 913.0,
+    "route_no": "38-1",
+    "semi": 1370.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|maligawila": {
+    "from_fare": 1237.0,
+    "luxury": null,
+    "normal": 1237.0,
+    "route_no": "122/98/236",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|mannar": {
+    "from_fare": 1325.0,
+    "luxury": 2545.0,
+    "normal": 1325.0,
+    "route_no": "4",
+    "semi": 1988.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|mapalagama": {
+    "from_fare": 496.0,
+    "luxury": null,
+    "normal": 496.0,
+    "route_no": "42-8",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|matale": {
+    "from_fare": 632.0,
+    "luxury": 1226.0,
+    "normal": 632.0,
+    "route_no": "8",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|matara": {
+    "expressway": 1320.0,
+    "from_fare": 1320.0,
+    "route_no": "EX 1-18",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|mawanella": {
+    "from_fare": 413.0,
+    "luxury": 812.0,
+    "normal": 413.0,
+    "route_no": "1-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|mawarala": {
+    "from_fare": 853.0,
+    "luxury": 1635.0,
+    "normal": 853.0,
+    "route_no": "2/13",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|medagama": {
+    "from_fare": 1325.0,
+    "luxury": null,
+    "normal": 1325.0,
+    "route_no": "122/98/199/02",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|medirigiriya": {
+    "from_fare": 980.0,
+    "luxury": null,
+    "normal": 980.0,
+    "route_no": "48-4",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|meegahakiwula": {
+    "from_fare": 1109.0,
+    "luxury": 2115.0,
+    "normal": 1109.0,
+    "route_no": "38-6",
+    "semi": 1664.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|middeniya": {
+    "expressway": 1850.0,
+    "from_fare": 1850.0,
+    "route_no": "EX 1-7/26",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|monaragala": {
+    "expressway": 2670.0,
+    "from_fare": 2670.0,
+    "route_no": "EX 1-52/35-2",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|morawaka": {
+    "from_fare": 640.0,
+    "luxury": null,
+    "normal": 640.0,
+    "route_no": "42/430",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|mullaitivu": {
+    "from_fare": 1525.0,
+    "luxury": 2913.0,
+    "normal": 1525.0,
+    "route_no": "15/82",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|mutur": {
+    "from_fare": 1237.0,
+    "luxury": null,
+    "normal": 1237.0,
+    "route_no": "49/950",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|nandikadal": {
+    "from_fare": 1693.0,
+    "luxury": null,
+    "normal": 1693.0,
+    "route_no": "15/819",
+    "semi": 2540.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|nattankandal": {
+    "from_fare": 1407.0,
+    "luxury": null,
+    "normal": 1407.0,
+    "route_no": "87/816-5",
+    "semi": 2111.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|nawalapitiya": {
+    "from_fare": 632.0,
+    "luxury": null,
+    "normal": 632.0,
+    "route_no": "16",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|nildandahinna": {
+    "from_fare": 879.0,
+    "luxury": null,
+    "normal": 879.0,
+    "route_no": "1/627",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|ninthavur": {
+    "from_fare": 1517.0,
+    "luxury": 2898.0,
+    "normal": 1517.0,
+    "route_no": "22-9",
+    "semi": 2276.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|nuwara": {
+    "from_fare": 844.0,
+    "luxury": 1619.0,
+    "normal": 844.0,
+    "route_no": "79",
+    "semi": 1266.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|obbegoda": {
+    "from_fare": 1245.0,
+    "luxury": null,
+    "normal": 1245.0,
+    "route_no": "122/98-19",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|oddamavadi": {
+    "from_fare": 1205.0,
+    "luxury": null,
+    "normal": 1205.0,
+    "route_no": "48-5",
+    "semi": 1808.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|opatha": {
+    "from_fare": 632.0,
+    "luxury": null,
+    "normal": 632.0,
+    "route_no": "42/369",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|padiyapelella": {
+    "from_fare": 741.0,
+    "luxury": null,
+    "normal": 741.0,
+    "route_no": "1/744",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|pallegama": {
+    "from_fare": 896.0,
+    "luxury": null,
+    "normal": 896.0,
+    "route_no": "60-6",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|panama": {
+    "from_fare": 1525.0,
+    "luxury": 2913.0,
+    "normal": 1525.0,
+    "route_no": "98-8",
+    "semi": 2288.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|panduwasnuwara": {
+    "from_fare": 462.0,
+    "luxury": null,
+    "normal": 462.0,
+    "route_no": "92/929-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|passara": {
+    "from_fare": 1213.0,
+    "luxury": 2323.0,
+    "normal": 1213.0,
+    "route_no": "99-8",
+    "semi": 1820.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|point": {
+    "from_fare": 1709.0,
+    "luxury": 3272.0,
+    "normal": 1709.0,
+    "route_no": "15/87/759",
+    "semi": 2564.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|pottuvil": {
+    "from_fare": 1450.0,
+    "luxury": null,
+    "normal": 1450.0,
+    "route_no": "98-4",
+    "semi": 2175.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|pulmoddai": {
+    "from_fare": 1365.0,
+    "luxury": null,
+    "normal": 1365.0,
+    "route_no": "49/867",
+    "semi": 2048.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|puttalam": {
+    "from_fare": 555.0,
+    "luxury": 1082.0,
+    "normal": 555.0,
+    "route_no": "4-7",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|radawela": {
+    "from_fare": 802.0,
+    "luxury": 1539.0,
+    "normal": 802.0,
+    "route_no": "366-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|rakwana": {
+    "from_fare": 681.0,
+    "luxury": null,
+    "normal": 681.0,
+    "route_no": "122/467",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|ratnapura": {
+    "from_fare": 453.0,
+    "luxury": null,
+    "normal": 453.0,
+    "route_no": "122-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|rupaha": {
+    "from_fare": 930.0,
+    "luxury": null,
+    "normal": 930.0,
+    "route_no": "1/627-5",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|seruwila": {
+    "from_fare": 1157.0,
+    "luxury": null,
+    "normal": 1157.0,
+    "route_no": "49/950-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|sewanagala": {
+    "from_fare": 836.0,
+    "luxury": null,
+    "normal": 836.0,
+    "route_no": "122/210-5",
+    "semi": 1254.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|siripura": {
+    "from_fare": 1141.0,
+    "luxury": null,
+    "normal": 1141.0,
+    "route_no": "48/218-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|sripura": {
+    "from_fare": 1309.0,
+    "luxury": 2515.0,
+    "normal": 1309.0,
+    "route_no": "4/844",
+    "semi": 1964.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|sungavila": {
+    "from_fare": 1066.0,
+    "luxury": null,
+    "normal": 1066.0,
+    "route_no": "48-15",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|suriyawewa": {
+    "from_fare": 905.0,
+    "luxury": null,
+    "normal": 905.0,
+    "route_no": "122/210-1",
+    "semi": 1358.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|talaimannar": {
+    "from_fare": 1458.0,
+    "luxury": 2789.0,
+    "normal": 1458.0,
+    "route_no": "4-1",
+    "semi": 2187.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|tangalle": {
+    "from_fare": 861.0,
+    "luxury": 1651.0,
+    "normal": 861.0,
+    "route_no": "32-4",
+    "semi": 1292.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|teldeniya": {
+    "from_fare": 640.0,
+    "luxury": null,
+    "normal": 640.0,
+    "route_no": "9",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|thalawakele": {
+    "from_fare": 624.0,
+    "luxury": 1210.0,
+    "normal": 624.0,
+    "route_no": "18-7",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|thawalama": {
+    "from_fare": 564.0,
+    "luxury": null,
+    "normal": 564.0,
+    "route_no": "42/410",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|thirukkovil": {
+    "from_fare": 1653.0,
+    "luxury": 3160.0,
+    "normal": 1653.0,
+    "route_no": "48-13",
+    "semi": 2480.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|thunukkai": {
+    "from_fare": 1357.0,
+    "luxury": null,
+    "normal": 1357.0,
+    "route_no": "87/816",
+    "semi": 2036.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|trincomalee": {
+    "from_fare": 1125.0,
+    "luxury": 2147.0,
+    "normal": 1125.0,
+    "route_no": "49",
+    "semi": 1688.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|udugama": {
+    "from_fare": 582.0,
+    "luxury": null,
+    "normal": 582.0,
+    "route_no": "42",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|udupussellawa": {
+    "from_fare": 963.0,
+    "luxury": null,
+    "normal": 963.0,
+    "route_no": "18/727",
+    "semi": 1445.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|urubokka": {
+    "from_fare": 922.0,
+    "luxury": null,
+    "normal": 922.0,
+    "route_no": "60-4",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|vavuniya": {
+    "from_fare": 1117.0,
+    "luxury": 2131.0,
+    "normal": 1117.0,
+    "route_no": "57/3",
+    "semi": 1676.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|vilachchiya": {
+    "from_fare": 1057.0,
+    "luxury": null,
+    "normal": 1057.0,
+    "route_no": "57-18",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|walasmulla": {
+    "from_fare": 930.0,
+    "luxury": null,
+    "normal": 930.0,
+    "route_no": "3/363",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|warakapola": {
+    "from_fare": 268.0,
+    "luxury": null,
+    "normal": 268.0,
+    "route_no": "1-3",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|wariyapola": {
+    "from_fare": 496.0,
+    "luxury": null,
+    "normal": 496.0,
+    "route_no": "5-11",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|wattegama": {
+    "from_fare": 582.0,
+    "luxury": 1130.0,
+    "normal": 582.0,
+    "route_no": "9-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|weeraketiya": {
+    "expressway": 1700.0,
+    "from_fare": 1700.0,
+    "route_no": "EX 1-11/32",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|welikanda": {
+    "from_fare": 1066.0,
+    "luxury": null,
+    "normal": 1066.0,
+    "route_no": "48-17",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|welimada": {
+    "from_fare": 1083.0,
+    "luxury": null,
+    "normal": 1083.0,
+    "route_no": "99-10",
+    "semi": 1625.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|welioya": {
+    "from_fare": 750.0,
+    "luxury": null,
+    "normal": 750.0,
+    "route_no": "98/486-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|welipathayaya": {
+    "from_fare": 784.0,
+    "luxury": null,
+    "normal": 784.0,
+    "route_no": "98/487",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|wewala": {
+    "from_fare": 750.0,
+    "luxury": null,
+    "normal": 750.0,
+    "route_no": "15/968",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|yakkalamulla": {
+    "from_fare": 582.0,
+    "luxury": null,
+    "normal": 582.0,
+    "route_no": "393",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "colombo|yatiyana": {
+    "from_fare": 758.0,
+    "luxury": null,
+    "normal": 758.0,
+    "route_no": "2-4",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "dambulla|kurunegala": {
+    "from_fare": 276.0,
+    "luxury": null,
+    "normal": 276.0,
+    "route_no": "549",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "dayagama|colombo": {
+    "from_fare": 750.0,
+    "luxury": null,
+    "normal": 750.0,
+    "route_no": "13-2",
+    "semi": 1125.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "dehiattakandiya|ampara": {
+    "from_fare": 698.0,
+    "luxury": null,
+    "normal": 698.0,
+    "route_no": "217/022-004",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "dehiattakandiya|colombo": {
+    "from_fare": 1173.0,
+    "luxury": null,
+    "normal": 1173.0,
+    "route_no": "48/218",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "dehiattakandiya|hanguranketha": {
+    "from_fare": 538.0,
+    "luxury": null,
+    "normal": 538.0,
+    "route_no": "218/685",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "dehiattakandiya|kandy": {
+    "from_fare": 582.0,
+    "luxury": null,
+    "normal": 582.0,
+    "route_no": "22-6-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "dehiwala|matara": {
+    "expressway": 1250.0,
+    "from_fare": 1250.0,
+    "route_no": "EX01-26/119",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "deiyandara|colombo": {
+    "expressway": 1630.0,
+    "from_fare": 1630.0,
+    "route_no": "EX 1-13/353",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "dematawewa|kurunegala": {
+    "from_fare": 802.0,
+    "luxury": null,
+    "normal": 802.0,
+    "route_no": "57/928",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "deniyaya|colombo": {
+    "expressway": 1670.0,
+    "from_fare": 1670.0,
+    "route_no": "EX 1-14/60",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "deniyaya|kataragama": {
+    "from_fare": 853.0,
+    "luxury": null,
+    "normal": 853.0,
+    "route_no": "60/32",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "derangala|colombo": {
+    "from_fare": 741.0,
+    "luxury": null,
+    "normal": 741.0,
+    "route_no": "60/369",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "digana|colombo": {
+    "from_fare": 598.0,
+    "luxury": null,
+    "normal": 598.0,
+    "route_no": "9-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "diyasenpura|colombo": {
+    "from_fare": 1006.0,
+    "luxury": null,
+    "normal": 1006.0,
+    "route_no": "48-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "diyasenpura|kandy": {
+    "from_fare": 656.0,
+    "luxury": null,
+    "normal": 656.0,
+    "route_no": "52-8",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "diyatalawa|jaffna": {
+    "from_fare": 2029.0,
+    "luxury": 3889.0,
+    "normal": 2029.0,
+    "route_no": "47-1/43/87",
+    "semi": 3044.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "diyatalawa|mannar": {
+    "from_fare": 1645.0,
+    "luxury": null,
+    "normal": 1645.0,
+    "route_no": "84/580/314",
+    "semi": 2468.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "dutuwewa|colombo": {
+    "from_fare": 972.0,
+    "luxury": null,
+    "normal": 972.0,
+    "route_no": "15/825",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "dutuwewa|kandy": {
+    "from_fare": 624.0,
+    "luxury": null,
+    "normal": 624.0,
+    "route_no": "825",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "eheliyagoda|avissawella": {
+    "from_fare": 108.0,
+    "luxury": null,
+    "normal": 108.0,
+    "route_no": "470",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "eliwila|negombo": {
+    "from_fare": 170.0,
+    "luxury": null,
+    "normal": 170.0,
+    "route_no": "929-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "elpitiya|aluthgama": {
+    "from_fare": 170.0,
+    "luxury": null,
+    "normal": 170.0,
+    "route_no": "401-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "elpitiya|colombo": {
+    "expressway": 830.0,
+    "from_fare": 830.0,
+    "route_no": "EX 1-16",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "elpitiya|kataragama": {
+    "from_fare": 980.0,
+    "luxury": null,
+    "normal": 980.0,
+    "route_no": "32-6",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "elpitiya|makumbura": {
+    "expressway": 660.0,
+    "from_fare": 660.0,
+    "route_no": "EX01-98",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "eluwankulam|colombo": {
+    "from_fare": 681.0,
+    "luxury": null,
+    "normal": 681.0,
+    "route_no": "4-10",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "embilipitiya|anuradhapura": {
+    "from_fare": 1450.0,
+    "luxury": null,
+    "normal": 1450.0,
+    "route_no": "69/15-8",
+    "semi": 2175.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "embilipitiya|beliatta": {
+    "from_fare": 261.0,
+    "luxury": null,
+    "normal": 261.0,
+    "route_no": "493-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "embilipitiya|colombo": {
+    "expressway": 1910.0,
+    "from_fare": 1910.0,
+    "route_no": "EX 1-83/493",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "embilipitiya|galle": {
+    "from_fare": 573.0,
+    "luxury": null,
+    "normal": 573.0,
+    "route_no": "493-4",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "embilipitiya|hakmana": {
+    "from_fare": 307.0,
+    "luxury": null,
+    "normal": 307.0,
+    "route_no": "493-3",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "embilipitiya|hambantota": {
+    "from_fare": 261.0,
+    "luxury": null,
+    "normal": 261.0,
+    "route_no": "211",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "embilipitiya|jaffna": {
+    "from_fare": 2181.0,
+    "luxury": 4181.0,
+    "normal": 2181.0,
+    "route_no": "69/15/87-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "embilipitiya|kandy": {
+    "from_fare": 930.0,
+    "luxury": null,
+    "normal": 930.0,
+    "route_no": "69-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "embilipitiya|karapitiya": {
+    "from_fare": 573.0,
+    "luxury": null,
+    "normal": 573.0,
+    "route_no": "363-13",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "embilipitiya|makumbura": {
+    "expressway": 1670.0,
+    "from_fare": 1670.0,
+    "route_no": "EX 1-75/211",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "embilipitiya|matara": {
+    "from_fare": 406.0,
+    "luxury": null,
+    "normal": 406.0,
+    "route_no": "363-12",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "embilipitiya|middeniya": {
+    "from_fare": 170.0,
+    "luxury": null,
+    "normal": 170.0,
+    "route_no": "363-6",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "embilipitiya|suriyawewa": {
+    "from_fare": 139.0,
+    "luxury": null,
+    "normal": 139.0,
+    "route_no": "497",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "embilipitiya|trincomalee": {
+    "from_fare": 1765.0,
+    "luxury": null,
+    "normal": 1765.0,
+    "route_no": "25/76",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "embilipitiya|vavuniya": {
+    "from_fare": 1573.0,
+    "luxury": null,
+    "normal": 1573.0,
+    "route_no": "69/15-7",
+    "semi": 2360.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "embilipitiya|walasmulla": {
+    "from_fare": 223.0,
+    "luxury": null,
+    "normal": 223.0,
+    "route_no": "363-11",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "embilipitiya|weheragala": {
+    "from_fare": 1083.0,
+    "luxury": null,
+    "normal": 1083.0,
+    "route_no": "25-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "embilipitiya|welikanda": {
+    "from_fare": 1221.0,
+    "luxury": null,
+    "normal": 1221.0,
+    "route_no": "25/27/218",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "galapitamada|colombo": {
+    "from_fare": 315.0,
+    "luxury": null,
+    "normal": 315.0,
+    "route_no": "1-4",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "galauda|suriyapokuna": {
+    "from_fare": 521.0,
+    "luxury": null,
+    "normal": 521.0,
+    "route_no": "312/218",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "galenbindunuwewa|colombo": {
+    "from_fare": 905.0,
+    "luxury": null,
+    "normal": 905.0,
+    "route_no": "15-6",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "galgamuwa|colombo": {
+    "from_fare": 698.0,
+    "luxury": null,
+    "normal": 698.0,
+    "route_no": "57-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "galkiriyagama|kurunegala": {
+    "from_fare": 368.0,
+    "luxury": null,
+    "normal": 368.0,
+    "route_no": "549-4",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "galle|ampara": {
+    "from_fare": 1450.0,
+    "luxury": null,
+    "normal": 1450.0,
+    "route_no": "35",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "galle|battaramulla": {
+    "expressway": 1020.0,
+    "from_fare": 1020.0,
+    "route_no": "EX 1-37/174",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "galle|batticaloa": {
+    "from_fare": 1677.0,
+    "luxury": null,
+    "normal": 1677.0,
+    "route_no": "35/935",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "galle|colombo": {
+    "from_fare": 496.0,
+    "luxury": 970.0,
+    "normal": 496.0,
+    "route_no": "2-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "galle|embilipitiya": {
+    "from_fare": 573.0,
+    "luxury": null,
+    "normal": 573.0,
+    "route_no": "493-4",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "galle|kadawatha": {
+    "expressway": 1070.0,
+    "from_fare": 1070.0,
+    "route_no": "EX 1-21",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "galle|kaduwela": {
+    "expressway": 1020.0,
+    "from_fare": 1020.0,
+    "route_no": "EX 1-23",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "galle|kalmunai": {
+    "from_fare": 1645.0,
+    "luxury": null,
+    "normal": 1645.0,
+    "route_no": "35/881-6",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "galle|kandy": {
+    "expressway": 1850.0,
+    "from_fare": 1850.0,
+    "route_no": "EX 1-27/01",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "galle|kataragama": {
+    "from_fare": 767.0,
+    "luxury": null,
+    "normal": 767.0,
+    "route_no": "32-7",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "galle|kurunegala": {
+    "expressway": 1920.0,
+    "from_fare": 1920.0,
+    "route_no": "EX01/EX03/EX04",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "galle|makumbura": {
+    "expressway": 930.0,
+    "from_fare": 930.0,
+    "route_no": "EX01",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "galle|negombo": {
+    "expressway": 1370.0,
+    "from_fare": 1370.0,
+    "route_no": "EX 1-33/270",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "galnewa|colombo": {
+    "from_fare": 853.0,
+    "luxury": null,
+    "normal": 853.0,
+    "route_no": "15-4",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "galnewa|katunayake": {
+    "from_fare": 810.0,
+    "luxury": null,
+    "normal": 810.0,
+    "route_no": "5/57/540",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "galnewa|kurunegala": {
+    "from_fare": 421.0,
+    "luxury": null,
+    "normal": 421.0,
+    "route_no": "548-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "gampola|batticaloa": {
+    "from_fare": 1100.0,
+    "luxury": null,
+    "normal": 1100.0,
+    "route_no": "41-12/48",
+    "semi": 1650.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "gampola|colombo": {
+    "from_fare": 555.0,
+    "luxury": 1082.0,
+    "normal": 555.0,
+    "route_no": "19-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "girandurukotte|colombo": {
+    "from_fare": 1269.0,
+    "luxury": null,
+    "normal": 1269.0,
+    "route_no": "48/218-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "giriulla|negombo": {
+    "from_fare": 215.0,
+    "luxury": null,
+    "normal": 215.0,
+    "route_no": "34-4",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "gomarankadawala|kandy": {
+    "from_fare": 861.0,
+    "luxury": null,
+    "normal": 861.0,
+    "route_no": "42/825/835",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "hakmana|colombo": {
+    "expressway": 1530.0,
+    "from_fare": 1530.0,
+    "route_no": "EX 1-5/26",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "hakmana|embilipitiya": {
+    "from_fare": 307.0,
+    "luxury": null,
+    "normal": 307.0,
+    "route_no": "493-3",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "hakmana|suriyawewa": {
+    "from_fare": 361.0,
+    "luxury": null,
+    "normal": 361.0,
+    "route_no": "363-2-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "hambantota|colombo": {
+    "from_fare": 1040.0,
+    "luxury": 1987.0,
+    "normal": 1040.0,
+    "route_no": "32-1",
+    "semi": 1560.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "hambantota|embilipitiya": {
+    "from_fare": 261.0,
+    "luxury": null,
+    "normal": 261.0,
+    "route_no": "211",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "hambantota|jaffna": {
+    "from_fare": 2400.0,
+    "luxury": null,
+    "normal": 2400.0,
+    "route_no": "3/15/87",
+    "semi": 3600.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "hambantota|trincomalee": {
+    "from_fare": 1773.0,
+    "luxury": null,
+    "normal": 1773.0,
+    "route_no": "27/218/49",
+    "semi": 2660.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "hambantota|vavuniya": {
+    "from_fare": 1765.0,
+    "luxury": 3380.0,
+    "normal": 1765.0,
+    "route_no": "69/15/87",
+    "semi": 2648.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "hanguranketha|dehiattakandiya": {
+    "from_fare": 538.0,
+    "luxury": null,
+    "normal": 538.0,
+    "route_no": "218/685",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "hatton|balangoda": {
+    "from_fare": 346.0,
+    "luxury": null,
+    "normal": 346.0,
+    "route_no": "488",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "hatton|colombo": {
+    "from_fare": 547.0,
+    "luxury": 1066.0,
+    "normal": 547.0,
+    "route_no": "18-2",
+    "semi": 821.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "hatton|jaffna": {
+    "from_fare": 1709.0,
+    "luxury": null,
+    "normal": 1709.0,
+    "route_no": "725/43/87",
+    "semi": 2564.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "hatton|negombo": {
+    "from_fare": 733.0,
+    "luxury": null,
+    "normal": 733.0,
+    "route_no": "245-1/182/18-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "hingurakgoda|kandy": {
+    "from_fare": 547.0,
+    "luxury": null,
+    "normal": 547.0,
+    "route_no": "52-3",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "hingurakgoda|kurunegala": {
+    "from_fare": 496.0,
+    "luxury": null,
+    "normal": 496.0,
+    "route_no": "48-9",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "horana|kandy": {
+    "from_fare": 598.0,
+    "luxury": null,
+    "normal": 598.0,
+    "route_no": "315/1",
+    "semi": 897.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "horana|karandana": {
+    "from_fare": 185.0,
+    "luxury": null,
+    "normal": 185.0,
+    "route_no": "449",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "horana|wakarai": {
+    "from_fare": 1565.0,
+    "luxury": 2988.0,
+    "normal": 1565.0,
+    "route_no": "315/1/30",
+    "semi": 2348.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "horowpothana|colombo": {
+    "from_fare": 1117.0,
+    "luxury": null,
+    "normal": 1117.0,
+    "route_no": "15/835",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "jaffna|badulla": {
+    "from_fare": 1845.0,
+    "luxury": 3535.0,
+    "normal": 1845.0,
+    "route_no": "314/580/87",
+    "semi": 2768.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "jaffna|batticaloa": {
+    "from_fare": 1661.0,
+    "luxury": null,
+    "normal": 1661.0,
+    "route_no": "86",
+    "semi": 2492.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "jaffna|colombo": {
+    "from_fare": 1733.0,
+    "luxury": null,
+    "normal": 1733.0,
+    "route_no": "57/87",
+    "semi": 2600.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "jaffna|diyatalawa": {
+    "from_fare": 2029.0,
+    "luxury": 3889.0,
+    "normal": 2029.0,
+    "route_no": "47-1/43/87",
+    "semi": 3044.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "jaffna|embilipitiya": {
+    "from_fare": 2181.0,
+    "luxury": 4181.0,
+    "normal": 2181.0,
+    "route_no": "69/15/87-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "jaffna|hambantota": {
+    "from_fare": 2400.0,
+    "luxury": null,
+    "normal": 2400.0,
+    "route_no": "3/15/87",
+    "semi": 3600.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "jaffna|hatton": {
+    "from_fare": 1709.0,
+    "luxury": null,
+    "normal": 1709.0,
+    "route_no": "725/43/87",
+    "semi": 2564.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "jaffna|kandy": {
+    "from_fare": 1399.0,
+    "luxury": null,
+    "normal": 1399.0,
+    "route_no": "43/87",
+    "semi": 2099.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "jaffna|kataragama": {
+    "from_fare": 2125.0,
+    "luxury": null,
+    "normal": 2125.0,
+    "route_no": "68/580",
+    "semi": 3188.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "jaffna|madhu": {
+    "from_fare": 844.0,
+    "luxury": null,
+    "normal": 844.0,
+    "route_no": "87-6",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "jaffna|matugama": {
+    "from_fare": 1941.0,
+    "luxury": null,
+    "normal": 1941.0,
+    "route_no": "458/15/87",
+    "semi": 2912.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "jaffna|monaragala": {
+    "from_fare": 2053.0,
+    "luxury": null,
+    "normal": 2053.0,
+    "route_no": "234/580/87",
+    "semi": 3080.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "jaffna|nuwara": {
+    "from_fare": 1869.0,
+    "luxury": 3583.0,
+    "normal": 1869.0,
+    "route_no": "626/43/87",
+    "semi": 2804.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "jaffna|tangalle": {
+    "from_fare": 2504.0,
+    "luxury": null,
+    "normal": 2504.0,
+    "route_no": "32-4/87",
+    "semi": 3756.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "jaffna|thirukkovil": {
+    "from_fare": 1965.0,
+    "luxury": null,
+    "normal": 1965.0,
+    "route_no": "86-7",
+    "semi": 2948.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "jaffna|trincomalee": {
+    "from_fare": 1092.0,
+    "luxury": 2083.0,
+    "normal": 1092.0,
+    "route_no": "88",
+    "semi": 1638.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "jaffna|vavuniya": {
+    "from_fare": 656.0,
+    "luxury": null,
+    "normal": 656.0,
+    "route_no": "87-3",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "jaffna|walasmulla": {
+    "from_fare": 2360.0,
+    "luxury": null,
+    "normal": 2360.0,
+    "route_no": "69/15-7/87",
+    "semi": 3540.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "janakapura|colombo": {
+    "from_fare": 1501.0,
+    "luxury": 2868.0,
+    "normal": 1501.0,
+    "route_no": "15-11",
+    "semi": 2252.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kadawatha|ambalangoda": {
+    "expressway": 860.0,
+    "from_fare": 860.0,
+    "route_no": "EX 1-48",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kadawatha|galle": {
+    "expressway": 1070.0,
+    "from_fare": 1070.0,
+    "route_no": "EX 1-21",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kadawatha|matara": {
+    "expressway": 1320.0,
+    "from_fare": 1320.0,
+    "route_no": "EX 1-22",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kaduruwela|badulla": {
+    "from_fare": 724.0,
+    "luxury": null,
+    "normal": 724.0,
+    "route_no": "218/314",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kaduruwela|batticaloa": {
+    "from_fare": 406.0,
+    "luxury": null,
+    "normal": 406.0,
+    "route_no": "48-10",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kaduruwela|bibila": {
+    "from_fare": 573.0,
+    "luxury": null,
+    "normal": 573.0,
+    "route_no": "301/218",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kaduruwela|colombo": {
+    "from_fare": 963.0,
+    "luxury": 1843.0,
+    "normal": 963.0,
+    "route_no": "48-3",
+    "semi": 1445.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kaduruwela|kalmunai": {
+    "from_fare": 573.0,
+    "luxury": null,
+    "normal": 573.0,
+    "route_no": "48-29",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kaduruwela|kandy": {
+    "from_fare": 615.0,
+    "luxury": null,
+    "normal": 615.0,
+    "route_no": "41-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kaduruwela|kattankudy": {
+    "from_fare": 436.0,
+    "luxury": null,
+    "normal": 436.0,
+    "route_no": "48-19",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kaduruwela|kegalle": {
+    "from_fare": 707.0,
+    "luxury": null,
+    "normal": 707.0,
+    "route_no": "46",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kaduruwela|kurunegala": {
+    "from_fare": 564.0,
+    "luxury": null,
+    "normal": 564.0,
+    "route_no": "48-8",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kaduruwela|mahiyanganaya": {
+    "from_fare": 406.0,
+    "luxury": null,
+    "normal": 406.0,
+    "route_no": "218-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kaduruwela|matale": {
+    "from_fare": 513.0,
+    "luxury": null,
+    "normal": 513.0,
+    "route_no": "581-3",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kaduruwela|matara": {
+    "from_fare": 1613.0,
+    "luxury": null,
+    "normal": 1613.0,
+    "route_no": "2/48",
+    "semi": 2420.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kaduruwela|panadura": {
+    "from_fare": 1083.0,
+    "luxury": null,
+    "normal": 1083.0,
+    "route_no": "17/48",
+    "semi": 1625.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kaduwela|galle": {
+    "expressway": 1020.0,
+    "from_fare": 1020.0,
+    "route_no": "EX 1-23",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kaduwela|matara": {
+    "expressway": 1270.0,
+    "from_fare": 1270.0,
+    "route_no": "EX 1-2",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kahatagasdigiliya|kandy": {
+    "from_fare": 681.0,
+    "luxury": null,
+    "normal": 681.0,
+    "route_no": "42/825",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kalahagala|colombo": {
+    "from_fare": 1057.0,
+    "luxury": null,
+    "normal": 1057.0,
+    "route_no": "48-33",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kalawana|colombo": {
+    "from_fare": 479.0,
+    "luxury": null,
+    "normal": 479.0,
+    "route_no": "473/7",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kalawana|matugama": {
+    "from_fare": 223.0,
+    "luxury": null,
+    "normal": 223.0,
+    "route_no": "482",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kala|colombo": {
+    "from_fare": 896.0,
+    "luxury": null,
+    "normal": 896.0,
+    "route_no": "57/978",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kalmunai|colombo": {
+    "from_fare": 1509.0,
+    "luxury": 2883.0,
+    "normal": 1509.0,
+    "route_no": "48",
+    "semi": 2264.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kalmunai|galle": {
+    "from_fare": 1645.0,
+    "luxury": null,
+    "normal": 1645.0,
+    "route_no": "35/881-6",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kalmunai|kaduruwela": {
+    "from_fare": 573.0,
+    "luxury": null,
+    "normal": 573.0,
+    "route_no": "48-29",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kalmunai|kilinochchi": {
+    "from_fare": 1533.0,
+    "luxury": null,
+    "normal": 1533.0,
+    "route_no": "86-8",
+    "semi": 2300.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kalmunai|matara": {
+    "from_fare": 1467.0,
+    "luxury": null,
+    "normal": 1467.0,
+    "route_no": "35/881-5",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kalmunai|puttalam": {
+    "from_fare": 1333.0,
+    "luxury": null,
+    "normal": 1333.0,
+    "route_no": "4/86",
+    "semi": 2000.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kalmunai|sungavila": {
+    "from_fare": 698.0,
+    "luxury": null,
+    "normal": 698.0,
+    "route_no": "48/962",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kalmunai|vavuniya": {
+    "from_fare": 1205.0,
+    "luxury": null,
+    "normal": 1205.0,
+    "route_no": "86-6",
+    "semi": 1808.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kalpitiya|colombo": {
+    "from_fare": 707.0,
+    "luxury": 1365.0,
+    "normal": 707.0,
+    "route_no": "7",
+    "semi": 1061.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kalpitiya|mannar": {
+    "from_fare": 802.0,
+    "luxury": null,
+    "normal": 802.0,
+    "route_no": "901/943",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kalpitiya|negombo": {
+    "from_fare": 564.0,
+    "luxury": null,
+    "normal": 564.0,
+    "route_no": "7-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kalpitiya|pottuvil": {
+    "from_fare": 1765.0,
+    "luxury": null,
+    "normal": 1765.0,
+    "route_no": "4/86-10",
+    "semi": 2648.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kaluthara|anuradhapura": {
+    "from_fare": 1075.0,
+    "luxury": null,
+    "normal": 1075.0,
+    "route_no": "57/221/420",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kamburupitiya|colombo": {
+    "expressway": 1480.0,
+    "from_fare": 1480.0,
+    "route_no": "EX 1-29/353",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kamburupitiya|viharagala": {
+    "from_fare": 436.0,
+    "luxury": null,
+    "normal": 436.0,
+    "route_no": "363-5",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|akkaraipattu": {
+    "from_fare": 1031.0,
+    "luxury": null,
+    "normal": 1031.0,
+    "route_no": "22-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|ambagaswewa": {
+    "from_fare": 724.0,
+    "luxury": null,
+    "normal": 724.0,
+    "route_no": "52-6",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|ampara": {
+    "from_fare": 939.0,
+    "luxury": null,
+    "normal": 939.0,
+    "route_no": "22/75",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|anuradhapura": {
+    "from_fare": 606.0,
+    "luxury": 1178.0,
+    "normal": 606.0,
+    "route_no": "43",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|arunapura": {
+    "from_fare": 802.0,
+    "luxury": null,
+    "normal": 802.0,
+    "route_no": "41-11",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|avissawella": {
+    "from_fare": 406.0,
+    "luxury": 797.0,
+    "normal": 406.0,
+    "route_no": "69-4",
+    "semi": 609.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|badulla": {
+    "from_fare": 590.0,
+    "luxury": null,
+    "normal": 590.0,
+    "route_no": "21",
+    "semi": 885.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|batticaloa": {
+    "from_fare": 1006.0,
+    "luxury": null,
+    "normal": 1006.0,
+    "route_no": "41/48",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|bimpokuna": {
+    "from_fare": 758.0,
+    "luxury": null,
+    "normal": 758.0,
+    "route_no": "41-2/686",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|buddhayaya": {
+    "from_fare": 615.0,
+    "luxury": null,
+    "normal": 615.0,
+    "route_no": "41-3",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|colombo": {
+    "expressway": 1230.0,
+    "from_fare": 1230.0,
+    "route_no": "EX03/EX04/602",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|dehiattakandiya": {
+    "from_fare": 582.0,
+    "luxury": null,
+    "normal": 582.0,
+    "route_no": "22-6-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|diyasenpura": {
+    "from_fare": 656.0,
+    "luxury": null,
+    "normal": 656.0,
+    "route_no": "52-8",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|dutuwewa": {
+    "from_fare": 624.0,
+    "luxury": null,
+    "normal": 624.0,
+    "route_no": "825",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|embilipitiya": {
+    "from_fare": 930.0,
+    "luxury": null,
+    "normal": 930.0,
+    "route_no": "69-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|galle": {
+    "expressway": 1850.0,
+    "from_fare": 1850.0,
+    "route_no": "EX 1-27/01",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|gomarankadawala": {
+    "from_fare": 861.0,
+    "luxury": null,
+    "normal": 861.0,
+    "route_no": "42/825/835",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|hingurakgoda": {
+    "from_fare": 547.0,
+    "luxury": null,
+    "normal": 547.0,
+    "route_no": "52-3",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|horana": {
+    "from_fare": 598.0,
+    "luxury": null,
+    "normal": 598.0,
+    "route_no": "315/1",
+    "semi": 897.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|jaffna": {
+    "from_fare": 1399.0,
+    "luxury": null,
+    "normal": 1399.0,
+    "route_no": "43/87",
+    "semi": 2099.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|kaduruwela": {
+    "from_fare": 615.0,
+    "luxury": null,
+    "normal": 615.0,
+    "route_no": "41-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|kahatagasdigiliya": {
+    "from_fare": 681.0,
+    "luxury": null,
+    "normal": 681.0,
+    "route_no": "42/825",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|kataragama": {
+    "from_fare": 1197.0,
+    "luxury": null,
+    "normal": 1197.0,
+    "route_no": "10",
+    "semi": 1796.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|kegalle": {
+    "from_fare": 207.0,
+    "luxury": null,
+    "normal": 207.0,
+    "route_no": "662",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|kurunegala": {
+    "from_fare": 223.0,
+    "luxury": 437.0,
+    "normal": 223.0,
+    "route_no": "602",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|lunuwatta": {
+    "from_fare": 573.0,
+    "luxury": null,
+    "normal": 573.0,
+    "route_no": "47-3/328",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|mahiyanganaya": {
+    "from_fare": 406.0,
+    "luxury": null,
+    "normal": 406.0,
+    "route_no": "22-5",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|makumbura": {
+    "expressway": 1210.0,
+    "from_fare": 1210.0,
+    "route_no": "EX02/EX04/602",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|mannar": {
+    "from_fare": 1023.0,
+    "luxury": null,
+    "normal": 1023.0,
+    "route_no": "43-1",
+    "semi": 1535.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|matara": {
+    "expressway": 2140.0,
+    "from_fare": 2140.0,
+    "route_no": "EX 1-24/01",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|matugama": {
+    "from_fare": 741.0,
+    "luxury": null,
+    "normal": 741.0,
+    "route_no": "458/1",
+    "semi": 1112.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|mawanella": {
+    "from_fare": 155.0,
+    "luxury": null,
+    "normal": 155.0,
+    "route_no": "662-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|monaragala": {
+    "from_fare": 758.0,
+    "luxury": null,
+    "normal": 758.0,
+    "route_no": "14",
+    "semi": 1137.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|mutur": {
+    "from_fare": 896.0,
+    "luxury": null,
+    "normal": 896.0,
+    "route_no": "45/950",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|negombo": {
+    "from_fare": 513.0,
+    "luxury": 1002.0,
+    "normal": 513.0,
+    "route_no": "1/245",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|nochchiyagama": {
+    "from_fare": 716.0,
+    "luxury": null,
+    "normal": 716.0,
+    "route_no": "42-5",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|nuwaragala": {
+    "from_fare": 656.0,
+    "luxury": null,
+    "normal": 656.0,
+    "route_no": "22-6-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|onegama": {
+    "from_fare": 673.0,
+    "luxury": null,
+    "normal": 673.0,
+    "route_no": "41-10",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|panadura": {
+    "from_fare": 648.0,
+    "luxury": null,
+    "normal": 648.0,
+    "route_no": "17/255",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|pussellawinna": {
+    "from_fare": 648.0,
+    "luxury": null,
+    "normal": 648.0,
+    "route_no": "22/218",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|ratnapura": {
+    "from_fare": 590.0,
+    "luxury": null,
+    "normal": 590.0,
+    "route_no": "69",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|siripura": {
+    "from_fare": 615.0,
+    "luxury": null,
+    "normal": 615.0,
+    "route_no": "22-6",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|siyambalagashandiya": {
+    "from_fare": 681.0,
+    "luxury": null,
+    "normal": 681.0,
+    "route_no": "52-3/996-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|somawathiya": {
+    "from_fare": 775.0,
+    "luxury": null,
+    "normal": 775.0,
+    "route_no": "41-1/962",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|sungavila": {
+    "from_fare": 656.0,
+    "luxury": null,
+    "normal": 656.0,
+    "route_no": "41-2/962",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|tampitiya": {
+    "from_fare": 707.0,
+    "luxury": null,
+    "normal": 707.0,
+    "route_no": "22-3",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|trincomalee": {
+    "from_fare": 775.0,
+    "luxury": null,
+    "normal": 775.0,
+    "route_no": "45",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|vavuniya": {
+    "from_fare": 767.0,
+    "luxury": 1475.0,
+    "normal": 767.0,
+    "route_no": "43/857",
+    "semi": 1151.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|walasmulla": {
+    "from_fare": 1390.0,
+    "luxury": null,
+    "normal": 1390.0,
+    "route_no": "32-7/1",
+    "semi": 2085.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kandy|welimada": {
+    "from_fare": 521.0,
+    "luxury": null,
+    "normal": 521.0,
+    "route_no": "47-3",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kankesanthurai|colombo": {
+    "from_fare": 1757.0,
+    "luxury": 3365.0,
+    "normal": 1757.0,
+    "route_no": "87/769",
+    "semi": 2636.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kankesanthurai|moratuwa": {
+    "from_fare": 1853.0,
+    "luxury": 3551.0,
+    "normal": 1853.0,
+    "route_no": "15-22/87/769",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "karainagar|panadura": {
+    "from_fare": 1917.0,
+    "luxury": null,
+    "normal": 1917.0,
+    "route_no": "87-5/782",
+    "semi": 2876.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "karandana|horana": {
+    "from_fare": 185.0,
+    "luxury": null,
+    "normal": 185.0,
+    "route_no": "449",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "karapitiya|embilipitiya": {
+    "from_fare": 573.0,
+    "luxury": null,
+    "normal": 573.0,
+    "route_no": "363-13",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kataragama|colombo": {
+    "expressway": 2340.0,
+    "from_fare": 2340.0,
+    "route_no": "EX 1-12/32",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kataragama|deniyaya": {
+    "from_fare": 853.0,
+    "luxury": null,
+    "normal": 853.0,
+    "route_no": "60/32",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kataragama|elpitiya": {
+    "from_fare": 980.0,
+    "luxury": null,
+    "normal": 980.0,
+    "route_no": "32-6",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kataragama|galle": {
+    "from_fare": 767.0,
+    "luxury": null,
+    "normal": 767.0,
+    "route_no": "32-7",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kataragama|jaffna": {
+    "from_fare": 2125.0,
+    "luxury": null,
+    "normal": 2125.0,
+    "route_no": "68/580",
+    "semi": 3188.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kataragama|kandy": {
+    "from_fare": 1197.0,
+    "luxury": null,
+    "normal": 1197.0,
+    "route_no": "10",
+    "semi": 1796.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kataragama|kurunegala": {
+    "from_fare": 1557.0,
+    "luxury": null,
+    "normal": 1557.0,
+    "route_no": "48/217/29",
+    "semi": 2336.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kataragama|matara": {
+    "from_fare": 598.0,
+    "luxury": null,
+    "normal": 598.0,
+    "route_no": "333",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kataragama|negombo": {
+    "from_fare": 1317.0,
+    "luxury": null,
+    "normal": 1317.0,
+    "route_no": "270/228/3",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kataragama|thihagoda": {
+    "from_fare": 564.0,
+    "luxury": null,
+    "normal": 564.0,
+    "route_no": "345",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kattankudy|colombo": {
+    "from_fare": 1373.0,
+    "luxury": null,
+    "normal": 1373.0,
+    "route_no": "48-14",
+    "semi": 2060.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kattankudy|kaduruwela": {
+    "from_fare": 436.0,
+    "luxury": null,
+    "normal": 436.0,
+    "route_no": "48-19",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "katunayake|badulla": {
+    "from_fare": 1057.0,
+    "luxury": 2019.0,
+    "normal": 1057.0,
+    "route_no": "21/1/245",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "katunayake|galnewa": {
+    "from_fare": 810.0,
+    "luxury": null,
+    "normal": 810.0,
+    "route_no": "5/57/540",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "katunayake|kurunegala": {
+    "from_fare": 331.0,
+    "luxury": null,
+    "normal": 331.0,
+    "route_no": "5/245",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "katunayake|matara": {
+    "from_fare": 810.0,
+    "luxury": null,
+    "normal": 810.0,
+    "route_no": "2/187",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kegalle|anuradhapura": {
+    "from_fare": 640.0,
+    "luxury": null,
+    "normal": 640.0,
+    "route_no": "57-9",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kegalle|avissawella": {
+    "from_fare": 253.0,
+    "luxury": null,
+    "normal": 253.0,
+    "route_no": "674-3",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kegalle|colombo": {
+    "from_fare": 361.0,
+    "luxury": null,
+    "normal": 361.0,
+    "route_no": "1-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kegalle|kaduruwela": {
+    "from_fare": 707.0,
+    "luxury": null,
+    "normal": 707.0,
+    "route_no": "46",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kegalle|kandy": {
+    "from_fare": 207.0,
+    "luxury": null,
+    "normal": 207.0,
+    "route_no": "662",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kegalle|kurunegala": {
+    "from_fare": 185.0,
+    "luxury": null,
+    "normal": 185.0,
+    "route_no": "507",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kegalle|makumbura": {
+    "expressway": 740.0,
+    "from_fare": 740.0,
+    "route_no": "EX02/01-01",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kegalle|negombo": {
+    "from_fare": 338.0,
+    "luxury": null,
+    "normal": 338.0,
+    "route_no": "1-1/245",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kegalle|vavuniya": {
+    "from_fare": 861.0,
+    "luxury": null,
+    "normal": 861.0,
+    "route_no": "15-18",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kekirawa|kurunegala": {
+    "from_fare": 406.0,
+    "luxury": null,
+    "normal": 406.0,
+    "route_no": "548",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kekirawa|matale": {
+    "from_fare": 307.0,
+    "luxury": null,
+    "normal": 307.0,
+    "route_no": "42-14",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kella|urubokka": {
+    "from_fare": 139.0,
+    "luxury": null,
+    "normal": 139.0,
+    "route_no": "168-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kilinochchi|colombo": {
+    "from_fare": 1407.0,
+    "luxury": null,
+    "normal": 1407.0,
+    "route_no": "87-6-1",
+    "semi": 2111.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kilinochchi|kalmunai": {
+    "from_fare": 1533.0,
+    "luxury": null,
+    "normal": 1533.0,
+    "route_no": "86-8",
+    "semi": 2300.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kinniya|colombo": {
+    "from_fare": 1109.0,
+    "luxury": 2115.0,
+    "normal": 1109.0,
+    "route_no": "49/866",
+    "semi": 1664.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kiriibbanara|matara": {
+    "from_fare": 428.0,
+    "luxury": null,
+    "normal": 428.0,
+    "route_no": "493-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kirinda|colombo": {
+    "from_fare": 802.0,
+    "luxury": null,
+    "normal": 802.0,
+    "route_no": "2-12",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kitulgala|avissawella": {
+    "from_fare": 207.0,
+    "luxury": null,
+    "normal": 207.0,
+    "route_no": "23",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kokkaddicholai|colombo": {
+    "from_fare": 1441.0,
+    "luxury": 2757.0,
+    "normal": 1441.0,
+    "route_no": "48-31",
+    "semi": 2162.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kolonna|colombo": {
+    "from_fare": 836.0,
+    "luxury": null,
+    "normal": 836.0,
+    "route_no": "3/461-5",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kosgama|ratnapura": {
+    "from_fare": 268.0,
+    "luxury": null,
+    "normal": 268.0,
+    "route_no": "122-5",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kotiyakumbura|colombo": {
+    "from_fare": 338.0,
+    "luxury": null,
+    "normal": 338.0,
+    "route_no": "674-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kuchchaveli|colombo": {
+    "from_fare": 1269.0,
+    "luxury": null,
+    "normal": 1269.0,
+    "route_no": "49/900",
+    "semi": 1904.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kuliyapitiya|colombo": {
+    "from_fare": 391.0,
+    "luxury": null,
+    "normal": 391.0,
+    "route_no": "92/929",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kuliyapitiya|negombo": {
+    "from_fare": 246.0,
+    "luxury": null,
+    "normal": 246.0,
+    "route_no": "92-5",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kurulubedda|mahiyanganaya": {
+    "from_fare": 496.0,
+    "luxury": null,
+    "normal": 496.0,
+    "route_no": "48-27/218",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kurunegala|ampara": {
+    "from_fare": 1100.0,
+    "luxury": null,
+    "normal": 1100.0,
+    "route_no": "22/756/48",
+    "semi": 1650.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kurunegala|anuradhapura": {
+    "from_fare": 496.0,
+    "luxury": null,
+    "normal": 496.0,
+    "route_no": "57-5",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kurunegala|battaramulla": {
+    "from_fare": 413.0,
+    "luxury": null,
+    "normal": 413.0,
+    "route_no": "17/6",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kurunegala|bulnewa": {
+    "from_fare": 398.0,
+    "luxury": null,
+    "normal": 398.0,
+    "route_no": "15-5/544-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kurunegala|colombo": {
+    "expressway": 930.0,
+    "from_fare": 930.0,
+    "route_no": "EX03/EX04",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kurunegala|dambulla": {
+    "from_fare": 276.0,
+    "luxury": null,
+    "normal": 276.0,
+    "route_no": "549",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kurunegala|dematawewa": {
+    "from_fare": 802.0,
+    "luxury": null,
+    "normal": 802.0,
+    "route_no": "57/928",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kurunegala|galkiriyagama": {
+    "from_fare": 368.0,
+    "luxury": null,
+    "normal": 368.0,
+    "route_no": "549-4",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kurunegala|galle": {
+    "expressway": 1920.0,
+    "from_fare": 1920.0,
+    "route_no": "EX01/EX03/EX04",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kurunegala|galnewa": {
+    "from_fare": 421.0,
+    "luxury": null,
+    "normal": 421.0,
+    "route_no": "548-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kurunegala|hingurakgoda": {
+    "from_fare": 496.0,
+    "luxury": null,
+    "normal": 496.0,
+    "route_no": "48-9",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kurunegala|kaduruwela": {
+    "from_fare": 564.0,
+    "luxury": null,
+    "normal": 564.0,
+    "route_no": "48-8",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kurunegala|kandy": {
+    "from_fare": 223.0,
+    "luxury": 437.0,
+    "normal": 223.0,
+    "route_no": "602",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kurunegala|kataragama": {
+    "from_fare": 1557.0,
+    "luxury": null,
+    "normal": 1557.0,
+    "route_no": "48/217/29",
+    "semi": 2336.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kurunegala|katunayake": {
+    "from_fare": 331.0,
+    "luxury": null,
+    "normal": 331.0,
+    "route_no": "5/245",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kurunegala|kegalle": {
+    "from_fare": 185.0,
+    "luxury": null,
+    "normal": 185.0,
+    "route_no": "507",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kurunegala|kekirawa": {
+    "from_fare": 406.0,
+    "luxury": null,
+    "normal": 406.0,
+    "route_no": "548",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kurunegala|matale": {
+    "from_fare": 268.0,
+    "luxury": null,
+    "normal": 268.0,
+    "route_no": "556",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kurunegala|medawachchiya": {
+    "from_fare": 615.0,
+    "luxury": null,
+    "normal": 615.0,
+    "route_no": "57-10",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kurunegala|mirissala": {
+    "from_fare": 238.0,
+    "luxury": null,
+    "normal": 238.0,
+    "route_no": "564-6",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kurunegala|negombo": {
+    "from_fare": 338.0,
+    "luxury": 662.0,
+    "normal": 338.0,
+    "route_no": "34-3",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kurunegala|panadura": {
+    "from_fare": 530.0,
+    "luxury": null,
+    "normal": 530.0,
+    "route_no": "17-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kurunegala|rambukkana": {
+    "from_fare": 163.0,
+    "luxury": null,
+    "normal": 163.0,
+    "route_no": "509",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kurunegala|sigiriya": {
+    "from_fare": 353.0,
+    "luxury": null,
+    "normal": 353.0,
+    "route_no": "549/499",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kurunegala|trincomalee": {
+    "from_fare": 724.0,
+    "luxury": null,
+    "normal": 724.0,
+    "route_no": "49-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kurunegala|vavuniya": {
+    "from_fare": 716.0,
+    "luxury": null,
+    "normal": 716.0,
+    "route_no": "57-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kurunegala|welikanda": {
+    "from_fare": 665.0,
+    "luxury": null,
+    "normal": 665.0,
+    "route_no": "48-27",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "kurunegala|wewala": {
+    "from_fare": 361.0,
+    "luxury": null,
+    "normal": 361.0,
+    "route_no": "549-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "lunugala|colombo": {
+    "from_fare": 1317.0,
+    "luxury": null,
+    "normal": 1317.0,
+    "route_no": "99-9",
+    "semi": 1976.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "lunugamvehera|colombo": {
+    "from_fare": 1205.0,
+    "luxury": null,
+    "normal": 1205.0,
+    "route_no": "32-2",
+    "semi": 1808.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "lunuwatta|kandy": {
+    "from_fare": 573.0,
+    "luxury": null,
+    "normal": 573.0,
+    "route_no": "47-3/328",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "madhu|jaffna": {
+    "from_fare": 844.0,
+    "luxury": null,
+    "normal": 844.0,
+    "route_no": "87-6",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "madolsima|colombo": {
+    "from_fare": 1277.0,
+    "luxury": null,
+    "normal": 1277.0,
+    "route_no": "99/318",
+    "semi": 1916.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "madolsima|makumbura": {
+    "expressway": 2880.0,
+    "from_fare": 2880.0,
+    "route_no": "EX 1-81/29",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "maduru|colombo": {
+    "from_fare": 1181.0,
+    "luxury": null,
+    "normal": 1181.0,
+    "route_no": "48-16",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "mahiyanganaya|ampara": {
+    "from_fare": 521.0,
+    "luxury": null,
+    "normal": 521.0,
+    "route_no": "22-4",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "mahiyanganaya|colombo": {
+    "from_fare": 913.0,
+    "luxury": 1747.0,
+    "normal": 913.0,
+    "route_no": "38-1",
+    "semi": 1370.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "mahiyanganaya|kaduruwela": {
+    "from_fare": 406.0,
+    "luxury": null,
+    "normal": 406.0,
+    "route_no": "218-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "mahiyanganaya|kandy": {
+    "from_fare": 406.0,
+    "luxury": null,
+    "normal": 406.0,
+    "route_no": "22-5",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "mahiyanganaya|kurulubedda": {
+    "from_fare": 496.0,
+    "luxury": null,
+    "normal": 496.0,
+    "route_no": "48-27/218",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "mahiyanganaya|minneriya": {
+    "from_fare": 496.0,
+    "luxury": null,
+    "normal": 496.0,
+    "route_no": "218-8",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "mahiyanganaya|siripura": {
+    "from_fare": 246.0,
+    "luxury": null,
+    "normal": 246.0,
+    "route_no": "221-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "makumbura|akkaraipattu": {
+    "expressway": 3330.0,
+    "from_fare": 3330.0,
+    "route_no": "EX 1-78/35/881",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "makumbura|ampara": {
+    "expressway": 3260.0,
+    "from_fare": 3260.0,
+    "route_no": "EX 1-77/35",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "makumbura|angunakolapelessa": {
+    "expressway": 1540.0,
+    "from_fare": 1540.0,
+    "route_no": "EX 1-87",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "makumbura|anuradhapura": {
+    "expressway": 1810.0,
+    "from_fare": 1810.0,
+    "route_no": "EX02/EX03/04-03",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "makumbura|badulla": {
+    "expressway": 2700.0,
+    "from_fare": 2700.0,
+    "route_no": "EX 1-74/31-2",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "makumbura|elpitiya": {
+    "expressway": 660.0,
+    "from_fare": 660.0,
+    "route_no": "EX01-98",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "makumbura|embilipitiya": {
+    "expressway": 1670.0,
+    "from_fare": 1670.0,
+    "route_no": "EX 1-75/211",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "makumbura|galle": {
+    "expressway": 930.0,
+    "from_fare": 930.0,
+    "route_no": "EX01",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "makumbura|kandy": {
+    "expressway": 1210.0,
+    "from_fare": 1210.0,
+    "route_no": "EX02/EX04/602",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "makumbura|kegalle": {
+    "expressway": 740.0,
+    "from_fare": 740.0,
+    "route_no": "EX02/01-01",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "makumbura|madolsima": {
+    "expressway": 2880.0,
+    "from_fare": 2880.0,
+    "route_no": "EX 1-81/29",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "makumbura|matale": {
+    "expressway": 1350.0,
+    "from_fare": 1350.0,
+    "route_no": "EX02/EX04/602-1",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "makumbura|matara": {
+    "expressway": 1170.0,
+    "from_fare": 1170.0,
+    "route_no": "EX01-001",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "makumbura|monaragala": {
+    "expressway": 2510.0,
+    "from_fare": 2510.0,
+    "route_no": "EX 1-73/35-2",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "makumbura|tangalle": {
+    "expressway": 1410.0,
+    "from_fare": 1410.0,
+    "route_no": "EX 1-39",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "maligawila|colombo": {
+    "from_fare": 1237.0,
+    "luxury": null,
+    "normal": 1237.0,
+    "route_no": "122/98/236",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "mannar|colombo": {
+    "from_fare": 1325.0,
+    "luxury": 2545.0,
+    "normal": 1325.0,
+    "route_no": "4",
+    "semi": 1988.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "mannar|diyatalawa": {
+    "from_fare": 1645.0,
+    "luxury": null,
+    "normal": 1645.0,
+    "route_no": "84/580/314",
+    "semi": 2468.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "mannar|kalpitiya": {
+    "from_fare": 802.0,
+    "luxury": null,
+    "normal": 802.0,
+    "route_no": "901/943",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "mannar|kandy": {
+    "from_fare": 1023.0,
+    "luxury": null,
+    "normal": 1023.0,
+    "route_no": "43-1",
+    "semi": 1535.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "mannar|monaragala": {
+    "from_fare": 1621.0,
+    "luxury": null,
+    "normal": 1621.0,
+    "route_no": "234/580/84",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "mannar|puttalam": {
+    "from_fare": 793.0,
+    "luxury": null,
+    "normal": 793.0,
+    "route_no": "4-13",
+    "semi": 1190.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "mannar|trincomalee": {
+    "from_fare": 784.0,
+    "luxury": null,
+    "normal": 784.0,
+    "route_no": "88-6",
+    "semi": 1176.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "mannar|vavuniya": {
+    "from_fare": 361.0,
+    "luxury": null,
+    "normal": 361.0,
+    "route_no": "83",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "mapalagama|colombo": {
+    "from_fare": 496.0,
+    "luxury": null,
+    "normal": 496.0,
+    "route_no": "42-8",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matale|colombo": {
+    "from_fare": 632.0,
+    "luxury": 1226.0,
+    "normal": 632.0,
+    "route_no": "8",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matale|kaduruwela": {
+    "from_fare": 513.0,
+    "luxury": null,
+    "normal": 513.0,
+    "route_no": "581-3",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matale|kekirawa": {
+    "from_fare": 307.0,
+    "luxury": null,
+    "normal": 307.0,
+    "route_no": "42-14",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matale|kurunegala": {
+    "from_fare": 268.0,
+    "luxury": null,
+    "normal": 268.0,
+    "route_no": "556",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matale|makumbura": {
+    "expressway": 1350.0,
+    "from_fare": 1350.0,
+    "route_no": "EX02/EX04/602-1",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matale|matara": {
+    "from_fare": 1293.0,
+    "luxury": null,
+    "normal": 1293.0,
+    "route_no": "2/8",
+    "semi": 1940.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matale|panadura": {
+    "from_fare": 844.0,
+    "luxury": null,
+    "normal": 844.0,
+    "route_no": "126/69",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matara|ampara": {
+    "from_fare": 1285.0,
+    "luxury": null,
+    "normal": 1285.0,
+    "route_no": "35-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matara|anuradhapura": {
+    "from_fare": 1517.0,
+    "luxury": null,
+    "normal": 1517.0,
+    "route_no": "2/4-3",
+    "semi": 2276.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matara|badulla": {
+    "from_fare": 989.0,
+    "luxury": null,
+    "normal": 989.0,
+    "route_no": "31-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matara|bandarawela": {
+    "from_fare": 930.0,
+    "luxury": null,
+    "normal": 930.0,
+    "route_no": "31",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matara|colombo": {
+    "expressway": 1320.0,
+    "from_fare": 1320.0,
+    "route_no": "EX 1-18",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matara|dehiwala": {
+    "expressway": 1250.0,
+    "from_fare": 1250.0,
+    "route_no": "EX01-26/119",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matara|embilipitiya": {
+    "from_fare": 406.0,
+    "luxury": null,
+    "normal": 406.0,
+    "route_no": "363-12",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matara|kadawatha": {
+    "expressway": 1320.0,
+    "from_fare": 1320.0,
+    "route_no": "EX 1-22",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matara|kaduruwela": {
+    "from_fare": 1613.0,
+    "luxury": null,
+    "normal": 1613.0,
+    "route_no": "2/48",
+    "semi": 2420.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matara|kaduwela": {
+    "expressway": 1270.0,
+    "from_fare": 1270.0,
+    "route_no": "EX 1-2",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matara|kalmunai": {
+    "from_fare": 1467.0,
+    "luxury": null,
+    "normal": 1467.0,
+    "route_no": "35/881-5",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matara|kandy": {
+    "expressway": 2140.0,
+    "from_fare": 2140.0,
+    "route_no": "EX 1-24/01",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matara|kataragama": {
+    "from_fare": 598.0,
+    "luxury": null,
+    "normal": 598.0,
+    "route_no": "333",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matara|katunayake": {
+    "from_fare": 810.0,
+    "luxury": null,
+    "normal": 810.0,
+    "route_no": "2/187",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matara|kiriibbanara": {
+    "from_fare": 428.0,
+    "luxury": null,
+    "normal": 428.0,
+    "route_no": "493-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matara|makumbura": {
+    "expressway": 1170.0,
+    "from_fare": 1170.0,
+    "route_no": "EX01-001",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matara|matale": {
+    "from_fare": 1293.0,
+    "luxury": null,
+    "normal": 1293.0,
+    "route_no": "2/8",
+    "semi": 1940.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matara|monaragala": {
+    "from_fare": 879.0,
+    "luxury": null,
+    "normal": 879.0,
+    "route_no": "35-3",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matara|negombo": {
+    "expressway": 1590.0,
+    "from_fare": 1590.0,
+    "route_no": "EX01/EX03",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matara|nuwara": {
+    "from_fare": 1173.0,
+    "luxury": null,
+    "normal": 1173.0,
+    "route_no": "31-1",
+    "semi": 1760.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matara|panadura": {
+    "expressway": 1140.0,
+    "from_fare": 1140.0,
+    "route_no": "EX 1-25/450",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matara|ratnapura": {
+    "from_fare": 750.0,
+    "luxury": null,
+    "normal": 750.0,
+    "route_no": "11",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matara|suriyawewa": {
+    "from_fare": 521.0,
+    "luxury": null,
+    "normal": 521.0,
+    "route_no": "11-3",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matara|trincomalee": {
+    "expressway": 3490.0,
+    "from_fare": 3490.0,
+    "route_no": "EX01/EX04/49",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matara|university": {
+    "expressway": 1220.0,
+    "from_fare": 1220.0,
+    "route_no": "EX 1-46",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matugama|anuradhapura": {
+    "from_fare": 1213.0,
+    "luxury": null,
+    "normal": 1213.0,
+    "route_no": "285/6/15-12",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matugama|jaffna": {
+    "from_fare": 1941.0,
+    "luxury": null,
+    "normal": 1941.0,
+    "route_no": "458/15/87",
+    "semi": 2912.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matugama|kalawana": {
+    "from_fare": 223.0,
+    "luxury": null,
+    "normal": 223.0,
+    "route_no": "482",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matugama|kandy": {
+    "from_fare": 741.0,
+    "luxury": null,
+    "normal": 741.0,
+    "route_no": "458/1",
+    "semi": 1112.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matugama|neluwa": {
+    "from_fare": 276.0,
+    "luxury": null,
+    "normal": 276.0,
+    "route_no": "403",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "matugama|pitigala": {
+    "from_fare": 192.0,
+    "luxury": null,
+    "normal": 192.0,
+    "route_no": "399",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "mawanella|colombo": {
+    "from_fare": 413.0,
+    "luxury": 812.0,
+    "normal": 413.0,
+    "route_no": "1-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "mawanella|kandy": {
+    "from_fare": 155.0,
+    "luxury": null,
+    "normal": 155.0,
+    "route_no": "662-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "mawarala|colombo": {
+    "from_fare": 853.0,
+    "luxury": 1635.0,
+    "normal": 853.0,
+    "route_no": "2/13",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "mawathagama|rambukkana": {
+    "from_fare": 123.0,
+    "luxury": null,
+    "normal": 123.0,
+    "route_no": "566",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "medagama|colombo": {
+    "from_fare": 1325.0,
+    "luxury": null,
+    "normal": 1325.0,
+    "route_no": "122/98/199/02",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "medawachchiya|kurunegala": {
+    "from_fare": 615.0,
+    "luxury": null,
+    "normal": 615.0,
+    "route_no": "57-10",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "medirigiriya|colombo": {
+    "from_fare": 980.0,
+    "luxury": null,
+    "normal": 980.0,
+    "route_no": "48-4",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "meegahakiwula|colombo": {
+    "from_fare": 1109.0,
+    "luxury": 2115.0,
+    "normal": 1109.0,
+    "route_no": "38-6",
+    "semi": 1664.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "middeniya|colombo": {
+    "expressway": 1850.0,
+    "from_fare": 1850.0,
+    "route_no": "EX 1-7/26",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "middeniya|embilipitiya": {
+    "from_fare": 170.0,
+    "luxury": null,
+    "normal": 170.0,
+    "route_no": "363-6",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "minneriya|mahiyanganaya": {
+    "from_fare": 496.0,
+    "luxury": null,
+    "normal": 496.0,
+    "route_no": "218-8",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "mirissala|kurunegala": {
+    "from_fare": 238.0,
+    "luxury": null,
+    "normal": 238.0,
+    "route_no": "564-6",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "monaragala|ampara": {
+    "from_fare": 421.0,
+    "luxury": null,
+    "normal": 421.0,
+    "route_no": "909",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "monaragala|colombo": {
+    "expressway": 2670.0,
+    "from_fare": 2670.0,
+    "route_no": "EX 1-52/35-2",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "monaragala|jaffna": {
+    "from_fare": 2053.0,
+    "luxury": null,
+    "normal": 2053.0,
+    "route_no": "234/580/87",
+    "semi": 3080.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "monaragala|kandy": {
+    "from_fare": 758.0,
+    "luxury": null,
+    "normal": 758.0,
+    "route_no": "14",
+    "semi": 1137.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "monaragala|makumbura": {
+    "expressway": 2510.0,
+    "from_fare": 2510.0,
+    "route_no": "EX 1-73/35-2",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "monaragala|mannar": {
+    "from_fare": 1621.0,
+    "luxury": null,
+    "normal": 1621.0,
+    "route_no": "234/580/84",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "monaragala|matara": {
+    "from_fare": 879.0,
+    "luxury": null,
+    "normal": 879.0,
+    "route_no": "35-3",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "monaragala|mulatiyana": {
+    "from_fare": 758.0,
+    "luxury": null,
+    "normal": 758.0,
+    "route_no": "25/363",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "monaragala|panama": {
+    "from_fare": 398.0,
+    "luxury": null,
+    "normal": 398.0,
+    "route_no": "303-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "moratuwa|kankesanthurai": {
+    "from_fare": 1853.0,
+    "luxury": 3551.0,
+    "normal": 1853.0,
+    "route_no": "15-22/87/769",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "morawaka|colombo": {
+    "from_fare": 640.0,
+    "luxury": null,
+    "normal": 640.0,
+    "route_no": "42/430",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "mulatiyana|monaragala": {
+    "from_fare": 758.0,
+    "luxury": null,
+    "normal": 758.0,
+    "route_no": "25/363",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "mullaitivu|ampara": {
+    "from_fare": 1813.0,
+    "luxury": 3471.0,
+    "normal": 1813.0,
+    "route_no": "82/580/22",
+    "semi": 2720.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "mullaitivu|colombo": {
+    "from_fare": 1525.0,
+    "luxury": 2913.0,
+    "normal": 1525.0,
+    "route_no": "15/82",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "mullaitivu|tangalle": {
+    "from_fare": 2312.0,
+    "luxury": null,
+    "normal": 2312.0,
+    "route_no": "32-87-3",
+    "semi": 3468.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "mullaitivu|trincomalee": {
+    "from_fare": 741.0,
+    "luxury": null,
+    "normal": 741.0,
+    "route_no": "819-4",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "mutur|colombo": {
+    "from_fare": 1237.0,
+    "luxury": null,
+    "normal": 1237.0,
+    "route_no": "49/950",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "mutur|kandy": {
+    "from_fare": 896.0,
+    "luxury": null,
+    "normal": 896.0,
+    "route_no": "45/950",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "nandikadal|colombo": {
+    "from_fare": 1693.0,
+    "luxury": null,
+    "normal": 1693.0,
+    "route_no": "15/819",
+    "semi": 2540.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "nattankandal|colombo": {
+    "from_fare": 1407.0,
+    "luxury": null,
+    "normal": 1407.0,
+    "route_no": "87/816-5",
+    "semi": 2111.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "nawalapitiya|colombo": {
+    "from_fare": 632.0,
+    "luxury": null,
+    "normal": 632.0,
+    "route_no": "16",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "negombo|chilaw": {
+    "from_fare": 215.0,
+    "luxury": 422.0,
+    "normal": 215.0,
+    "route_no": "907",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "negombo|eliwila": {
+    "from_fare": 170.0,
+    "luxury": null,
+    "normal": 170.0,
+    "route_no": "929-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "negombo|galle": {
+    "expressway": 1370.0,
+    "from_fare": 1370.0,
+    "route_no": "EX 1-33/270",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "negombo|giriulla": {
+    "from_fare": 215.0,
+    "luxury": null,
+    "normal": 215.0,
+    "route_no": "34-4",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "negombo|hatton": {
+    "from_fare": 733.0,
+    "luxury": null,
+    "normal": 733.0,
+    "route_no": "245-1/182/18-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "negombo|kalpitiya": {
+    "from_fare": 564.0,
+    "luxury": null,
+    "normal": 564.0,
+    "route_no": "7-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "negombo|kandy": {
+    "from_fare": 513.0,
+    "luxury": 1002.0,
+    "normal": 513.0,
+    "route_no": "1/245",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "negombo|kataragama": {
+    "from_fare": 1317.0,
+    "luxury": null,
+    "normal": 1317.0,
+    "route_no": "270/228/3",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "negombo|kegalle": {
+    "from_fare": 338.0,
+    "luxury": null,
+    "normal": 338.0,
+    "route_no": "1-1/245",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "negombo|kuliyapitiya": {
+    "from_fare": 246.0,
+    "luxury": null,
+    "normal": 246.0,
+    "route_no": "92-5",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "negombo|kurunegala": {
+    "from_fare": 338.0,
+    "luxury": 662.0,
+    "normal": 338.0,
+    "route_no": "34-3",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "negombo|matara": {
+    "expressway": 1590.0,
+    "from_fare": 1590.0,
+    "route_no": "EX01/EX03",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "neluwa|matugama": {
+    "from_fare": 276.0,
+    "luxury": null,
+    "normal": 276.0,
+    "route_no": "403",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "nildandahinna|colombo": {
+    "from_fare": 879.0,
+    "luxury": null,
+    "normal": 879.0,
+    "route_no": "1/627",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ninthavur|colombo": {
+    "from_fare": 1517.0,
+    "luxury": 2898.0,
+    "normal": 1517.0,
+    "route_no": "22-9",
+    "semi": 2276.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "nittambuwa|ruwanwella": {
+    "from_fare": 177.0,
+    "luxury": null,
+    "normal": 177.0,
+    "route_no": "348",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "nittambuwa|warakapola": {
+    "from_fare": 115.0,
+    "luxury": null,
+    "normal": 115.0,
+    "route_no": "670",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "nochchiyagama|kandy": {
+    "from_fare": 716.0,
+    "luxury": null,
+    "normal": 716.0,
+    "route_no": "42-5",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "nuwaragala|kandy": {
+    "from_fare": 656.0,
+    "luxury": null,
+    "normal": 656.0,
+    "route_no": "22-6-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "nuwara|ampara": {
+    "from_fare": 1057.0,
+    "luxury": null,
+    "normal": 1057.0,
+    "route_no": "311/488/98",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "nuwara|colombo": {
+    "from_fare": 844.0,
+    "luxury": 1619.0,
+    "normal": 844.0,
+    "route_no": "79",
+    "semi": 1266.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "nuwara|jaffna": {
+    "from_fare": 1869.0,
+    "luxury": 3583.0,
+    "normal": 1869.0,
+    "route_no": "626/43/87",
+    "semi": 2804.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "nuwara|matara": {
+    "from_fare": 1173.0,
+    "luxury": null,
+    "normal": 1173.0,
+    "route_no": "31-1",
+    "semi": 1760.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "nuwara|welimada": {
+    "from_fare": 177.0,
+    "luxury": null,
+    "normal": 177.0,
+    "route_no": "311-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "obbegoda|colombo": {
+    "from_fare": 1245.0,
+    "luxury": null,
+    "normal": 1245.0,
+    "route_no": "122/98-19",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "oddamavadi|colombo": {
+    "from_fare": 1205.0,
+    "luxury": null,
+    "normal": 1205.0,
+    "route_no": "48-5",
+    "semi": 1808.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "onegama|kandy": {
+    "from_fare": 673.0,
+    "luxury": null,
+    "normal": 673.0,
+    "route_no": "41-10",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "opatha|colombo": {
+    "from_fare": 632.0,
+    "luxury": null,
+    "normal": 632.0,
+    "route_no": "42/369",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "padiyapelella|colombo": {
+    "from_fare": 741.0,
+    "luxury": null,
+    "normal": 741.0,
+    "route_no": "1/744",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "pallegama|colombo": {
+    "from_fare": 896.0,
+    "luxury": null,
+    "normal": 896.0,
+    "route_no": "60-6",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "panadura|ampara": {
+    "from_fare": 1441.0,
+    "luxury": null,
+    "normal": 1441.0,
+    "route_no": "64/98",
+    "semi": 2162.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "panadura|anuradhapura": {
+    "from_fare": 1075.0,
+    "luxury": null,
+    "normal": 1075.0,
+    "route_no": "17/15-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "panadura|kaduruwela": {
+    "from_fare": 1083.0,
+    "luxury": null,
+    "normal": 1083.0,
+    "route_no": "17/48",
+    "semi": 1625.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "panadura|kandy": {
+    "from_fare": 648.0,
+    "luxury": null,
+    "normal": 648.0,
+    "route_no": "17/255",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "panadura|karainagar": {
+    "from_fare": 1917.0,
+    "luxury": null,
+    "normal": 1917.0,
+    "route_no": "87-5/782",
+    "semi": 2876.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "panadura|kurunegala": {
+    "from_fare": 530.0,
+    "luxury": null,
+    "normal": 530.0,
+    "route_no": "17-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "panadura|matale": {
+    "from_fare": 844.0,
+    "luxury": null,
+    "normal": 844.0,
+    "route_no": "126/69",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "panadura|matara": {
+    "expressway": 1140.0,
+    "from_fare": 1140.0,
+    "route_no": "EX 1-25/450",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "panadura|point": {
+    "from_fare": 1773.0,
+    "luxury": null,
+    "normal": 1773.0,
+    "route_no": "87-5/759",
+    "semi": 2660.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "panadura|ratnapura": {
+    "from_fare": 323.0,
+    "luxury": null,
+    "normal": 323.0,
+    "route_no": "450",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "panadura|trincomalee": {
+    "from_fare": 1237.0,
+    "luxury": null,
+    "normal": 1237.0,
+    "route_no": "17/49",
+    "semi": 1856.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "panama|colombo": {
+    "from_fare": 1525.0,
+    "luxury": 2913.0,
+    "normal": 1525.0,
+    "route_no": "98-8",
+    "semi": 2288.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "panama|monaragala": {
+    "from_fare": 398.0,
+    "luxury": null,
+    "normal": 398.0,
+    "route_no": "303-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "panduwasnuwara|colombo": {
+    "from_fare": 462.0,
+    "luxury": null,
+    "normal": 462.0,
+    "route_no": "92/929-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "passara|colombo": {
+    "from_fare": 1213.0,
+    "luxury": 2323.0,
+    "normal": 1213.0,
+    "route_no": "99-8",
+    "semi": 1820.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "peella|suriyawewa": {
+    "from_fare": 406.0,
+    "luxury": null,
+    "normal": 406.0,
+    "route_no": "363-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "pitigala|matugama": {
+    "from_fare": 192.0,
+    "luxury": null,
+    "normal": 192.0,
+    "route_no": "399",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "point|colombo": {
+    "from_fare": 1709.0,
+    "luxury": 3272.0,
+    "normal": 1709.0,
+    "route_no": "15/87/759",
+    "semi": 2564.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "point|panadura": {
+    "from_fare": 1773.0,
+    "luxury": null,
+    "normal": 1773.0,
+    "route_no": "87-5/759",
+    "semi": 2660.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "pottuvil|colombo": {
+    "from_fare": 1450.0,
+    "luxury": null,
+    "normal": 1450.0,
+    "route_no": "98-4",
+    "semi": 2175.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "pottuvil|kalpitiya": {
+    "from_fare": 1765.0,
+    "luxury": null,
+    "normal": 1765.0,
+    "route_no": "4/86-10",
+    "semi": 2648.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "pulmoddai|anuradhapura": {
+    "from_fare": 487.0,
+    "luxury": null,
+    "normal": 487.0,
+    "route_no": "842",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "pulmoddai|colombo": {
+    "from_fare": 1365.0,
+    "luxury": null,
+    "normal": 1365.0,
+    "route_no": "49/867",
+    "semi": 2048.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "pussellawinna|kandy": {
+    "from_fare": 648.0,
+    "luxury": null,
+    "normal": 648.0,
+    "route_no": "22/218",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "puttalam|batticaloa": {
+    "from_fare": 1325.0,
+    "luxury": null,
+    "normal": 1325.0,
+    "route_no": "81/48",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "puttalam|colombo": {
+    "from_fare": 555.0,
+    "luxury": 1082.0,
+    "normal": 555.0,
+    "route_no": "4-7",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "puttalam|kalmunai": {
+    "from_fare": 1333.0,
+    "luxury": null,
+    "normal": 1333.0,
+    "route_no": "4/86",
+    "semi": 2000.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "puttalam|mannar": {
+    "from_fare": 793.0,
+    "luxury": null,
+    "normal": 793.0,
+    "route_no": "4-13",
+    "semi": 1190.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "radawela|colombo": {
+    "from_fare": 802.0,
+    "luxury": 1539.0,
+    "normal": 802.0,
+    "route_no": "366-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "rakwana|colombo": {
+    "from_fare": 681.0,
+    "luxury": null,
+    "normal": 681.0,
+    "route_no": "122/467",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "rambukkana|kurunegala": {
+    "from_fare": 163.0,
+    "luxury": null,
+    "normal": 163.0,
+    "route_no": "509",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "rambukkana|mawathagama": {
+    "from_fare": 123.0,
+    "luxury": null,
+    "normal": 123.0,
+    "route_no": "566",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ratnapura|avissawella": {
+    "from_fare": 223.0,
+    "luxury": null,
+    "normal": 223.0,
+    "route_no": "470-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ratnapura|colombo": {
+    "from_fare": 453.0,
+    "luxury": null,
+    "normal": 453.0,
+    "route_no": "122-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ratnapura|kandy": {
+    "from_fare": 590.0,
+    "luxury": null,
+    "normal": 590.0,
+    "route_no": "69",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ratnapura|kosgama": {
+    "from_fare": 268.0,
+    "luxury": null,
+    "normal": 268.0,
+    "route_no": "122-5",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ratnapura|matara": {
+    "from_fare": 750.0,
+    "luxury": null,
+    "normal": 750.0,
+    "route_no": "11",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ratnapura|panadura": {
+    "from_fare": 323.0,
+    "luxury": null,
+    "normal": 323.0,
+    "route_no": "450",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "rupaha|colombo": {
+    "from_fare": 930.0,
+    "luxury": null,
+    "normal": 930.0,
+    "route_no": "1/627-5",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "ruwanwella|nittambuwa": {
+    "from_fare": 177.0,
+    "luxury": null,
+    "normal": 177.0,
+    "route_no": "348",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "seruwila|colombo": {
+    "from_fare": 1157.0,
+    "luxury": null,
+    "normal": 1157.0,
+    "route_no": "49/950-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "sewanagala|colombo": {
+    "from_fare": 836.0,
+    "luxury": null,
+    "normal": 836.0,
+    "route_no": "122/210-5",
+    "semi": 1254.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "sigiriya|kurunegala": {
+    "from_fare": 353.0,
+    "luxury": null,
+    "normal": 353.0,
+    "route_no": "549/499",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "siripura|badulla": {
+    "from_fare": 547.0,
+    "luxury": null,
+    "normal": 547.0,
+    "route_no": "218-6",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "siripura|colombo": {
+    "from_fare": 1141.0,
+    "luxury": null,
+    "normal": 1141.0,
+    "route_no": "48/218-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "siripura|kandy": {
+    "from_fare": 615.0,
+    "luxury": null,
+    "normal": 615.0,
+    "route_no": "22-6",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "siripura|mahiyanganaya": {
+    "from_fare": 246.0,
+    "luxury": null,
+    "normal": 246.0,
+    "route_no": "221-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "siyambalagashandiya|kandy": {
+    "from_fare": 681.0,
+    "luxury": null,
+    "normal": 681.0,
+    "route_no": "52-3/996-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "somawathiya|kandy": {
+    "from_fare": 775.0,
+    "luxury": null,
+    "normal": 775.0,
+    "route_no": "41-1/962",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "sripura|colombo": {
+    "from_fare": 1309.0,
+    "luxury": 2515.0,
+    "normal": 1309.0,
+    "route_no": "4/844",
+    "semi": 1964.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "sungavila|akkaraipattu": {
+    "from_fare": 793.0,
+    "luxury": null,
+    "normal": 793.0,
+    "route_no": "48-12/962",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "sungavila|colombo": {
+    "from_fare": 1066.0,
+    "luxury": null,
+    "normal": 1066.0,
+    "route_no": "48-15",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "sungavila|kalmunai": {
+    "from_fare": 698.0,
+    "luxury": null,
+    "normal": 698.0,
+    "route_no": "48/962",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "sungavila|kandy": {
+    "from_fare": 656.0,
+    "luxury": null,
+    "normal": 656.0,
+    "route_no": "41-2/962",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "suriyapokuna|galauda": {
+    "from_fare": 521.0,
+    "luxury": null,
+    "normal": 521.0,
+    "route_no": "312/218",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "suriyawewa|colombo": {
+    "from_fare": 905.0,
+    "luxury": null,
+    "normal": 905.0,
+    "route_no": "122/210-1",
+    "semi": 1358.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "suriyawewa|embilipitiya": {
+    "from_fare": 139.0,
+    "luxury": null,
+    "normal": 139.0,
+    "route_no": "497",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "suriyawewa|hakmana": {
+    "from_fare": 361.0,
+    "luxury": null,
+    "normal": 361.0,
+    "route_no": "363-2-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "suriyawewa|matara": {
+    "from_fare": 521.0,
+    "luxury": null,
+    "normal": 521.0,
+    "route_no": "11-3",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "suriyawewa|peella": {
+    "from_fare": 406.0,
+    "luxury": null,
+    "normal": 406.0,
+    "route_no": "363-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "talaimannar|colombo": {
+    "from_fare": 1458.0,
+    "luxury": 2789.0,
+    "normal": 1458.0,
+    "route_no": "4-1",
+    "semi": 2187.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "tampitiya|kandy": {
+    "from_fare": 707.0,
+    "luxury": null,
+    "normal": 707.0,
+    "route_no": "22-3",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "tangalle|colombo": {
+    "from_fare": 861.0,
+    "luxury": 1651.0,
+    "normal": 861.0,
+    "route_no": "32-4",
+    "semi": 1292.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "tangalle|jaffna": {
+    "from_fare": 2504.0,
+    "luxury": null,
+    "normal": 2504.0,
+    "route_no": "32-4/87",
+    "semi": 3756.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "tangalle|makumbura": {
+    "expressway": 1410.0,
+    "from_fare": 1410.0,
+    "route_no": "EX 1-39",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "tangalle|mullaitivu": {
+    "from_fare": 2312.0,
+    "luxury": null,
+    "normal": 2312.0,
+    "route_no": "32-87-3",
+    "semi": 3468.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "tangalle|trincomalee": {
+    "from_fare": 1933.0,
+    "luxury": 3704.0,
+    "normal": 1933.0,
+    "route_no": "32/49",
+    "semi": 2900.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "teldeniya|colombo": {
+    "from_fare": 640.0,
+    "luxury": null,
+    "normal": 640.0,
+    "route_no": "9",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "thalawakele|colombo": {
+    "from_fare": 624.0,
+    "luxury": 1210.0,
+    "normal": 624.0,
+    "route_no": "18-7",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "thanamalwila|anuradhapura": {
+    "from_fare": 1565.0,
+    "luxury": null,
+    "normal": 1565.0,
+    "route_no": "27/218/75",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "thanamalwila|tissa": {
+    "from_fare": 170.0,
+    "luxury": null,
+    "normal": 170.0,
+    "route_no": "335-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "thawalama|colombo": {
+    "from_fare": 564.0,
+    "luxury": null,
+    "normal": 564.0,
+    "route_no": "42/410",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "thihagoda|kataragama": {
+    "from_fare": 564.0,
+    "luxury": null,
+    "normal": 564.0,
+    "route_no": "345",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "thirukkovil|colombo": {
+    "from_fare": 1653.0,
+    "luxury": 3160.0,
+    "normal": 1653.0,
+    "route_no": "48-13",
+    "semi": 2480.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "thirukkovil|jaffna": {
+    "from_fare": 1965.0,
+    "luxury": null,
+    "normal": 1965.0,
+    "route_no": "86-7",
+    "semi": 2948.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "thirukkovil|vavuniya": {
+    "from_fare": 1349.0,
+    "luxury": null,
+    "normal": 1349.0,
+    "route_no": "86-9",
+    "semi": 2024.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "thunukkai|colombo": {
+    "from_fare": 1357.0,
+    "luxury": null,
+    "normal": 1357.0,
+    "route_no": "87/816",
+    "semi": 2036.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "tissa|thanamalwila": {
+    "from_fare": 170.0,
+    "luxury": null,
+    "normal": 170.0,
+    "route_no": "335-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "trincomalee|anuradhapura": {
+    "from_fare": 496.0,
+    "luxury": null,
+    "normal": 496.0,
+    "route_no": "835",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "trincomalee|badulla": {
+    "from_fare": 1277.0,
+    "luxury": null,
+    "normal": 1277.0,
+    "route_no": "76/218/314",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "trincomalee|colombo": {
+    "from_fare": 1125.0,
+    "luxury": 2147.0,
+    "normal": 1125.0,
+    "route_no": "49",
+    "semi": 1688.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "trincomalee|embilipitiya": {
+    "from_fare": 1765.0,
+    "luxury": null,
+    "normal": 1765.0,
+    "route_no": "25/76",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "trincomalee|hambantota": {
+    "from_fare": 1773.0,
+    "luxury": null,
+    "normal": 1773.0,
+    "route_no": "27/218/49",
+    "semi": 2660.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "trincomalee|jaffna": {
+    "from_fare": 1092.0,
+    "luxury": 2083.0,
+    "normal": 1092.0,
+    "route_no": "88",
+    "semi": 1638.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "trincomalee|kandy": {
+    "from_fare": 775.0,
+    "luxury": null,
+    "normal": 775.0,
+    "route_no": "45",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "trincomalee|kurunegala": {
+    "from_fare": 724.0,
+    "luxury": null,
+    "normal": 724.0,
+    "route_no": "49-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "trincomalee|mannar": {
+    "from_fare": 784.0,
+    "luxury": null,
+    "normal": 784.0,
+    "route_no": "88-6",
+    "semi": 1176.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "trincomalee|matara": {
+    "expressway": 3490.0,
+    "from_fare": 3490.0,
+    "route_no": "EX01/EX04/49",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "trincomalee|mullaitivu": {
+    "from_fare": 741.0,
+    "luxury": null,
+    "normal": 741.0,
+    "route_no": "819-4",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "trincomalee|panadura": {
+    "from_fare": 1237.0,
+    "luxury": null,
+    "normal": 1237.0,
+    "route_no": "17/49",
+    "semi": 1856.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "trincomalee|tangalle": {
+    "from_fare": 1933.0,
+    "luxury": 3704.0,
+    "normal": 1933.0,
+    "route_no": "32/49",
+    "semi": 2900.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "trincomalee|vavuniya": {
+    "from_fare": 445.0,
+    "luxury": 874.0,
+    "normal": 445.0,
+    "route_no": "88-2",
+    "semi": 668.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "udugama|colombo": {
+    "from_fare": 582.0,
+    "luxury": null,
+    "normal": 582.0,
+    "route_no": "42",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "udupussellawa|colombo": {
+    "from_fare": 963.0,
+    "luxury": null,
+    "normal": 963.0,
+    "route_no": "18/727",
+    "semi": 1445.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "university|matara": {
+    "expressway": 1220.0,
+    "from_fare": 1220.0,
+    "route_no": "EX 1-46",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "urubokka|colombo": {
+    "from_fare": 922.0,
+    "luxury": null,
+    "normal": 922.0,
+    "route_no": "60-4",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "urubokka|kella": {
+    "from_fare": 139.0,
+    "luxury": null,
+    "normal": 139.0,
+    "route_no": "168-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "urubokka|wandama": {
+    "from_fare": 698.0,
+    "luxury": null,
+    "normal": 698.0,
+    "route_no": "363/98",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "vavuniya|akkaraipattu": {
+    "from_fare": 1293.0,
+    "luxury": null,
+    "normal": 1293.0,
+    "route_no": "89-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "vavuniya|ampara": {
+    "from_fare": 1533.0,
+    "luxury": 2928.0,
+    "normal": 1533.0,
+    "route_no": "86/218/22",
+    "semi": 2300.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "vavuniya|anuradhapura": {
+    "from_fare": 261.0,
+    "luxury": null,
+    "normal": 261.0,
+    "route_no": "857",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "vavuniya|bandarawela": {
+    "from_fare": 1365.0,
+    "luxury": null,
+    "normal": 1365.0,
+    "route_no": "314/580/15-7",
+    "semi": 2048.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "vavuniya|batticaloa": {
+    "from_fare": 1040.0,
+    "luxury": null,
+    "normal": 1040.0,
+    "route_no": "86-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "vavuniya|colombo": {
+    "from_fare": 1117.0,
+    "luxury": 2131.0,
+    "normal": 1117.0,
+    "route_no": "57/3",
+    "semi": 1676.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "vavuniya|embilipitiya": {
+    "from_fare": 1573.0,
+    "luxury": null,
+    "normal": 1573.0,
+    "route_no": "69/15-7",
+    "semi": 2360.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "vavuniya|hambantota": {
+    "from_fare": 1765.0,
+    "luxury": 3380.0,
+    "normal": 1765.0,
+    "route_no": "69/15/87",
+    "semi": 2648.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "vavuniya|jaffna": {
+    "from_fare": 656.0,
+    "luxury": null,
+    "normal": 656.0,
+    "route_no": "87-3",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "vavuniya|kalmunai": {
+    "from_fare": 1205.0,
+    "luxury": null,
+    "normal": 1205.0,
+    "route_no": "86-6",
+    "semi": 1808.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "vavuniya|kandy": {
+    "from_fare": 767.0,
+    "luxury": 1475.0,
+    "normal": 767.0,
+    "route_no": "43/857",
+    "semi": 1151.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "vavuniya|kegalle": {
+    "from_fare": 861.0,
+    "luxury": null,
+    "normal": 861.0,
+    "route_no": "15-18",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "vavuniya|kurunegala": {
+    "from_fare": 716.0,
+    "luxury": null,
+    "normal": 716.0,
+    "route_no": "57-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "vavuniya|mannar": {
+    "from_fare": 361.0,
+    "luxury": null,
+    "normal": 361.0,
+    "route_no": "83",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "vavuniya|thirukkovil": {
+    "from_fare": 1349.0,
+    "luxury": null,
+    "normal": 1349.0,
+    "route_no": "86-9",
+    "semi": 2024.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "vavuniya|trincomalee": {
+    "from_fare": 445.0,
+    "luxury": 874.0,
+    "normal": 445.0,
+    "route_no": "88-2",
+    "semi": 668.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "viharagala|kamburupitiya": {
+    "from_fare": 436.0,
+    "luxury": null,
+    "normal": 436.0,
+    "route_no": "363-5",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "vilachchiya|colombo": {
+    "from_fare": 1057.0,
+    "luxury": null,
+    "normal": 1057.0,
+    "route_no": "57-18",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "wakarai|horana": {
+    "from_fare": 1565.0,
+    "luxury": 2988.0,
+    "normal": 1565.0,
+    "route_no": "315/1/30",
+    "semi": 2348.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "walasmulla|colombo": {
+    "from_fare": 930.0,
+    "luxury": null,
+    "normal": 930.0,
+    "route_no": "3/363",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "walasmulla|embilipitiya": {
+    "from_fare": 223.0,
+    "luxury": null,
+    "normal": 223.0,
+    "route_no": "363-11",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "walasmulla|jaffna": {
+    "from_fare": 2360.0,
+    "luxury": null,
+    "normal": 2360.0,
+    "route_no": "69/15-7/87",
+    "semi": 3540.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "walasmulla|kandy": {
+    "from_fare": 1390.0,
+    "luxury": null,
+    "normal": 1390.0,
+    "route_no": "32-7/1",
+    "semi": 2085.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "walasmulla|weliara": {
+    "from_fare": 323.0,
+    "luxury": null,
+    "normal": 323.0,
+    "route_no": "363-18",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "wandama|urubokka": {
+    "from_fare": 698.0,
+    "luxury": null,
+    "normal": 698.0,
+    "route_no": "363/98",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "warakapola|colombo": {
+    "from_fare": 268.0,
+    "luxury": null,
+    "normal": 268.0,
+    "route_no": "1-3",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "warakapola|nittambuwa": {
+    "from_fare": 115.0,
+    "luxury": null,
+    "normal": 115.0,
+    "route_no": "670",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "wariyapola|colombo": {
+    "from_fare": 496.0,
+    "luxury": null,
+    "normal": 496.0,
+    "route_no": "5-11",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "wattegama|colombo": {
+    "from_fare": 582.0,
+    "luxury": 1130.0,
+    "normal": 582.0,
+    "route_no": "9-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "weeraketiya|colombo": {
+    "expressway": 1700.0,
+    "from_fare": 1700.0,
+    "route_no": "EX 1-11/32",
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "weheragala|badulla": {
+    "from_fare": 598.0,
+    "luxury": null,
+    "normal": 598.0,
+    "route_no": "218-4",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "weheragala|embilipitiya": {
+    "from_fare": 1083.0,
+    "luxury": null,
+    "normal": 1083.0,
+    "route_no": "25-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "weliara|walasmulla": {
+    "from_fare": 323.0,
+    "luxury": null,
+    "normal": 323.0,
+    "route_no": "363-18",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "welikanda|colombo": {
+    "from_fare": 1066.0,
+    "luxury": null,
+    "normal": 1066.0,
+    "route_no": "48-17",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "welikanda|embilipitiya": {
+    "from_fare": 1221.0,
+    "luxury": null,
+    "normal": 1221.0,
+    "route_no": "25/27/218",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "welikanda|kurunegala": {
+    "from_fare": 665.0,
+    "luxury": null,
+    "normal": 665.0,
+    "route_no": "48-27",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "welimada|colombo": {
+    "from_fare": 1083.0,
+    "luxury": null,
+    "normal": 1083.0,
+    "route_no": "99-10",
+    "semi": 1625.0,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "welimada|kandy": {
+    "from_fare": 521.0,
+    "luxury": null,
+    "normal": 521.0,
+    "route_no": "47-3",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "welimada|nuwara": {
+    "from_fare": 177.0,
+    "luxury": null,
+    "normal": 177.0,
+    "route_no": "311-2",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "welioya|colombo": {
+    "from_fare": 750.0,
+    "luxury": null,
+    "normal": 750.0,
+    "route_no": "98/486-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "welipathayaya|colombo": {
+    "from_fare": 784.0,
+    "luxury": null,
+    "normal": 784.0,
+    "route_no": "98/487",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "wellawaya|anuradhapura": {
+    "from_fare": 1349.0,
+    "luxury": null,
+    "normal": 1349.0,
+    "route_no": "27/218/58",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "wewala|colombo": {
+    "from_fare": 750.0,
+    "luxury": null,
+    "normal": 750.0,
+    "route_no": "15/968",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "wewala|kurunegala": {
+    "from_fare": 361.0,
+    "luxury": null,
+    "normal": 361.0,
+    "route_no": "549-1",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "yakkalamulla|colombo": {
+    "from_fare": 582.0,
+    "luxury": null,
+    "normal": 582.0,
+    "route_no": "393",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  },
+  "yatiyana|colombo": {
+    "from_fare": 758.0,
+    "luxury": null,
+    "normal": 758.0,
+    "route_no": "2-4",
+    "semi": null,
+    "source": "NTC inter-provincial + expressway full fares, effective 2026-07-06"
+  }
+}
