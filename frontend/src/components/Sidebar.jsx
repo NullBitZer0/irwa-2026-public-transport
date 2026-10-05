@@ -4,6 +4,8 @@ const EXAMPLES = [
   'Heta ude Colombo indan Kandy yanna train ekak balanna',
   'Express train from Colombo Fort to Kandy tomorrow morning',
   'Makumbura idala Galle yanna highway bus ekak thiyeda?',
+  'Kandy indan Jaffna yanna train ekak thiyeda?',
+  'Kandy indan Galle yanna train ekak',
   'Kandy yanna train ekak thiyeda?',
   'Heta ude 6ta Kandy yanna dumriya ekak',
   'What are the baggage rules on SLR?',

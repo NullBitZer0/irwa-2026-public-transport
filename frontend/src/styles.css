@@ -333,6 +333,102 @@ code {
   margin: 0 0 0.4rem;
 }
 
+/* ── Connections (mixed train + bus) ──────────────────────────────────── */
+
+.route--connection {
+  border-color: #7c5cbf;
+  background: linear-gradient(180deg, rgba(124, 92, 191, 0.09), transparent 60%);
+}
+
+.route__note {
+  margin: 0.6rem 0 0;
+  font-size: 0.78rem;
+  color: #c4b5fd;
+}
+
+.route__mode {
+  font-size: 0.95em;
+}
+
+.route__mode--mixed {
+  color: #c4b5fd;
+}
+
+.conn__summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.1rem;
+  margin: 0.7rem 0;
+  font-size: 0.85rem;
+}
+
+.conn__mixed {
+  color: #c4b5fd;
+  font-weight: 600;
+}
+
+.conn__legs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.conn__leg {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  padding: 0.55rem 0;
+  border-left: 2px solid var(--border);
+  padding-left: 0.8rem;
+  margin-left: 0.35rem;
+}
+
+.conn__legBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.conn__legTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.conn__legPath {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.conn__legTimes {
+  font-size: 0.82rem;
+}
+
+.conn__nextDay {
+  color: #fcd34d;
+}
+
+.conn__legFare {
+  font-size: 0.82rem;
+  white-space: nowrap;
+  color: var(--accent);
+}
+
+.conn__transfer {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.3rem 0 0 0.35rem;
+  padding: 0.45rem 0 0.45rem 0.8rem;
+  border-left: 2px dashed #7c5cbf;
+  font-size: 0.82rem;
+  color: #c4b5fd;
+}
+
+.conn__transferIcon {
+  font-size: 1rem;
+}
+
 .route__stopsLabel {
   text-transform: uppercase;
   letter-spacing: 0.05em;
