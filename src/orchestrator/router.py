@@ -38,10 +38,35 @@ Notes:
 - If the user mentions a route ID AND says "book" / "reserve" (or "book karanna") → EXECUTE_BOOKING.
 - If the user only asks about schedules or fares → PLAN_ROUTE.
 - Questions about baggage/refund/policy (or "kohomada refund karanne") → FAQ.
+- A bare pair of places is still a route request: "Colombo to Galle",
+  "Colombo Galle", "Kandy yanna" → PLAN_ROUTE. Only use CLARIFY when no
+  journey can be identified at all (greetings, thanks, unrelated small talk).
 
 Respond ONLY with valid JSON (no markdown, no extra text):
 {"intent": "<INTENT>", "reasoning": "<one short sentence>"}
 """
+
+
+def _has_journey_endpoints(query: str) -> bool:
+    """
+    True when the deterministic parser can resolve both an origin and a destination.
+
+    The LLM classifier tends to label bare fragments such as "Colombo to Galle"
+    as CLARIFY because they look incomplete. Entity extraction is deterministic
+    and language-agnostic (English and Singlish), so a resolved origin +
+    destination is stronger evidence of a route request than the LLM's verdict.
+    """
+    try:
+        # Imported lazily: the parser belongs to the Planning Agent's module and
+        # is only needed on the fallback path.
+        from src.planner.nlp_parser import extract_transit_intent
+
+        parsed = extract_transit_intent(query)
+    except Exception as exc:  # pragma: no cover - defensive
+        logger.warning(f"Endpoint probe failed ({type(exc).__name__}): {exc}")
+        return False
+
+    return bool(parsed.origin and parsed.destination)
 
 
 def classify_user_intent(
@@ -57,7 +82,7 @@ def classify_user_intent(
 
     Returns:
         One of: "PLAN_ROUTE", "EXECUTE_BOOKING", "FAQ", "CLARIFY".
-        Falls back to "CLARIFY" on any error.
+        Falls back to "PLAN_ROUTE" (when endpoints are detectable) else "CLARIFY".
     """
     user_content = (
         f"User message: {query}\n"
@@ -86,9 +111,18 @@ def classify_user_intent(
             intent = "CLARIFY"
 
         logger.info(f"Intent → {intent} | Reason: {reasoning} | Model: {ROUTER_MODEL}")
+
+        # Guard: a resolvable origin + destination means this is a route request,
+        # whatever the classifier decided.
+        if intent == "CLARIFY" and _has_journey_endpoints(query):
+            logger.info("Intent CLARIFY → PLAN_ROUTE (origin and destination detected)")
+            return "PLAN_ROUTE"
+
         return intent  # type: ignore[return-value]
 
     except Exception as exc:
         logger.error(f"Intent classification failed ({type(exc).__name__}): {exc}")
-        return "CLARIFY"
+        # The LLM is unavailable — fall back to deterministic entity extraction
+        # so a plain route query still works.
+        return "PLAN_ROUTE" if _has_journey_endpoints(query) else "CLARIFY"
 

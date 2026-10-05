@@ -128,6 +128,19 @@
     "classes": ["2nd Class Reserved", "3rd Class Unreserved"],
     "base_fare_lkr": 620.0,
     "transit_type": "EXPRESS_TRAIN"
+  },
+  {
+    "route_id": "TRAIN-1011",
+    "service_name": "Yal Devi (Southbound)",
+    "provider": "SLR",
+    "origin": "Jaffna",
+    "destination": "Colombo Fort",
+    "departure_time": "11:00",
+    "arrival_time": "19:03",
+    "stops": ["Jaffna", "Vavuniya", "Anuradhapura", "Colombo Fort"],
+    "classes": ["1st Class Reserved", "2nd Class Reserved"],
+    "base_fare_lkr": 1450.0,
+    "transit_type": "INTERCITY_EXPRESS"
   }
 ]
 

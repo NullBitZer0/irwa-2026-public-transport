@@ -76,7 +76,11 @@ async def planning_agent_node(state: TransitSessionState) -> dict:
 
     try:
         response = await _bridge.call_planning_agent(payload)
-        routes: list = (response.data or {}).get("route_options", [])
+        data = response.data or {}
+        routes: list = (data.get("route_options") or [])
+        connections: list = (data.get("connections") or [])
+        direction_note: str | None = data.get("direction_note")
+        mixed_fallback: bool = bool(data.get("mixed_mode_fallback"))
 
         if routes:
             lines = []
@@ -94,13 +98,47 @@ async def planning_agent_node(state: TransitSessionState) -> dict:
                 f"To book a seat, tell me: *\"Book route TRAIN-XXXX\"* or "
                 f"click **Confirm & Hold Seat** in the UI."
             )
+        elif connections:
+            lines = []
+            for i, c in enumerate(connections, 1):
+                legs = c.get("legs") or []
+                leg_bits = [
+                    f"{'🚆' if leg.get('mode') == 'TRAIN' else '🚌'} "
+                    f"**{leg.get('service_name')}** (`{leg.get('route_id')}`) "
+                    f"{leg.get('origin')} → {leg.get('destination')} "
+                    f"{leg.get('departure_time')}–{leg.get('arrival_time')}"
+                    + (" *(+1 day)*" if leg.get("next_day") else "")
+                    for leg in legs
+                ]
+                mixed = "train + bus" if c.get("mixed_mode") else "same mode"
+                lines.append(
+                    f"{i}. **{c.get('origin')} → {c.get('destination')}** "
+                    f"via **{c.get('transfer_station')}** "
+                    f"({c.get('transfer_minutes')} min change, {mixed})\n"
+                    + "\n".join(f"   - {bit}" for bit in leg_bits)
+                    + f"\n   Total: LKR {c.get('base_fare_lkr', 0):.0f}"
+                )
+            header = "No direct service runs this route. Here are connecting options:\n\n"
+            if mixed_fallback:
+                header = (
+                    "No direct service runs this route, and nothing connects in a "
+                    "single mode. Here is a connecting option mixing train and bus:\n\n"
+                )
+            msg = (
+                f"{header}"
+                + "\n\n".join(lines)
+                + "\n\n🔁 Connections need **two tickets**, one per leg — book each "
+                "leg separately at the station or operator."
+            )
         else:
             msg = (
                 "No routes found for your query. Please check the origin/destination "
                 "names or try a different date."
             )
+            if direction_note:
+                msg = f"ℹ️ {direction_note}\n\nPlease confirm the direction you want to travel."
 
-        return {"route_options": routes, "messages": [msg]}
+        return {"route_options": routes + connections, "messages": [msg]}
 
     except Exception as exc:
         logger.warning(f"[{state['session_id']}] Planning Agent unreachable: {exc}")
