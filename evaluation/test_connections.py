@@ -68,8 +68,11 @@ def test_no_connections_to_the_same_station(services) -> None:
 
 
 def test_no_connection_without_a_shared_hub(services) -> None:
-    """Nothing runs out of Galle, so Galle → Badulla cannot be connected here."""
-    assert find_connections(services, "Galle", "Badulla") == []
+    """
+    Ella → Kandy is a known data gap: Kandy → Ella runs, the reverse does not, and
+    nothing reaches Kandy from Ella either, so no connection can be built.
+    """
+    assert find_connections(services, "Ella", "Kandy") == []
 
 
 # ── Finding connections ──────────────────────────────────────────────────────

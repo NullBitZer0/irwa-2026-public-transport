@@ -294,6 +294,17 @@ code {
   white-space: nowrap;
 }
 
+.route__fare--unknown {
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 0.8rem;
+}
+
+.route__synthetic {
+  color: #eab308;
+  cursor: help;
+}
+
 .route__path {
   display: flex;
   align-items: center;

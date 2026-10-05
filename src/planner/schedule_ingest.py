@@ -104,6 +104,14 @@ class ServiceRecord:
     # True when the service arrives after midnight, so a bare arrival_time would
     # look earlier than the departure.
     arrival_next_day: bool = False
+    # Set on generated demo rows. `synthetic_fields` names exactly which fields
+    # were derived rather than taken from a published source, so a reviewer can
+    # see precisely what is real.
+    synthetic: bool = False
+    synthetic_fields: list[str] = field(default_factory=list)
+    # True when no fare could be sourced. The UI must not render these as LKR 0,
+    # which would read as "free".
+    fare_unknown: bool = False
     # Provenance — kept alongside the row so a reviewer can check it.
     source: str = ""
     source_url: str = ""
@@ -132,6 +140,11 @@ class ServiceRecord:
             fixture["route_number"] = self.route_number
         if self.arrival_next_day:
             fixture["arrival_next_day"] = True
+        if self.synthetic:
+            fixture["synthetic"] = True
+            fixture["synthetic_fields"] = self.synthetic_fields
+        if self.fare_unknown or self.base_fare_lkr is None:
+            fixture["fare_unknown"] = True
         return fixture
 
 
@@ -192,6 +205,13 @@ def read_csv_rows(path: str) -> list[ServiceRecord]:
                     route_number=clean.get("route_number", ""),
                     arrival_next_day=(clean.get("arrival_next_day", "") or "").lower()
                     in ("1", "true", "yes", "y"),
+                    synthetic=(clean.get("synthetic", "") or "").lower()
+                    in ("1", "true", "yes", "y"),
+                    synthetic_fields=[
+                        s.strip()
+                        for s in (clean.get("synthetic_fields") or "").split(";")
+                        if s.strip()
+                    ],
                     source=clean.get("source", ""),
                     source_url=clean.get("source_url", ""),
                     confidence=clean.get("confidence", "curated"),

@@ -187,21 +187,34 @@ def test_no_service_in_requested_direction_returns_nothing(
     retriever: HybridTransitRetriever,
 ) -> None:
     """
-    No coach runs Colombo → Galle, so nothing may be offered. Note that the
-    fixtures have no Galle → Colombo coach either, so there is no reverse
-    direction to point at and the caller falls back to a generic message.
+    A known data gap: Kandy → Ella is a published service, Ella → Kandy is not in
+    the fixtures, so the reverse direction must return nothing rather than
+    something that looks plausible.
     """
     results = retriever.retrieve_candidates(
-        "Bus from Colombo to Galle",
-        origin="Colombo Fort",
-        destination="Galle",
-        mode="BUS",
+        "Ella idala Kandy yanna train ekak",
+        origin="Ella",
+        destination="Kandy",
         top_k=5,
     )
     assert results == [], [r["route_id"] for r in results]
+    # …and there is no Ella → Kandy coach either, so nothing to point at.
     assert (
-        retriever.reverse_direction_options("Colombo Fort", "Galle", mode="BUS") == []
+        retriever.reverse_direction_options("Ella", "Kandy", mode="BUS") == []
     )
+
+
+def test_direction_filter_respects_mode(retriever: HybridTransitRetriever) -> None:
+    """A bus request must be satisfied by a bus, never by a train."""
+    results = retriever.retrieve_candidates(
+        "Jaffna idala Colombo yanna",
+        origin="Jaffna",
+        destination="Colombo Fort",
+        mode="BUS",
+        top_k=5,
+    )
+    assert results, "SLTB route 87 runs Jaffna → Colombo"
+    assert all(_is_bus(r) for r in results), [r["route_id"] for r in results]
 
 
 def test_adjacent_facilities_still_match(retriever: HybridTransitRetriever) -> None:
@@ -226,19 +239,6 @@ def test_reverse_direction_options_explains_the_gap(
     assert "TRAIN-1006" in ids, ids
 
 
-def test_direction_filter_respects_mode(retriever: HybridTransitRetriever) -> None:
-    """A bus request must be satisfied by a bus, never by a train."""
-    results = retriever.retrieve_candidates(
-        "Jaffna idala Colombo yanna",
-        origin="Jaffna",
-        destination="Colombo Fort",
-        mode="BUS",
-        top_k=5,
-    )
-    assert results, "SLTB route 87 runs Jaffna → Colombo"
-    assert all(_is_bus(r) for r in results), [r["route_id"] for r in results]
-
-
 def test_endpoint_reports_direction_note(client: TestClient) -> None:
     """
     With no service in the requested direction — and nothing to connect with — the
@@ -251,7 +251,7 @@ def test_endpoint_reports_direction_note(client: TestClient) -> None:
             "destination": "",
             "travel_mode": "ANY",
             "date_str": "TODAY",
-            "raw_query": "Badulla idala Colombo yanna train ekak",
+            "raw_query": "Ella idala Kandy yanna train ekak",
         },
     )
     assert res.status_code == 200, res.text
@@ -260,4 +260,4 @@ def test_endpoint_reports_direction_note(client: TestClient) -> None:
     assert data["connections"] == [], data["connections"]
     note = data["direction_note"]
     assert note, "expected a direction note explaining there is no such service"
-    assert "Colombo Fort" in note, note
+    assert "TRAIN-1008" in note, note  # the Kandy → Ella service that does run

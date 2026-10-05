@@ -57,6 +57,11 @@ export default function ChatMessage({ message }) {
 function RouteCard({ route, onSelect }) {
   const isConnection = Boolean(route.is_connection)
   const canBook = onSelect && route.bookable !== false && !isConnection
+  // A missing fare must not read as "free".
+  const fare =
+    route.fare_unknown || !route.base_fare_lkr
+      ? 'Fare not published'
+      : `LKR ${Number(route.base_fare_lkr).toLocaleString('en-LK')}`
 
   return (
     <article className={`route ${isConnection ? 'route--connection' : ''}`}>
@@ -82,10 +87,21 @@ function RouteCard({ route, onSelect }) {
                 <span title="Operator route number">Route {route.route_number}</span>
               </>
             )}
+            {route.synthetic && (
+              <span
+                className="route__synthetic"
+                title={`Generated for demonstration. Derived: ${
+                  (route.synthetic_fields ?? []).join(', ') || 'times'
+                }`}
+              >
+                {' '}
+                · demo data
+              </span>
+            )}
           </span>
         </div>
-        <span className="route__fare">
-          LKR {Number(route.base_fare_lkr ?? 0).toLocaleString('en-LK')}
+        <span className={`route__fare ${route.fare_unknown ? 'route__fare--unknown' : ''}`}>
+          {fare}
         </span>
       </header>
 
