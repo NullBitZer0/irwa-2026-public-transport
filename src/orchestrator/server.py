@@ -68,6 +68,9 @@ class ChatResponse(BaseModel):
     transaction_id: Optional[str] = None
     amount_lkr: Optional[float] = None
     seat_count: Optional[int] = None
+    # Populated when the planner needs the traveller to choose a mode or give a
+    # time, so the UI can offer one-tap quick replies.
+    clarification: Optional[dict] = None
 
 
 class PaymentRequest(BaseModel):
@@ -113,6 +116,13 @@ async def chat(request: ChatRequest) -> ChatResponse:
     except IngressBlocked as exc:
         raise HTTPException(status_code=400, detail=f"Blocked by security gateway: {exc}")
 
+    # The NLP parser runs in the Planning Agent's module; using it here only
+    # decides *which* question to ask, not the answer. The planner still owns
+    # extraction and ranking.
+    from src.planner.nlp_parser import extract_transit_intent
+
+    parsed = extract_transit_intent(user_query)
+
     initial_state = {
         "session_id": session_id,
         "user_query": user_query,
@@ -122,6 +132,11 @@ async def chat(request: ChatRequest) -> ChatResponse:
             # Amount the UI displayed when the traveller clicked Confirm, so the
             # payment portal asks for the same figure the user was shown.
             "fare_lkr": request.fare_lkr,
+            "origin": parsed.origin or "",
+            "destination": parsed.destination or "",
+            "mode": "ANY" if parsed.mode == "ANY" else parsed.mode,
+            "departure_date": parsed.departure_date,
+            "departure_time": parsed.departure_time,
         },
         "route_options": [],
         "selected_route_id": request.selected_route_id,
@@ -130,6 +145,7 @@ async def chat(request: ChatRequest) -> ChatResponse:
         "transaction_id": None,
         "amount_lkr": None,
         "seat_count": None,
+        "clarification": None,
         "hitl_approved": request.hitl_approved,
         "messages": [],
         "next_node": "supervisor",
@@ -157,6 +173,7 @@ async def chat(request: ChatRequest) -> ChatResponse:
             transaction_id=result.get("transaction_id"),
             amount_lkr=result.get("amount_lkr"),
             seat_count=result.get("seat_count"),
+            clarification=result.get("clarification"),
         )
 
     except Exception as exc:

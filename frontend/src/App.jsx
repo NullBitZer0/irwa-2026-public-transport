@@ -90,8 +90,10 @@ export default function App() {
             intent: data.intent,
             routes: data.route_options ?? [],
 bookingReference: data.booking_reference,
-              bookingStatus: data.booking_status,
-              onSelectRoute: handleSelectRoute,
+            bookingStatus: data.booking_status,
+            clarification: data.clarification,
+            onQuickReply: handleQuickReply,
+            onSelectRoute: handleSelectRoute,
           },
         ])
       } catch (err) {
@@ -130,6 +132,15 @@ bookingReference: data.booking_reference,
     setReceipt(result)
     setPaymentHold(null)
     loadPurchases()
+  }
+
+  /** A one-tap answer to the planner's question, e.g. "bus". */
+  function handleQuickReply(value) {
+    const last = [...messages].reverse().find((m) => m.role === 'user')
+    const prior = last?.text ?? ''
+    // Extend the traveller's own message rather than replacing it, so the planner
+    // keeps the origin, destination and time already given.
+    send(`${prior} ${value}`.trim())
   }
 
   function handleReset() {

@@ -30,6 +30,12 @@ SL_STATIONS: list[str] = [
     "Kalutara", "Panadura", "Moratuwa", "Mount Lavinia", "Ambalangoda",
     "Makumbura MMC", "Kadawatha", "Katunayake Airport", "Jaffna",
     "Anuradhapura", "Kurunegala", "Maho", "Vavuniya", "Kilinochchi",
+    # Major cities and junctions served on the main intercity corridors, so
+    # "Negombo to Colombo" resolves instead of silently losing the origin.
+    "Negombo", "Matale", "Dambulla", "Trincomalee", "Batticaloa",
+    "Mannar", "Ampara", "Monaragala", "Ratnapura", "Kegalle",
+    "Hambantota", "Nuwara Eliya", "Ambalantota", "Tangalle",
+    "Kuliyapitiya", "Embilipitiya",
 ]
 
 STATION_ALIASES: dict[str, str] = {
@@ -48,6 +54,16 @@ STATION_ALIASES: dict[str, str] = {
     "airport": "Katunayake Airport", "katunayake": "Katunayake Airport",
     "jaffna": "Jaffna", "anuradhapura": "Anuradhapura", "kurunegala": "Kurunegala",
     "maho": "Maho", "vavuniya": "Vavuniya", "kilinochchi": "Kilinochchi",
+    # Major cities on the intercity corridors. Without these, "Negombo to
+    # Colombo" silently loses its origin instead of being answered.
+    "negombo": "Negombo", "matale": "Matale", "dambulla": "Dambulla",
+    "trincomalee": "Trincomalee", "trinco": "Trincomalee",
+    "batticaloa": "Batticaloa", "mannar": "Mannar", "ampara": "Ampara",
+    "monaragala": "Monaragala", "ratnapura": "Ratnapura", "kegalle": "Kegalle",
+    "hambantota": "Hambantota", "hambanthota": "Hambantota",
+    "nuwaraeliya": "Nuwara Eliya", "nuwara": "Nuwara Eliya",
+    "ambalantota": "Ambalantota", "tangalle": "Tangalle",
+    "kuliyapitiya": "Kuliyapitiya", "embilipitiya": "Embilipitiya",
 }
 
 # Singlish direction markers (Sinhala words typed in English letters).
@@ -149,14 +165,24 @@ def _detect_origin_destination(raw_query: str) -> tuple[Optional[str], Optional[
         elif token in ORIGIN_MARKERS_AFTER:
             origin = _nearest_station(tokens, station_at, i, +1)
 
-    # Destination: same, independent of origin resolution.
+    # Destination: walk markers left-to-right, skipping a candidate that would
+    # collide with the origin. "I need to go from Negombo to Colombo" contains an
+    # earlier "to" (in "go to") whose nearest following station is Negombo itself;
+    # taking it would collapse both endpoints to the same place.
     for i, token in enumerate(tokens):
         if destination is not None:
             break
         if token in DEST_MARKERS_BEFORE:
-            destination = _nearest_station(tokens, station_at, i, -1)
+            candidate = _nearest_station(tokens, station_at, i, -1)
         elif token in DEST_MARKERS_AFTER:
-            destination = _nearest_station(tokens, station_at, i, +1)
+            candidate = _nearest_station(tokens, station_at, i, +1)
+        else:
+            continue
+        if candidate is not None and candidate == origin:
+            # Keep looking with the next marker instead of settling for a
+            # degenerate pair.
+            continue
+        destination = candidate
 
     # English "X to Y" without "from": the station before "to" is the origin.
     if origin is None and destination is not None:

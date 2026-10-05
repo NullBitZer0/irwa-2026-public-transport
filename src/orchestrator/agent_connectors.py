@@ -8,6 +8,7 @@ Typed async HTTP clients connecting the Orchestrator to:
 """
 
 import os
+from typing import Optional
 
 import httpx
 
@@ -97,6 +98,46 @@ class AgentDispatchBridge:
             res.raise_for_status()
             data = res.json()
             return AgentResponse(**data)
+
+    async def call_journey_search(
+        self,
+        origin: str,
+        destination: str,
+        travel_mode: str = "ANY",
+        time_preference: Optional[str] = None,
+        raw_query: str = "",
+    ) -> AgentResponse:
+        """
+        Clarification-first journey search.
+
+        Endpoint: POST /mcp/plan_journey
+        Returns what the traveller still needs to supply (a mode, a time) and,
+        when it has enough, the services that board at the requested place and
+        time — including long-distance coaches that only pass through.
+        """
+        async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
+            res = await client.post(
+                f"{self.planner_url}/mcp/plan_journey",
+                json={
+                    "origin": origin,
+                    "destination": destination,
+                    "travel_mode": travel_mode,
+                    "time_preference": time_preference,
+                    "date_str": "TODAY",
+                    "raw_query": raw_query,
+                },
+            )
+            res.raise_for_status()
+            data = res.json()
+            # The planner answers with the standard data envelope; expose the
+            # planner-specific keys the graph needs alongside it.
+            payload = dict(data.get("data") or {})
+            payload["status"] = data.get("status", "SUCCESS")
+            return AgentResponse(
+                status=payload["status"],
+                data=payload,
+                message=data.get("message", ""),
+            )
 
     async def begin_booking(self, payload: BookingRequestPayload) -> AgentResponse:
         """

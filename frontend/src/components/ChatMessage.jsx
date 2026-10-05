@@ -31,10 +31,26 @@ export default function ChatMessage({ message }) {
           <div className="routes">
             {message.routes.map((route) => (
               <RouteCard
-                key={route.route_id}
+                key={route.route_id ?? route.service_name}
                 route={route}
                 onSelect={message.onSelectRoute}
               />
+            ))}
+          </div>
+        )}
+
+        {/* Quick replies while the planner is waiting on a mode or a time */}
+        {message.clarification?.options?.length > 0 && (
+          <div className="chips">
+            {message.clarification.options.map((option) => (
+              <button
+                key={option.value}
+                className="chip"
+                onClick={() => message.onQuickReply?.(option.value)}
+                disabled={message.onQuickReply === undefined}
+              >
+                {option.label}
+              </button>
             ))}
           </div>
         )}
@@ -114,6 +130,23 @@ function RouteCard({ route, onSelect }) {
             <span className="route__arrow" aria-hidden="true">→</span>
             <span>{route.destination}</span>
           </div>
+
+          {/* A long-distance coach that only passes through the boarding point */}
+          {route.board_type && (
+            <p className="route__board">
+              {route.board_type === 'passing' ? (
+                <>
+                  🛏️ Long-distance service — it starts at{' '}
+                  <strong>{route.service_origin}</strong> and passes your stop,
+                  boarding at <strong>{route.boards_at}</strong>.
+                </>
+              ) : (
+                <>
+                  🚏 Starts here, boards at <strong>{route.boards_at}</strong>.
+                </>
+              )}
+            </p>
+          )}
 
           <dl className="route__meta">
             <div>

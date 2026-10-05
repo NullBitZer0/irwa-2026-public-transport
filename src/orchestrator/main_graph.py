@@ -59,12 +59,117 @@ def supervisor_node(state: TransitSessionState) -> dict:
 
 async def planning_agent_node(state: TransitSessionState) -> dict:
     """
-    Delegates route discovery to Member 2's Planning Agent via HTTP MCP call.
+    Delegates route discovery to Member 2's Planning Agent.
 
-    Falls back gracefully if the Planning Agent is unreachable.
+    Asks for what it is missing first, then shows services for the requested
+    mode and time. Falls back to keyword retrieval if the planner is unreachable.
     """
     entities: dict = state.get("extracted_entities") or {}
 
+    # Prefer the clarification-first journey search: it reports what the
+    # traveller still needs to say (a mode, a time) instead of guessing.
+    try:
+        journey = await _bridge.call_journey_search(
+            origin=entities.get("origin", "") or "",
+            destination=entities.get("destination", "") or "",
+            travel_mode=entities.get("mode", "ANY"),
+            time_preference=entities.get("departure_time"),
+            raw_query=state["user_query"],
+        )
+        jdata = journey.data or {}
+    except Exception as exc:
+        logger.warning(f"[{state['session_id']}] Journey search unavailable: {exc}")
+        return await _keyword_route_search(state, entities)
+
+    missing = jdata.get("missing") or []
+    services = jdata.get("services") or []
+
+    if missing:
+        msg, options = _journey_clarification_message(missing, jdata)
+        return {
+            "messages": [msg],
+            "route_options": [],
+            "clarification": {"missing": missing, "options": options},
+        }
+
+    if services:
+        return {
+            "messages": [_journey_services_message(services, jdata)],
+            "route_options": services,
+        }
+
+    msg = (
+        f"No {('train' if jdata.get('mode') == 'TRAIN' else 'bus')} service found from "
+        f"**{jdata.get('origin')}** to **{jdata.get('destination')}**. "
+        f"Try a different time, or the other mode."
+    )
+    return {"messages": [msg], "route_options": []}
+
+
+def _journey_clarification_message(missing: list[str], jdata: dict) -> tuple[str, list[dict]]:
+    """
+    Builds the "what do I still need to know?" reply and its quick replies.
+
+    Asking is better than guessing: a confident list of the wrong mode or the
+    wrong hour is less useful than one short question.
+    """
+    questions = []
+    if "mode" in missing:
+        questions.append("train or bus?")
+    if "time" in missing:
+        questions.append("what time do you want to travel?")
+    if "major_cities" in missing:
+        questions.append("I can plan for major cities only — which city are you heading to?")
+    if "origin" in missing or "destination" in missing:
+        questions.append("where are you travelling from and to?")
+
+    msg = (
+        f"To get this right I need a little more: **{' and '.join(questions)}**\n\n"
+        f'For example: *"I need to go from Negombo to Colombo at 10am by bus"*'
+    )
+    options: list[dict] = []
+    if "mode" in missing:
+        options = [
+            {"label": "🚆 Train", "value": "train"},
+            {"label": "🚌 Bus", "value": "bus"},
+        ]
+    return msg, options
+
+
+def _journey_services_message(services: list[dict], jdata: dict) -> str:
+    """Renders the services that board at the requested place and time."""
+    lines = []
+    for i, svc in enumerate(services, 1):
+        code = svc.get("route_number") or svc.get("route_id")
+        passing = svc["board_type"] == "passing"
+        detail = f"starts at **{svc['service_origin']}**" if passing else "direct service"
+        later = " _(next one — nothing that close to your time)_" if svc.get(
+            "after_requested"
+        ) else ""
+        lines.append(
+            f"{i}. {'🚆' if svc.get('provider') == 'SLR' else '🚌'} "
+            f"**{svc.get('service_name')}** (`{code}`) boards **{svc['boards_at']}** "
+            f"— {detail}{later}\n"
+            f"   {svc.get('service_origin')} → {svc.get('service_destination')}"
+        )
+
+    mode_word = "train" if jdata.get("mode") == "TRAIN" else "bus"
+    when = f" around **{jdata['at_time']}**" if jdata.get("at_time") else ""
+    return (
+        f"Here are the {mode_word} options from **{jdata.get('origin')}** to "
+        f"**{jdata.get('destination')}**{when}:\n\n"
+        + "\n".join(lines)
+        + "\n\nTell me which one and I'll check seats and hold it for you."
+    )
+
+
+async def _keyword_route_search(state: TransitSessionState, entities: dict) -> dict:
+    """
+    Fallback used only when the Planning Agent's journey endpoint is unreachable.
+
+    Returns route cards and connections the legacy way, so the UI still has
+    something to show.
+    """
     payload = RouteRequestPayload(
         origin=entities.get("origin", ""),
         destination=entities.get("destination", ""),

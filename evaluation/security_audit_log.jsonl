@@ -10,3 +10,12 @@
 {"timestamp": "2026-10-05T16:26:35.805081+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=4"}
 {"timestamp": "2026-10-05T16:26:36.061009+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
 {"timestamp": "2026-10-05T16:26:36.064925+00:00", "event_type": "BOOKING_BLOCKED_NO_HITL", "detail": "transaction_id=TXN-E0B521E4"}
+{"timestamp": "2026-10-05T17:54:09.588634+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=32"}
+{"timestamp": "2026-10-05T17:54:09.589006+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='system\\\\s+override' input_length=15"}
+{"timestamp": "2026-10-05T17:54:09.589205+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='set\\\\s+fare\\\\s+to\\\\s+0' input_length=13"}
+{"timestamp": "2026-10-05T17:54:09.589360+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='<script[\\\\s>]' input_length=25"}
+{"timestamp": "2026-10-05T17:54:09.651641+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=56"}
+{"timestamp": "2026-10-05T17:54:09.670576+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=56"}
+{"timestamp": "2026-10-05T17:54:09.983751+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=159"}
+{"timestamp": "2026-10-05T17:54:12.454559+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T17:54:12.953522+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='<script[\\\\s>]' input_length=46"}

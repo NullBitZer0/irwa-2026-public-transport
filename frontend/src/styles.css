@@ -446,7 +446,46 @@ code {
   font-size: 0.68rem;
 }
 
-/* ── Payment portal ────────────────────────────────────────────────────── */
+/* ── Clarification chips ───────────────────────────────────────────────── */
+
+.chips {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.chip {
+  background: var(--panel-2);
+  border: 1px solid var(--accent);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.chip:hover:not(:disabled) {
+  background: var(--accent-2);
+}
+
+.chip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Boarding point for a passing service ──────────────────────────────── */
+
+.route__board {
+  font-size: 0.8rem;
+  color: #fcd34d;
+  background: rgba(252, 211, 77, 0.08);
+  border-left: 3px solid #fcd34d;
+  border-radius: 0 6px 6px 0;
+  padding: 0.4rem 0.6rem;
+  margin: 0 0 0.5rem;
+}
 
 .pay {
   margin: 0 1.5rem 0.5rem;

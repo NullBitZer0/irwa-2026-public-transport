@@ -56,6 +56,9 @@ class TransitSessionState(TypedDict):
     seat_count: Optional[int]
     """Seats held, carried into the payment step."""
 
+    clarification: Optional[dict]
+    """What the planner still needs (e.g. a mode choice) plus quick replies."""
+
     # ── Human-in-the-Loop gate ────────────────────────────────────────────────
     hitl_approved: bool
     """True only after the user explicitly confirms the booking action in the UI."""

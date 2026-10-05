@@ -27,6 +27,7 @@ from src.planner.connection_planner import (
     rank_connections,
 )
 from src.planner.hybrid_retriever import HybridTransitRetriever
+from src.planner.journey_search import find_services_at, missing_details
 from src.planner.nlp_parser import extract_transit_intent
 
 app = FastAPI(
@@ -127,6 +128,63 @@ async def plan_route(payload: PlanRouteRequest) -> dict:
         "message": (
             f"Retrieved {len(candidates)} route option(s) and "
             f"{len(connections)} connection(s). [STUB — Member 2 implementing full NLP+IR]"
+        ),
+    }
+
+
+@app.post("/mcp/plan_journey")
+async def plan_journey(payload: PlanRouteRequest) -> dict:
+    """
+    Clarification-first journey search.
+
+    Rather than guessing, this reports what is still missing — a mode, a
+    departure time — so the caller can ask the traveller instead of returning a
+    confident but unhelpful list. When there is enough to answer, it returns the
+    services that board at the requested origin heading the right way, including
+    long-distance coaches that merely pass through, flagged `board_type`.
+
+    Times at intermediate stops are estimated by distributing the journey evenly
+    across the stop sequence, so they are good for ranking, not a timetable.
+    """
+    raw_query = payload.raw_query or f"{payload.origin} to {payload.destination}"
+    parsed = extract_transit_intent(raw_query)
+
+    origin = payload.origin or (parsed.origin or "")
+    destination = payload.destination or (parsed.destination or "")
+    # The Orchestrator sends "ANY" to mean "the traveller has not chosen yet".
+    mode = payload.travel_mode if payload.travel_mode in ("TRAIN", "BUS") else parsed.mode
+    at_time = payload.time_preference or parsed.departure_time
+
+    missing = missing_details(origin, destination, mode, at_time)
+    blocking = [m for m in missing if m in ("origin", "destination", "major_cities")]
+
+    services: list[dict] = []
+    if not blocking:
+        services = find_services_at(
+            _retriever.schedules,
+            origin=origin,
+            destination=destination,
+            at_time=at_time,
+            mode=mode,
+            major_cities_only=True,
+        )
+
+    return {
+        "status": "SUCCESS",
+        "data": {
+            "parsed_entities": parsed.model_dump(),
+            "origin": origin,
+            "destination": destination,
+            "mode": mode if mode in ("TRAIN", "BUS") else None,
+            "at_time": at_time,
+            "missing": missing,
+            "needs_clarification": bool(missing),
+            "services": services,
+        },
+        "message": (
+            f"{len(services)} service(s) found."
+            if not missing
+            else f"Need more detail: {', '.join(missing)}"
         ),
     }
 
