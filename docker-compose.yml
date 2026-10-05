@@ -20,6 +20,14 @@ x-agent: &agent
   env_file:
     - .env
   restart: unless-stopped
+  # Run as the host user so the bind-mounted audit log stays writable.
+  # Set DOCKER_UID / DOCKER_GID in .env to `id -u` / `id -g`.
+  user: "${DOCKER_UID:-1000}:${DOCKER_GID:-1000}"
+  volumes:
+    # Without this the agents write audit events to a container-local file that
+    # is lost on `docker compose down`, so the security evidence never reaches
+    # the repository.
+    - ./evaluation:/app/evaluation
 
 services:
   opensearch:
