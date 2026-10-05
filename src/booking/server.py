@@ -100,6 +100,13 @@ async def hold_seat(req: HoldRequest) -> dict:
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+    # Defence in depth: the Orchestrator already ran the gateway, but a caller
+    # hitting this endpoint directly must not get PII stored in the clear either.
+    # Redacting also populates this process's vault, so confirm_booking can
+    # detokenize at the final gateway step. The stub booking engine does not
+    # persist the note itself, so the tokenised form is not stored anywhere.
+    _tokenizer.redact(req.raw_note or "")
+
     inventory = _transit_gateway.check_seat_inventory(req.route_id)
     if inventory["status"] == "SOLD_OUT":
         raise HTTPException(status_code=409, detail="No seats available for this route.")

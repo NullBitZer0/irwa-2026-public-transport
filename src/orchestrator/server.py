@@ -20,6 +20,7 @@ load_dotenv()  # Load .env before importing modules that read env vars
 
 from src.orchestrator.logger import get_logger  # noqa: E402
 from src.orchestrator.main_graph import build_graph  # noqa: E402
+from src.security.gateway import IngressBlocked, enforce_ingress  # noqa: E402
 
 logger = get_logger(__name__)
 
@@ -74,9 +75,16 @@ async def chat(request: ChatRequest) -> ChatResponse:
     """
     session_id = request.session_id or str(uuid.uuid4())
 
+    # STEP 1 — Security Gateway Ingress. Reject adversarial input and mask PII
+    # before anything reaches the intent router, the NLP parser or an LLM.
+    try:
+        user_query = enforce_ingress(request.query)
+    except IngressBlocked as exc:
+        raise HTTPException(status_code=400, detail=f"Blocked by security gateway: {exc}")
+
     initial_state = {
         "session_id": session_id,
-        "user_query": request.query,
+        "user_query": user_query,
         "intent": None,
         "extracted_entities": {
             "passenger_token": request.passenger_token or f"GUEST-{session_id[:8]}"
