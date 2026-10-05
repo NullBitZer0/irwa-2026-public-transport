@@ -98,6 +98,61 @@ class AgentDispatchBridge:
             data = res.json()
             return AgentResponse(**data)
 
+    async def begin_booking(self, payload: BookingRequestPayload) -> AgentResponse:
+        """
+        Steps 2-4: holds the seat and clears the HITL gate, then stops.
+
+        Endpoint: POST /mcp/begin_booking
+        Used by the UI payment flow: nothing is charged yet, so the client
+        receives the transaction id and amount due before it collects payment.
+        """
+        async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
+            res = await client.post(
+                f"{self.booking_url}/mcp/begin_booking",
+                # exclude_none: optional fields the Orchestrator has no value for
+                # must be omitted, not sent as null, or the Booking Agent's schema
+                # rejects the payload.
+                json=payload.model_dump(exclude_none=True),
+            )
+            res.raise_for_status()
+            return AgentResponse(**res.json())
+
+    async def settle_booking(
+        self,
+        transaction_id: str,
+        card_last4: str,
+        provider: str = "SLR",
+    ) -> AgentResponse:
+        """
+        Steps 6-7: charges the tokenized payment and issues the ticket.
+
+        Endpoint: POST /mcp/settle_booking
+        Only the card's last four digits are sent; no PAN or CVV ever reaches an
+        agent, matching the tokenized design in payment_gateway.py.
+        """
+        async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
+            res = await client.post(
+                f"{self.booking_url}/mcp/settle_booking",
+                json={
+                    "transaction_id": transaction_id,
+                    "card_last4": card_last4,
+                    "provider": provider,
+                },
+            )
+            res.raise_for_status()
+            return AgentResponse(**res.json())
+
+    async def fetch_purchases(self) -> AgentResponse:
+        """
+        Completed ticket purchases for the UI's purchase history.
+
+        Endpoint: GET /mcp/purchases
+        """
+        async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
+            res = await client.get(f"{self.booking_url}/mcp/purchases")
+            res.raise_for_status()
+            return AgentResponse(**res.json())
+
     # ── Health checks ─────────────────────────────────────────────────────────
 
     async def health_check_planner(self) -> bool:

@@ -12,11 +12,22 @@ const EXAMPLES = [
 ]
 
 /**
- * Session sidebar: connection status, example prompts and the Zero Trust note.
+ * Session sidebar: connection status, purchase history, example prompts and the
+ * Zero Trust note.
  * @param {{sessionId:string|null, status:string, agentStatus:object|null,
- *          onExample:(q:string)=>void, onReset:()=>void}} props
+ *          purchases:Array, purchasesLoading:boolean,
+ *          onExample:(q:string)=>void, onReset:()=>void, onRefreshPurchases:()=>void}} props
  */
-export default function Sidebar({ sessionId, status, agentStatus, onExample, onReset }) {
+export default function Sidebar({
+  sessionId,
+  status,
+  agentStatus,
+  purchases,
+  purchasesLoading,
+  onExample,
+  onReset,
+  onRefreshPurchases,
+}) {
   return (
     <aside className="sidebar">
       <div className="sidebar__brand">
@@ -35,6 +46,51 @@ export default function Sidebar({ sessionId, status, agentStatus, onExample, onR
             {agentStatus.agent} v{agentStatus.version}
           </p>
         )}
+      </section>
+
+      <section className="panel">
+        <h2>
+          🎫 Purchase history
+          <button
+            className="panel__refresh"
+            onClick={onRefreshPurchases}
+            disabled={purchasesLoading}
+            title="Reload purchases"
+          >
+            {purchasesLoading ? '…' : '↻'}
+          </button>
+        </h2>
+
+        {purchasesLoading && <p className="muted">Loading…</p>}
+
+        {!purchasesLoading && purchases.length === 0 && (
+          <p className="muted">
+            No tickets purchased yet. Complete a payment and the ticket will appear here.
+          </p>
+        )}
+
+        <ul className="purchases">
+          {purchases.map((purchase) => (
+            <li key={purchase.transaction_id ?? purchase.booking_reference} className="purchase">
+              <div className="purchase__top">
+                <span className="purchase__ref mono">{purchase.booking_reference}</span>
+                <span className="purchase__fare">
+                  LKR {Number(purchase.amount_paid_lkr ?? purchase.fare_lkr ?? 0).toLocaleString('en-LK')}
+                </span>
+              </div>
+              <div className="purchase__meta">
+                <span className="mono">{purchase.route_id}</span>
+                {' · '}
+                {purchase.seat_count} seat{purchase.seat_count > 1 ? 's' : ''}
+                {purchase.provider ? ` · ${purchase.provider}` : ''}
+              </div>
+              <div className="purchase__foot">
+                <span>{purchase.purchased_at?.replace('T', ' ').slice(0, 16)}</span>
+                {purchase.card_last4 && <span className="mono">•••• {purchase.card_last4}</span>}
+              </div>
+            </li>
+          ))}
+        </ul>
       </section>
 
       <section className="panel">

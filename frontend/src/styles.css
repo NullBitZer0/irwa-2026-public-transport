@@ -446,6 +446,176 @@ code {
   font-size: 0.68rem;
 }
 
+/* ── Payment portal ────────────────────────────────────────────────────── */
+
+.pay {
+  margin: 0 1.5rem 0.5rem;
+  padding: 1rem 1.1rem;
+  background: linear-gradient(180deg, rgba(31, 157, 143, 0.08), transparent);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+}
+
+.pay__card {
+  max-width: 460px;
+}
+
+.pay__title {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+}
+
+.pay__summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.5rem 1rem;
+  margin: 0 0 0.9rem;
+}
+
+.pay__summary dt {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.pay__summary dd {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.pay__amount {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.pay__label {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-bottom: 0.3rem;
+}
+
+.pay__input {
+  width: 7rem;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 0.5rem 0.6rem;
+  font-size: 1rem;
+  letter-spacing: 0.25em;
+}
+
+.pay__input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.pay__hint {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin: 0.5rem 0 0.8rem;
+}
+
+.pay__actions {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: flex-end;
+}
+
+/* ── Receipt ───────────────────────────────────────────────────────────── */
+
+.receipt-bar {
+  margin: 0 1.5rem 0.5rem;
+  padding: 0.9rem 1.1rem;
+  background: rgba(31, 157, 143, 0.12);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.receipt {
+  flex: 1;
+  min-width: 260px;
+}
+
+.receipt__title {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+}
+
+/* ── Purchase history ──────────────────────────────────────────────────── */
+
+.panel__refresh {
+  float: right;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.7rem;
+  padding: 1px 6px;
+}
+
+.panel__refresh:hover:not(:disabled) {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.purchases {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.purchase {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  padding: 0.45rem 0.55rem;
+  font-size: 0.78rem;
+}
+
+.purchase__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.purchase__ref {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.purchase__fare {
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+.purchase__meta,
+.purchase__foot {
+  color: var(--muted);
+  font-size: 0.72rem;
+  margin-top: 0.15rem;
+}
+
+.purchase__foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
 /* ── HITL banner ───────────────────────────────────────────────────────── */
 
 .hitl {

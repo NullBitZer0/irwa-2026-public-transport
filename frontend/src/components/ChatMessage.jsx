@@ -152,7 +152,7 @@ function RouteCard({ route, onSelect }) {
       )}
 
       {canBook && (
-        <button className="btn btn--primary" onClick={() => onSelect(route.route_id)}>
+        <button className="btn btn--primary" onClick={() => onSelect(route)}>
           Confirm &amp; Hold Seat
         </button>
       )}

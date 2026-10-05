@@ -190,23 +190,40 @@ async def booking_agent_node(state: TransitSessionState) -> dict:
         provider="SLR",  # TODO: derive from selected route_options data
         passenger_token=passenger_token,
         seat_count=int(entities.get("passengers", 1)),
+        # The fare shown to the traveller. Production must re-derive this from the
+        # server-side fare matrix rather than trusting a client-supplied amount;
+        # the demo has no session state to look it up from.
+        fare_lkr=entities.get("fare_lkr"),
         user_confirmed=True,  # HITL already cleared by supervisor routing
     )
 
     try:
-        response = await _bridge.call_booking_agent(payload)
+        # begin_booking holds the seat and clears the HITL gate but does NOT
+        # charge: the traveller pays through the payment portal afterwards.
+        response = await _bridge.begin_booking(payload)
         data = response.data or {}
-        ref = data.get("booking_reference") or data.get("transaction", {}).get("transaction_id", "N/A")
+        txn = data.get("transaction") or {}
+
+        ref = txn.get("transaction_id") or data.get("booking_reference") or "N/A"
+        amount = txn.get("fare_lkr")
+        seats = txn.get("seat_count")
+        # A missing fare must not crash the formatter or read as free.
+        amount_text = f"LKR {amount:,.0f}" if isinstance(amount, (int, float)) else "not available"
         msg = (
-            f"✅ **Seat Hold Confirmed!**\n\n"
-            f"**Booking Reference:** `{ref}`\n"
-            f"**Status:** SEAT_HELD\n\n"
-            f"⏱️ You have **10 minutes** to complete payment before the hold expires."
+            f"✅ **Seat held!**\n\n"
+            f"**Transaction:** `{ref}`\n"
+            f"**Seats:** {seats if seats is not None else '—'}\n"
+            f"**Amount due:** {amount_text}\n\n"
+            f"⏱️ You have **10 minutes** to complete payment before the hold expires.\n\n"
+            f"💳 Continue to the secure payment portal to pay and get your e-ticket."
         )
         return {
             "messages": [msg],
             "booking_reference": ref,
-            "booking_status": "SEAT_HELD",
+            "booking_status": "AWAITING_PAYMENT",
+            "transaction_id": ref,
+            "amount_lkr": amount,
+            "seat_count": seats,
         }
 
     except Exception as exc:

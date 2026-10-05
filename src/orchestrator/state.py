@@ -47,6 +47,15 @@ class TransitSessionState(TypedDict):
     booking_reference: Optional[str]
     """Final booking reference (e.g. SLR-2026-XXXXXX) after confirmation."""
 
+    transaction_id: Optional[str]
+    """Seat-hold transaction id, needed by the UI payment portal."""
+
+    amount_lkr: Optional[float]
+    """Amount due for the held seat, quoted to the traveller."""
+
+    seat_count: Optional[int]
+    """Seats held, carried into the payment step."""
+
     # ── Human-in-the-Loop gate ────────────────────────────────────────────────
     hitl_approved: bool
     """True only after the user explicitly confirms the booking action in the UI."""

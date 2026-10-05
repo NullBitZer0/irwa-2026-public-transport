@@ -19,7 +19,7 @@ from pydantic import BaseModel
 load_dotenv()  # Load .env before importing modules that read env vars
 
 from src.orchestrator.logger import get_logger  # noqa: E402
-from src.orchestrator.main_graph import build_graph  # noqa: E402
+from src.orchestrator.main_graph import _bridge, build_graph  # noqa: E402
 from src.security.gateway import IngressBlocked, enforce_ingress  # noqa: E402
 
 logger = get_logger(__name__)
@@ -43,13 +43,16 @@ logger.info("Orchestration state graph compiled and ready.")
 # ── Request / Response schemas ────────────────────────────────────────────────
 
 class ChatRequest(BaseModel):
-    """Payload sent by the Streamlit UI or any MCP client."""
+    """Payload sent by the React UI or any MCP client."""
 
     query: str
     session_id: Optional[str] = None
     hitl_approved: bool = False
     selected_route_id: Optional[str] = None
     passenger_token: Optional[str] = None
+    # Fare the UI displayed, carried into the booking so the traveller is charged
+    # the amount they were quoted.
+    fare_lkr: Optional[float] = None
 
 
 class ChatResponse(BaseModel):
@@ -61,6 +64,34 @@ class ChatResponse(BaseModel):
     route_options: list = []
     booking_reference: Optional[str] = None
     booking_status: Optional[str] = None
+    # Payment step: a held seat exposes what is owed so the UI can collect it.
+    transaction_id: Optional[str] = None
+    amount_lkr: Optional[float] = None
+    seat_count: Optional[int] = None
+
+
+class PaymentRequest(BaseModel):
+    """
+    Payment settlement request from the UI.
+
+    `card_last4` is the only card data this system accepts; a real deployment
+    would use the payment provider's hosted field so no PAN or CVV is ever
+    transmitted to us.
+    """
+
+    transaction_id: str
+    card_last4: str
+    provider: str = "SLR"
+
+
+class PaymentResponse(BaseModel):
+    """Result of a settled payment."""
+
+    status: str
+    booking_reference: Optional[str] = None
+    receipt: dict = {}
+    ticket: dict = {}
+    purchase: dict = {}
 
 
 # ── Endpoints ─────────────────────────────────────────────────────────────────
@@ -87,12 +118,18 @@ async def chat(request: ChatRequest) -> ChatResponse:
         "user_query": user_query,
         "intent": None,
         "extracted_entities": {
-            "passenger_token": request.passenger_token or f"GUEST-{session_id[:8]}"
+            "passenger_token": request.passenger_token or f"GUEST-{session_id[:8]}",
+            # Amount the UI displayed when the traveller clicked Confirm, so the
+            # payment portal asks for the same figure the user was shown.
+            "fare_lkr": request.fare_lkr,
         },
         "route_options": [],
         "selected_route_id": request.selected_route_id,
         "booking_status": None,
         "booking_reference": None,
+        "transaction_id": None,
+        "amount_lkr": None,
+        "seat_count": None,
         "hitl_approved": request.hitl_approved,
         "messages": [],
         "next_node": "supervisor",
@@ -117,11 +154,67 @@ async def chat(request: ChatRequest) -> ChatResponse:
             route_options=result.get("route_options", []),
             booking_reference=result.get("booking_reference"),
             booking_status=result.get("booking_status"),
+            transaction_id=result.get("transaction_id"),
+            amount_lkr=result.get("amount_lkr"),
+            seat_count=result.get("seat_count"),
         )
 
     except Exception as exc:
         logger.error(f"[{session_id}] Graph execution error: {exc}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(exc))
+
+
+@app.post("/payment", response_model=PaymentResponse)
+async def payment(request: PaymentRequest) -> PaymentResponse:
+    """
+    Settles a held seat and issues the ticket.
+
+    The UI calls this after the human-in-the-loop gate, once the traveller has
+    actually chosen how to pay. The Orchestrator stays the only client of the
+    Booking Agent, so the UI never touches a sub-agent directly.
+
+    Only `card_last4` is accepted. A full card number must never be sent here:
+    a real integration would have the payment provider's hosted field collect it
+    and return an opaque token.
+    """
+    if not (request.card_last4.isdigit() and len(request.card_last4) == 4):
+        raise HTTPException(
+            status_code=400,
+            detail="card_last4 must be exactly 4 digits; never send a full card number.",
+        )
+
+    try:
+        response = await _bridge.settle_booking(
+            transaction_id=request.transaction_id,
+            card_last4=request.card_last4,
+            provider=request.provider,
+        )
+    except Exception as exc:
+        logger.error(f"Payment settlement failed: {exc}")
+        raise HTTPException(status_code=502, detail="Payment could not be completed.")
+
+    data = response.data or {}
+    return PaymentResponse(
+        status="PAID",
+        booking_reference=data.get("booking_reference"),
+        receipt=data.get("receipt") or {},
+        ticket=data.get("ticket") or {},
+        purchase=data.get("purchase") or {},
+    )
+
+
+@app.get("/purchases")
+async def purchases() -> dict:
+    """Completed ticket purchases, newest first, for the UI purchase history."""
+    try:
+        response = await _bridge.fetch_purchases()
+    except Exception as exc:
+        logger.error(f"Could not load purchase history: {exc}")
+        return {"status": "UNAVAILABLE", "purchases": []}
+    return {
+        "status": "OK",
+        "purchases": ((response.data or {}).get("purchases") or []),
+    }
 
 
 @app.get("/health")

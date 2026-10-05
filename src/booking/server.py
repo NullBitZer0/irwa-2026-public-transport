@@ -27,6 +27,7 @@ Start:
 from __future__ import annotations
 
 import uuid
+from datetime import datetime, timezone
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
@@ -78,6 +79,34 @@ class ConfirmRequest(BaseModel):
     provider: str = "SLR"
 
 
+# ── Purchase ledger (demo, in-memory) ────────────────────────────────────────
+#
+# Backs the UI's purchase history. In-memory like the booking state machine, so
+# it resets on restart — a real deployment would persist this to a database.
+# Metadata only: no PII and no card number, just the last four digits a receipt
+# would show anyway.
+PURCHASES: list[dict] = []
+
+
+def record_purchase(ticket: dict, receipt: dict, card_last4: str) -> dict:
+    """Appends one settled ticket to the ledger and returns the entry."""
+    entry = {
+        "booking_reference": ticket.get("booking_reference"),
+        "transaction_id": ticket.get("transaction_id"),
+        "route_id": ticket.get("route_id"),
+        "provider": ticket.get("provider"),
+        "seat_count": ticket.get("seat_count"),
+        "fare_lkr": ticket.get("fare_lkr"),
+        "passenger_token": ticket.get("passenger_token"),
+        "purchased_at": datetime.now(tz=timezone.utc).isoformat(timespec="seconds"),
+        "receipt_id": receipt.get("receipt_id"),
+        "amount_paid_lkr": receipt.get("amount_lkr"),
+        "card_last4": card_last4,
+    }
+    PURCHASES.append(entry)
+    return entry
+
+
 class BookTicketRequest(BaseModel):
     """Single-call convenience endpoint matching agent_connectors.py's expectation."""
     route_id: str
@@ -87,6 +116,21 @@ class BookTicketRequest(BaseModel):
     fare_lkr: float = 0.0
     user_confirmed: bool = False  # HITL gate — orchestrator sets this after user approval
     card_last4: str = "0000"      # mock card digits for the demo payment step
+
+
+class SettleRequest(BaseModel):
+    """
+    Payment settlement request.
+
+    `card_last4` is the ONLY card data this system ever accepts. A real
+    integration would have the payment provider's hosted field collect the full
+    card number on their side and hand back an opaque checkout token, so no PAN
+    or CVV ever reaches our agents.
+    """
+
+    transaction_id: str
+    card_last4: str
+    provider: str = "SLR"
 
 
 # ── Endpoints ────────────────────────────────────────────────────────────────
@@ -207,7 +251,7 @@ async def book_ticket(req: BookTicketRequest) -> dict:
             fare_lkr=req.fare_lkr,
         )
     )
-    txn_id = hold_result["transaction"]["transaction_id"]
+    txn_id = hold_result["data"]["transaction"]["transaction_id"]
 
     await await_payment(
         AwaitPaymentRequest(transaction_id=txn_id, user_confirmed=req.user_confirmed)
@@ -220,6 +264,92 @@ async def book_ticket(req: BookTicketRequest) -> dict:
     )
 
     return confirm_result
+
+
+@app.post("/mcp/begin_booking")
+async def begin_booking(req: BookTicketRequest) -> dict:
+    """
+    Steps 2-4: hold the seat and clear the HITL gate, then STOP.
+
+    Used by the UI payment flow: the seat is held and the traveller is asked to
+    pay, so the transaction id and amount must be returned to the client. Nothing
+    is charged here — settlement happens in /mcp/settle_booking once the
+    traveller has actually paid.
+    """
+    hold_result = await hold_seat(
+        HoldRequest(
+            route_id=req.route_id,
+            provider=req.provider,
+            passenger_token=req.passenger_token,
+            seat_count=req.seat_count,
+            fare_lkr=req.fare_lkr,
+        )
+    )
+    txn_id = hold_result["data"]["transaction"]["transaction_id"]
+
+    await await_payment(
+        AwaitPaymentRequest(transaction_id=txn_id, user_confirmed=req.user_confirmed)
+    )
+
+    return {
+        "status": "SUCCESS",
+        "data": {"transaction": _state_machine.get(txn_id).model_dump(mode="json")},
+        "message": f"Seat held for 10 minutes. Transaction: {txn_id}",
+    }
+
+
+@app.post("/mcp/settle_booking")
+async def settle_booking(req: SettleRequest) -> dict:
+    """
+    Steps 6-7: charge the tokenized payment, then confirm and issue the ticket.
+
+    Only the last four card digits are accepted. A full card number must never be
+    sent to this agent — the payment provider's hosted field collects it and hands
+    back an opaque token, which is the whole point of the tokenized design.
+    """
+    if not (req.card_last4.isdigit() and len(req.card_last4) == 4):
+        raise HTTPException(
+            status_code=400,
+            detail="card_last4 must be exactly 4 digits; never send a full card number.",
+        )
+
+    txn = _state_machine.get(req.transaction_id)
+    if not txn:
+        raise HTTPException(status_code=404, detail="Transaction not found.")
+
+    checkout_token = _payment_gateway.tokenize_card(req.card_last4)
+    receipt = _payment_gateway.charge(checkout_token, txn.fare_lkr)
+
+    confirm_result = await confirm_booking(
+        ConfirmRequest(
+            transaction_id=req.transaction_id,
+            checkout_token=checkout_token,
+            provider=req.provider,
+        )
+    )
+
+    return {
+        "status": "SUCCESS",
+        "data": {
+            "booking_reference": confirm_result["booking_reference"],
+            "receipt": receipt,
+            "ticket": confirm_result["details"],
+            "purchase": record_purchase(confirm_result["details"], receipt, req.card_last4),
+        },
+        "message": f"Payment settled. Booking reference: {confirm_result['booking_reference']}",
+    }
+
+
+@app.get("/mcp/purchases")
+def get_purchases() -> dict:
+    """
+    Completed ticket purchases, newest first, for the UI's purchase history.
+
+    Metadata only: the passenger token is stored as the opaque TOKEN_ value, and
+    only the card's last four digits are kept, so this ledger can be displayed
+    without exposing PII or card data.
+    """
+    return {"status": "SUCCESS", "data": {"purchases": list(PURCHASES)}}
 
 
 @app.get("/mcp/inventory/{route_id}")

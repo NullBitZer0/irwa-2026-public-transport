@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { chat, health } from './api.js'
+import { chat, fetchPurchases, health } from './api.js'
 import { renderMarkdown } from './markdown.js'
 import ChatMessage from './components/ChatMessage.jsx'
+import PaymentPortal, { PaymentReceipt } from './components/PaymentPortal.jsx'
 import Sidebar from './components/Sidebar.jsx'
 
 const GREETING = `Welcome to **LankaJourney AI** 🚆
@@ -21,6 +22,11 @@ export default function App() {
   const [error, setError] = useState(null)
   const [status, setStatus] = useState('checking')
   const [agentStatus, setAgentStatus] = useState(null)
+  // Payment step: a held seat awaiting settlement, and the last receipt.
+  const [paymentHold, setPaymentHold] = useState(null)
+  const [receipt, setReceipt] = useState(null)
+  const [purchases, setPurchases] = useState([])
+  const [purchasesLoading, setPurchasesLoading] = useState(false)
 
   const endRef = useRef(null)
 
@@ -33,7 +39,15 @@ export default function App() {
       setStatus(h.status === 'ok' ? 'online' : 'offline')
       setAgentStatus(h)
     })
+    loadPurchases()
   }, [])
+
+  /** Reloads the sidebar purchase history from the booking agent. */
+  async function loadPurchases() {
+    setPurchasesLoading(true)
+    setPurchases(await fetchPurchases())
+    setPurchasesLoading(false)
+  }
 
   /** POST a turn and append the agent's reply. */
   const send = useCallback(
@@ -52,9 +66,21 @@ export default function App() {
           sessionId,
           selectedRouteId: options.selectedRouteId ?? null,
           hitlApproved: options.hitlApproved ?? false,
+          fareLkr: options.fareLkr ?? null,
         })
 
         if (data.session_id) setSessionId(data.session_id)
+
+        // A held seat with an amount due opens the payment portal instead of
+        // silently completing the booking.
+        if (data.booking_status === 'AWAITING_PAYMENT' && data.transaction_id) {
+          setPaymentHold({
+            transactionId: data.transaction_id,
+            amountLkr: data.amount_lkr,
+            seatCount: data.seat_count,
+            routeId: options.selectedRouteId,
+          })
+        }
 
         setMessages((prev) => [
           ...prev,
@@ -81,23 +107,29 @@ bookingReference: data.booking_reference,
     [busy, sessionId],
   )
 
-  /**
-   * Step 1 of booking: the user picks a route, which reaches the HITL checkpoint.
-   * @param {string} routeId
-   */
-  function handleSelectRoute(routeId) {
-    setPendingRoute(routeId)
-    send(`Book route ${routeId}`, { selectedRouteId: routeId })
+  /** Step 1 of booking: the user picks a route, which reaches the HITL checkpoint. */
+  function handleSelectRoute(route) {
+    setPendingRoute(route)
+    send(`Book route ${route.route_id}`, { selectedRouteId: route.route_id })
   }
 
   /** Step 2 of booking: the user explicitly approves, clearing the HITL gate. */
   function handleApprove() {
     if (!pendingRoute) return
-    send(`YES confirm ${pendingRoute}`, {
-      selectedRouteId: pendingRoute,
+    send(`YES confirm ${pendingRoute.route_id}`, {
+      selectedRouteId: pendingRoute.route_id,
       hitlApproved: true,
+      // Charge the fare that was displayed on the card they clicked.
+      fareLkr: pendingRoute.base_fare_lkr ?? null,
     })
     setPendingRoute(null)
+  }
+
+  /** Payment settled: show the e-ticket and refresh the purchase history. */
+  function handlePaid(result) {
+    setReceipt(result)
+    setPaymentHold(null)
+    loadPurchases()
   }
 
   function handleReset() {
@@ -122,8 +154,11 @@ bookingReference: data.booking_reference,
         sessionId={sessionId}
         status={status}
         agentStatus={agentStatus}
+        purchases={purchases}
+        purchasesLoading={purchasesLoading}
         onExample={handleExample}
         onReset={handleReset}
+        onRefreshPurchases={loadPurchases}
       />
 
       <main className="chat">
@@ -160,11 +195,31 @@ bookingReference: data.booking_reference,
           <div ref={endRef} />
         </div>
 
+        {paymentHold && (
+          <PaymentPortal
+            hold={paymentHold}
+            onPaid={handlePaid}
+            onCancel={() => setPaymentHold(null)}
+          />
+        )}
+
+        {receipt && !paymentHold && (
+          <div className="receipt-bar">
+            <PaymentReceipt result={receipt} />
+            <button className="btn btn--ghost" onClick={() => setReceipt(null)}>
+              Dismiss
+            </button>
+          </div>
+        )}
+
         {pendingRoute && (
           <div className="hitl">
-            <span>
+<span>
               Human-in-the-Loop: approve the seat hold for{' '}
-              <code>{pendingRoute}</code>?
+              <code>{pendingRoute.route_id}</code>
+              {pendingRoute.base_fare_lkr ? (
+                <> — LKR {Number(pendingRoute.base_fare_lkr).toLocaleString('en-LK')}</>
+              ) : null}
             </span>
             <button className="btn btn--primary" onClick={handleApprove} disabled={busy}>
               ✅ Confirm &amp; Hold Seat
