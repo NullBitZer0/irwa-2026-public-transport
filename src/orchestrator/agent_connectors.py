@@ -99,6 +99,30 @@ class AgentDispatchBridge:
             data = res.json()
             return AgentResponse(**data)
 
+    async def fetch_fare(self, route_id: str) -> Optional[float]:
+        """
+        Asks the Planning Agent for the authoritative fare.
+
+        Returns None when the route has no published fare, which the caller must
+        treat as "cannot sell" rather than "free". Fails closed: an unreachable
+        planner returns None, never a guess.
+        """
+        try:
+            async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
+                res = await client.get(f"{self.planner_url}/mcp/fare",
+                                       params={"route_id": route_id})
+                res.raise_for_status()
+                payload = res.json()
+        except Exception as exc:
+            logger.warning(f"Fare lookup failed for {route_id}: {exc}")
+            return None
+
+        data = payload.get("data") or {}
+        if data.get("fare_unknown"):
+            return None
+        fare = data.get("fare_lkr")
+        return float(fare) if fare else None
+
     async def call_journey_search(
         self,
         origin: str,

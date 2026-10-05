@@ -28,6 +28,11 @@ def client() -> TestClient:
     return TestClient(booking_app)
 
 
+@pytest.fixture
+def booking_client() -> TestClient:
+    return TestClient(booking_app)
+
+
 def _begin(client: TestClient, **overrides) -> dict:
     body = {
         "route_id": "TRAIN-1001",
@@ -157,3 +162,59 @@ def test_history_exposes_no_pii(client: TestClient) -> None:
     # The token is opaque, and no raw NIC/phone can appear.
     assert entry["passenger_token"].startswith("TOKEN_")
     assert "200012345678" not in str(entry)
+
+
+# ── Fares are not client-supplied ────────────────────────────────────────────
+
+def test_zero_fare_is_refused(booking_client: TestClient) -> None:
+    """A missing fare must never become a free ticket."""
+    res = booking_client.post(
+        "/mcp/begin_booking",
+        json={
+            "route_id": "TRAIN-1001",
+            "provider": "SLR",
+            "passenger_token": "GUEST-TEST",
+            "seat_count": 1,
+            "fare_lkr": 0,
+            "user_confirmed": True,
+        },
+    )
+    assert res.status_code == 400, res.text
+    assert "no fare" in res.json()["detail"].lower()
+
+
+def test_chat_api_accepts_no_fare_field() -> None:
+    """
+    The tamper vector is removed at the API boundary, not merely ignored.
+
+    A client that posts its own price must not be able to set one, so the field
+    simply does not exist on the request model.
+    """
+    from src.orchestrator.server import ChatRequest
+
+    assert "fare_lkr" not in ChatRequest.model_fields
+    assert "fare" not in ChatRequest.model_fields
+
+
+def test_planner_is_the_pricing_authority() -> None:
+    """Fares come from the planner's matrix, not from the caller."""
+    from src.planner.hybrid_retriever import HybridTransitRetriever
+    from src.planner.server import app as planner_app
+
+    tc = TestClient(planner_app)
+
+    priced = tc.get("/mcp/fare", params={"route_id": "TRAIN-1001"}).json()["data"]
+    assert priced["fare_lkr"] == 850.0
+    assert priced["fare_unknown"] is False
+
+    # A route with no published fare reports unknown, not zero.
+    unpriced = next(
+        s["route_id"] for s in HybridTransitRetriever().schedules if s.get("fare_unknown")
+    )
+    unknown = tc.get("/mcp/fare", params={"route_id": unpriced}).json()["data"]
+    assert unknown["fare_unknown"] is True
+    assert unknown["fare_lkr"] is None
+
+    missing = tc.get("/mcp/fare", params={"route_id": "NOPE-999"}).json()
+    assert missing["status"] == "NOT_FOUND"
+    assert missing["data"]["fare_lkr"] is None

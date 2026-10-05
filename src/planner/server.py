@@ -189,6 +189,43 @@ async def plan_journey(payload: PlanRouteRequest) -> dict:
     }
 
 
+@app.get("/mcp/fare")
+def quote_fare(route_id: str) -> dict:
+    """
+    Authoritative fare for a route — the Planning Agent is the pricing authority.
+
+    The Booking Agent must never take a price from the client: if it did, a
+    tampered request could buy an LKR 850 ticket for LKR 1. So the Orchestrator
+    quotes from here and books at this figure.
+
+    Returns fare_unknown rather than 0 when no published fare exists, so a
+    missing price can never be mistaken for a free ticket.
+    """
+    for service in _retriever.schedules:
+        if service.get("route_id") == route_id:
+            fare = service.get("base_fare_lkr") or 0.0
+            unknown = bool(service.get("fare_unknown")) or fare <= 0
+            return {
+                "status": "SUCCESS",
+                "data": {
+                    "route_id": route_id,
+                    "fare_lkr": None if unknown else float(fare),
+                    "fare_unknown": unknown,
+                    "source": "planner fare matrix",
+                },
+            }
+
+    return {
+        "status": "NOT_FOUND",
+        "data": {
+            "route_id": route_id,
+            "fare_lkr": None,
+            "fare_unknown": True,
+            "source": "planner fare matrix",
+        },
+    }
+
+
 @app.get("/health")
 def health() -> dict:
     return {"status": "ok", "agent": "planner", "version": "0.1.0-stub"}

@@ -43,16 +43,18 @@ logger.info("Orchestration state graph compiled and ready.")
 # ── Request / Response schemas ────────────────────────────────────────────────
 
 class ChatRequest(BaseModel):
-    """Payload sent by the React UI or any MCP client."""
+    """Payload sent by the React UI or any MCP client.
+
+    Note there is deliberately no fare field: the price is quoted by the
+    Planning Agent and applied server-side, so a client cannot buy a ticket for
+    less than it costs by posting a different amount.
+    """
 
     query: str
     session_id: Optional[str] = None
     hitl_approved: bool = False
     selected_route_id: Optional[str] = None
     passenger_token: Optional[str] = None
-    # Fare the UI displayed, carried into the booking so the traveller is charged
-    # the amount they were quoted.
-    fare_lkr: Optional[float] = None
 
 
 class ChatResponse(BaseModel):
@@ -129,9 +131,6 @@ async def chat(request: ChatRequest) -> ChatResponse:
         "intent": None,
         "extracted_entities": {
             "passenger_token": request.passenger_token or f"GUEST-{session_id[:8]}",
-            # Amount the UI displayed when the traveller clicked Confirm, so the
-            # payment portal asks for the same figure the user was shown.
-            "fare_lkr": request.fare_lkr,
             "origin": parsed.origin or "",
             "destination": parsed.destination or "",
             "mode": "ANY" if parsed.mode == "ANY" else parsed.mode,

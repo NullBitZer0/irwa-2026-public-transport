@@ -66,7 +66,6 @@ export default function App() {
           sessionId,
           selectedRouteId: options.selectedRouteId ?? null,
           hitlApproved: options.hitlApproved ?? false,
-          fareLkr: options.fareLkr ?? null,
         })
 
         if (data.session_id) setSessionId(data.session_id)
@@ -121,8 +120,6 @@ bookingReference: data.booking_reference,
     send(`YES confirm ${pendingRoute.route_id}`, {
       selectedRouteId: pendingRoute.route_id,
       hitlApproved: true,
-      // Charge the fare that was displayed on the card they clicked.
-      fareLkr: pendingRoute.base_fare_lkr ?? null,
     })
     setPendingRoute(null)
   }

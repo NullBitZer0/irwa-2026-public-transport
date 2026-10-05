@@ -290,15 +290,27 @@ async def booking_agent_node(state: TransitSessionState) -> dict:
     entities: dict = state.get("extracted_entities") or {}
     passenger_token = entities.get("passenger_token", f"GUEST-{state['session_id'][:8]}")
 
+    # The fare is NEVER taken from the client. The Planner is the pricing
+    # authority, so the price is quoted here and cannot be tampered with by
+    # posting a different amount to /chat.
+    fare = await _bridge.fetch_fare(route_id)
+    if fare is None:
+        logger.warning(f"[{state['session_id']}] No published fare for {route_id}")
+        return {
+            "messages": [
+                f"⚠️ I can't take this booking: there is no published fare for "
+                f"**{route_id}**, so I won't guess a price. Please pick another "
+                f"service, or check the operator's site."
+            ],
+            "route_options": [],
+        }
+
     payload = BookingRequestPayload(
         route_id=route_id,
         provider="SLR",  # TODO: derive from selected route_options data
         passenger_token=passenger_token,
         seat_count=int(entities.get("passengers", 1)),
-        # The fare shown to the traveller. Production must re-derive this from the
-        # server-side fare matrix rather than trusting a client-supplied amount;
-        # the demo has no session state to look it up from.
-        fare_lkr=entities.get("fare_lkr"),
+        fare_lkr=fare,
         user_confirmed=True,  # HITL already cleared by supervisor routing
     )
 

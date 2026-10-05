@@ -20,7 +20,6 @@ export async function chat({
   sessionId = null,
   selectedRouteId = null,
   hitlApproved = false,
-  fareLkr = null,
 }) {
   const res = await fetch(`${BASE}/chat`, {
     method: 'POST',
@@ -30,7 +29,6 @@ export async function chat({
       session_id: sessionId,
       selected_route_id: selectedRouteId,
       hitl_approved: hitlApproved,
-      fare_lkr: fareLkr,
     }),
   })
 

@@ -291,6 +291,18 @@ async def begin_booking(req: BookTicketRequest) -> dict:
         AwaitPaymentRequest(transaction_id=txn_id, user_confirmed=req.user_confirmed)
     )
 
+    fare = _state_machine.get(txn_id).fare_lkr
+    if fare <= 0:
+        # Refusing here is the last line of defence: a zero fare must never be
+        # treated as a free ticket, whatever the caller sent.
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "Refusing to hold a seat with no fare. The price must come from the "
+                "Planning Agent's fare matrix."
+            ),
+        )
+
     return {
         "status": "SUCCESS",
         "data": {"transaction": _state_machine.get(txn_id).model_dump(mode="json")},
