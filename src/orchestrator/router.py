@@ -31,9 +31,13 @@ Classify the user's message into EXACTLY ONE of these intents:
   CLARIFY         – Input is too vague, incomplete, or off-topic.
 
 Notes:
-- "heta" (Singlish) = TOMORROW, "ada" = TODAY.
-- If the user mentions a route ID AND says "book" / "reserve" → EXECUTE_BOOKING.
+- Users may write in English or Singlish (colloquial Sinhala in English letters).
+- Singlish glossary: "heta" = TOMORROW, "ada" = TODAY, "indan"/"idala"/"sita" = from,
+  "yanna"/"yanawa" = to, "ekak" = a/an, "thiyeda" = is there, "balanna" = check/look,
+  "bas" = bus, "dumriya"/"relya" = train.
+- If the user mentions a route ID AND says "book" / "reserve" (or "book karanna") → EXECUTE_BOOKING.
 - If the user only asks about schedules or fares → PLAN_ROUTE.
+- Questions about baggage/refund/policy (or "kohomada refund karanne") → FAQ.
 
 Respond ONLY with valid JSON (no markdown, no extra text):
 {"intent": "<INTENT>", "reasoning": "<one short sentence>"}
