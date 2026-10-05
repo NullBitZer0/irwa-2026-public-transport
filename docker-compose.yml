@@ -1,12 +1,119 @@
-version: '3'
+# LankaJourney AI — full stack
+#
+#   docker compose up --build
+#
+# Host ports are chosen to avoid clashing with other local services:
+#   frontend    3000
+#   orchestrator 8100
+#   planner      8101
+#   booking      8102
+#   opensearch   9200
+#
+# Inside the compose network the agents talk to each other by service name.
+
+name: lankajourney
+
+x-agent: &agent
+  build:
+    context: .
+    dockerfile: Dockerfile
+  env_file:
+    - .env
+  restart: unless-stopped
+
 services:
   opensearch:
     image: opensearchproject/opensearch:2.17.0
-    container_name: opensearch-node
+    container_name: lankajourney-opensearch
     environment:
       - discovery.type=single-node
       - plugins.security.disabled=true
       - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
-      - "OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_INITIAL_ADMIN_PASSWORD}"
+      - "OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_INITIAL_ADMIN_PASSWORD:-Tr@nsit_SriLanka_2026!}"
     ports:
       - "9200:9200"
+    volumes:
+      - opensearch-data:/usr/share/opensearch/data
+
+  planner:
+    <<: *agent
+    container_name: lankajourney-planner
+    command:
+      - uvicorn
+      - src.planner.server:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8001"
+    environment:
+      OPENSEARCH_PORT: "9200"
+      OPENSEARCH_HOST: opensearch
+    ports:
+      - "8101:8001"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8001/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  booking:
+    <<: *agent
+    container_name: lankajourney-booking
+    command:
+      - uvicorn
+      - src.booking.server:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8002"
+    ports:
+      - "8102:8002"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8002/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  orchestrator:
+    <<: *agent
+    container_name: lankajourney-orchestrator
+    command:
+      - uvicorn
+      - src.orchestrator.server:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+    environment:
+      # Service names resolve on the compose network; these override the
+      # localhost URLs in .env, which only make sense on the host.
+      PLANNER_AGENT_URL: http://planner:8001
+      BOOKING_AGENT_URL: http://booking:8002
+      AGENT_TIMEOUT_SECONDS: "20"
+    ports:
+      - "8100:8000"
+    depends_on:
+      - planner
+      - booking
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: lankajourney-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - orchestrator
+    restart: unless-stopped
+
+volumes:
+  opensearch-data:

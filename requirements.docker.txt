@@ -1,0 +1,27 @@
+# Runtime dependencies for the containerised agents.
+# Mirrors requirements.txt minus the offline-ingest extras (sentence-transformers,
+# which drags in PyTorch and is only needed by src/planner/opensearch_ingest.py).
+
+# Core agents & orchestration
+langgraph>=0.2.0
+langchain-core>=0.3.0
+litellm>=1.50.0
+instructor>=1.4.0
+
+# API framework
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+httpx>=0.27.0
+pydantic>=2.8.0
+python-dotenv>=1.0.0
+
+# NLP & Information Retrieval
+opensearch-py>=2.7.0
+rapidfuzz>=3.9.0
+feedparser>=6.0.11
+groq>=0.11.0
+
+# Utilities
+numpy>=1.26.0
+
+cryptography>=43.0.0

@@ -1,0 +1,53 @@
+/**
+ * Thin API client for the Orchestration Agent.
+ *
+ * Requests go to /api/* which nginx (prod) or Vite (dev) reverse-proxies to the
+ * orchestrator, so no CORS configuration is required in the browser.
+ */
+
+const BASE = '/api'
+
+/**
+ * Send a chat turn to the orchestrator.
+ * @param {object} opts
+ * @param {string} opts.query                 user message text
+ * @param {string|null} [opts.sessionId]      conversation id to continue
+ * @param {string|null} [opts.selectedRouteId] route the user picked from the results
+ * @param {boolean} [opts.hitlApproved]       user cleared the human-in-the-loop gate
+ */
+export async function chat({ query, sessionId = null, selectedRouteId = null, hitlApproved = false }) {
+  const res = await fetch(`${BASE}/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      query,
+      session_id: sessionId,
+      selected_route_id: selectedRouteId,
+      hitl_approved: hitlApproved,
+    }),
+  })
+
+  if (!res.ok) {
+    let detail = `HTTP ${res.status}`
+    try {
+      const body = await res.json()
+      if (body?.detail) detail = body.detail
+    } catch {
+      /* non-JSON error body */
+    }
+    throw new Error(detail)
+  }
+
+  return res.json()
+}
+
+/** Liveness probe for the orchestrator. */
+export async function health() {
+  try {
+    const res = await fetch(`${BASE}/health`)
+    if (!res.ok) return { status: 'offline' }
+    return await res.json()
+  } catch {
+    return { status: 'offline' }
+  }
+}
