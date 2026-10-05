@@ -11,6 +11,27 @@ from __future__ import annotations
 from typing import Any
 
 
+def citation_source_for(route: dict[str, Any]) -> str:
+    """
+    Which dataset a route came from.
+
+    Provenance is decided here, server-side, where the route dicts live, rather
+    than in the UI: the React frontend renders whatever string arrives, so there
+    is exactly one copy of this mapping instead of one per language.
+    """
+    provider = str(route.get("provider") or "").upper()
+    transit_type = str(route.get("transit_type") or "").upper()
+
+    if provider == "SLR" or "TRAIN" in transit_type:
+        return (
+            "Sri Lanka Railways official timetable "
+            "(data/processed/train_schedules.json)"
+        )
+    if provider in {"SLTB", "PRIVATE_HIGHWAY", "RM"} or "BUS" in transit_type:
+        return "SLTB / NTC expressway routes (data/processed/bus_routes.json)"
+    return "Sri Lanka Railways & SLTB timetables (data/processed/)"
+
+
 def format_grounded_response(
     route_data: dict[str, Any],
     citation_source: str = "Sri Lanka Railways Official Timetable (data/processed/train_schedules.json)",
@@ -53,7 +74,10 @@ def format_grounded_response(
 def attach_hallucination_warning(response: str, has_routes: bool) -> str:
     """
     Appends a hallucination disclaimer if no grounded routes were found.
-    TODO (Member 4): Integrate into all route responses in src/app.py.
+
+    Ported to the shipped React UI in ChatMessage.jsx, which shows the same
+    disclaimer when a route search returns nothing — an empty result should read
+    as "nothing verified", not as "no such service exists".
     """
     if not has_routes:
         return (

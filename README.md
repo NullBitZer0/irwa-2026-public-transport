@@ -147,7 +147,6 @@ lanka-journey-ai/
 │   ├── responsible_ai/
 │   │   ├── **init__.py
 │   │   └── grounding.py            # Citation verification & data provenance
-│   └── app.py                      # Legacy Streamlit UI (superseded, unused)
 ├── frontend/                       # React UI (the shipped interface)
 │   └── src/
 │       ├── App.jsx                 # Chat, HITL gate, payment portal
@@ -264,8 +263,17 @@ Open your browser and navigate to `http://localhost:3000`.
 <summary>Running the agents locally without Docker</summary>
 
 ```bash
-streamlit run src/app.py   # legacy interface, superseded by the React UI
+# Backend agents
+uvicorn src.planner.server:app    --port 8001
+uvicorn src.booking.server:app    --port 8002
+uvicorn src.orchestrator.server:app --port 8000
+
+# Frontend dev server, proxying /api to the orchestrator
+cd frontend && npm install && npm run dev
 ```
+
+There is no Python UI layer: the legacy Streamlit prototype was removed and the
+React frontend is the only interface.
 
 </details>
 
@@ -416,7 +424,7 @@ unreachable service, so a dead stack cannot quietly "pass" on fewer tests.
 | **Member 1 (Placeholder)** | **System Architect & Orchestrator Lead** | Orchestration Agent (`src/orchestrator/`), FastMCP protocol schemas, conversation state graph, CI/CD pipeline. | Multi-agent coordination, Zero Trust network boundary, LangGraph state design. |
 | **Member 2 (Placeholder)** | **NLP & Information Retrieval Lead** | Planning Agent (`src/planner/`), BM25 + ChromaDB hybrid RAG, RapidFuzz normalization, IR benchmarking. | Hybrid retrieval math (RRF), vocabulary mismatch mitigation, MRR/NDCG metrics. |
 | **Member 3 (Placeholder)** | **Execution Engine & Security Lead** | Booking Agent (`src/booking/`), PII tokenization vault, state machine transitions, mock API adapters. | Data protection under SL PDP Act, prompt injection defense, transaction state integrity. |
-| **Member 4 (Placeholder)** | **Responsible AI, Commercialization & Media Lead** | Frontend UI (`src/app.py`), route grounding citations, unit economics model, Gen AI video production. | Linguistic fairness across Singlish/English, financial viability, explainability framework. |
+| **Member 4 (Placeholder)** | **Responsible AI, Commercialization & Media Lead** | React frontend UI, route grounding citations, ticket payment/history panel, unit economics model, Gen AI video production. | Linguistic fairness across Singlish/English, financial viability, explainability framework. |
 
 ---
 

@@ -20,6 +20,7 @@ from src.orchestrator.logger import get_logger
 from src.orchestrator.router import classify_user_intent
 from src.orchestrator.schemas import BookingRequestPayload, RouteRequestPayload
 from src.orchestrator.state import TransitSessionState
+from src.responsible_ai.grounding import citation_source_for
 
 logger = get_logger(__name__)
 
@@ -102,7 +103,7 @@ async def planning_agent_node(state: TransitSessionState) -> dict:
     if services:
         return {
             "messages": [_journey_services_message(services, jdata)],
-            "route_options": services,
+            "route_options": _with_provenance(services),
         }
 
     msg = (
@@ -269,7 +270,7 @@ async def _keyword_route_search(state: TransitSessionState, entities: dict) -> d
             if direction_note:
                 msg = f"ℹ️ {direction_note}\n\nPlease confirm the direction you want to travel."
 
-        return {"route_options": routes + connections, "messages": [msg]}
+        return {"route_options": _with_provenance(routes + connections), "messages": [msg]}
 
     except Exception as exc:
         logger.warning(f"[{state['session_id']}] Planning Agent unreachable: {exc}")
@@ -412,6 +413,28 @@ def clarify_node(state: TransitSessionState) -> dict:  # noqa: ARG001
 
 
 # ── Edge router ───────────────────────────────────────────────────────────────
+
+def _with_provenance(routes: list[dict]) -> list[dict]:
+    """
+    Attaches a data-provenance citation to each route.
+
+    Responsible AI / transparency: a recommendation should never appear without
+    the dataset it came from. Deciding this server-side keeps one copy of the
+    provider→dataset mapping, and means a new UI cannot forget to show it.
+
+    Connections carry `legs`, so they are cited per leg.
+    """
+    cited: list[dict] = []
+    for route in routes:
+        legs = route.get("legs")
+        if isinstance(legs, list) and legs:
+            sources = list(dict.fromkeys(citation_source_for(leg) for leg in legs))
+            route = {**route, "citation_source": " + ".join(sources)}
+        else:
+            route = {**route, "citation_source": citation_source_for(route)}
+        cited.append(route)
+    return cited
+
 
 def _route_from_supervisor(state: TransitSessionState) -> str:
     """Reads `next_node` set by supervisor_node for conditional edge routing."""

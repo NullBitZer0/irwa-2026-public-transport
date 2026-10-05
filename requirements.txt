@@ -19,7 +19,8 @@ feedparser>=6.0.11
 groq>=0.11.0
 
 # Frontend (Member 4)
-streamlit>=1.38.0
+# The shipped UI is React (frontend/, built by node/nginx) — no Python web
+# framework is needed at runtime. The legacy Streamlit prototype was removed.
 
 # Utilities
 numpy>=1.26.0

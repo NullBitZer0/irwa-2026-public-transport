@@ -743,6 +743,26 @@ code {
   color: var(--accent);
 }
 
+/* Responsible AI: provenance citation on a route card, and the disclaimer shown
+   when a search returns nothing verifiable. */
+.route__source {
+  margin-top: 0.35rem;
+  color: var(--muted);
+  font-size: 0.68rem;
+  border-top: 1px solid var(--border);
+  padding-top: 0.3rem;
+}
+
+.msg__disclaimer {
+  margin: 0.5rem 0 0;
+  padding: 0.45rem 0.6rem;
+  border-left: 3px solid #e8a33d;
+  background: rgba(232, 163, 61, 0.08);
+  border-radius: 0 6px 6px 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
 /* ── HITL banner ───────────────────────────────────────────────────────── */
 
 .hitl {

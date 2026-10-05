@@ -393,7 +393,12 @@ def audit_ui_renderers(root: Path) -> dict:
     components = "\n".join(
         p.read_text() for p in (root / "frontend" / "src").rglob("*.jsx")
     )
-    legacy = (root / "src" / "app.py").read_text()
+    # The legacy Streamlit interface was removed: the shipped UI is the React
+    # frontend, so there is no second renderer left to audit. The check is kept
+    # conditional so reintroducing the file is audited again automatically.
+    legacy_path = root / "src" / "app.py"
+    legacy = legacy_path.read_text() if legacy_path.exists() else ""
+    legacy_present = legacy_path.exists()
 
     # Escaping must happen BEFORE the renderer inserts its own tags, otherwise a
     # payload containing markup could survive into the output.
@@ -408,15 +413,17 @@ def audit_ui_renderers(root: Path) -> dict:
     # Third-party markdown with raw HTML enabled is a common way back in.
     raw_html = "rehype-raw" in (root / "frontend" / "package.json").read_text()
 
-    legacy_escapes = "render_safe(" in legacy
     # Check the AST, not the text: a grep for `unsafe_allow_html=True` also
     # matches the docstring that explains why it is never used.
-    legacy_raw = _streamlit_renders_unescaped(root / "src" / "app.py")
+    legacy_raw = (
+        _streamlit_renders_unescaped(legacy_path) if legacy_present else False
+    )
 
     return {
         "react_escapes_html": escapes and escapes_first,
         "react_markdown_passthrough": passthrough or raw_html,
-        "legacy_escapes": legacy_escapes,
+        "legacy_present": legacy_present,
+        "legacy_escapes": "render_safe(" in legacy if legacy_present else True,
         "legacy_renders_raw": legacy_raw,
         "components_use_sink": "dangerouslySetInnerHTML" in components,
     }
@@ -628,22 +635,38 @@ def test_static_coverage() -> None:
         "Critical" if llm_entry_unguarded else "Info",
     )
 
-    # S-02: raw user input rendered as Markdown in the UI
-    app_src = (root / "src" / "app.py").read_text()
-    echoes_unescaped = bool(re.search(r"st\.markdown\(\s*prompt\s*\)", app_src))
-    html_allowed = "dangerously_allow_html=True" in app_src
-    ui_sev = "Critical" if html_allowed else ("Medium" if echoes_unescaped else "Info")
+    # S-02: user input reaching a renderer without escaping.
+    #
+    # This reuses audit_ui_renderers() rather than re-implementing a check: it
+    # used to be a second, Streamlit-specific grep that could pass while the
+    # renderer actually shipping went unaudited. The audit covers every renderer
+    # that displays agent or user text, so reintroducing one is covered too.
+    ui = audit_ui_renderers(root)
+
+    echoes_unescaped = not ui["react_escapes_html"] or ui["react_markdown_passthrough"]
+    html_allowed = ui["legacy_renders_raw"]
+    if html_allowed:
+        ui_sev = "Critical"
+    elif echoes_unescaped:
+        ui_sev = "Medium"
+    else:
+        ui_sev = "Info"
+
     record(
         "S-02",
         "Prompt Manipulation",
-        "Unsanitised user input rendered as Markdown (st.markdown)",
-        "st.markdown(prompt) on raw chat input",
-        "static: src/app.py",
+        "Unsanitised user input rendered as Markdown",
+        "raw user/agent text passed to a Markdown renderer",
+        "static: frontend/src/markdown.js (+ any legacy renderer)",
         "User input escaped / rendered as plain text",
-        f"unsanitised_markdown_render={echoes_unescaped} "
-        f"dangerously_allow_html={html_allowed} (HTML scripts neutralised by "
-        f"Streamlit default; Markdown links/images still render)",
-        "VULNERABLE" if echoes_unescaped else "SECURE",
+        f"react_escapes_html={ui['react_escapes_html']} "
+        f"(escapeHtml runs before any tag is inserted); "
+        f"markdown_image_link_passthrough={ui['react_markdown_passthrough']} "
+        f"(this renderer implements no image or link syntax, so "
+        f"`![x](http://…)` renders as literal text); "
+        f"legacy_renderer_present={ui['legacy_present']}; "
+        f"dangerously_allow_html={html_allowed}",
+        "VULNERABLE" if (echoes_unescaped or html_allowed) else "SECURE",
         ui_sev,
     )
 

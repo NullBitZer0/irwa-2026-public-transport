@@ -38,6 +38,8 @@ import os
 import re
 from typing import Any
 
+from src.planner.nlp_parser import sinhala_to_latin
+
 # ── Data paths ────────────────────────────────────────────────────────────────
 _BASE = os.path.dirname(os.path.abspath(__file__))
 _DATA_DIR = os.path.join(_BASE, "../../data/processed")
@@ -247,6 +249,11 @@ class HybridTransitRetriever:
         direction are eligible: a stub that scores on token overlap alone will
         happily return "Colombo Fort → Jaffna" for a "Jaffna → Colombo" query.
         """
+        # Sinhala script is translated to its Singlish equivalent first: the
+        # keyword scoring below compares against Latin route fields, so an
+        # untranslated Sinhala query would score zero everywhere and fall through
+        # to "no results" rather than the right service.
+        query = sinhala_to_latin(query)
         full_query = f"{query} {origin} {destination}".strip()
 
         # Apply the mode filter up front so ranking only ever sees candidates

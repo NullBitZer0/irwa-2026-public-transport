@@ -27,6 +27,15 @@ export default function ChatMessage({ message }) {
           dangerouslySetInnerHTML={{ __html: renderMarkdown(message.text) }}
         />
 
+        {/* Responsible AI: say so when nothing could be verified, rather than
+            letting an empty result read as "no such service exists". */}
+        {!isUser && message.intent === 'PLAN_ROUTE' && (message.routes?.length ?? 0) === 0 && (
+          <p className="msg__disclaimer">
+            ⚠️ No verified routes found in our timetable database. Please check
+            official sources before travelling.
+          </p>
+        )}
+
         {message.routes?.length > 0 && (
           <div className="routes">
             {message.routes.map((route) => (
@@ -181,7 +190,16 @@ function RouteCard({ route, onSelect }) {
           {route.classes?.length > 0 && (
             <p className="route__classes">{route.classes.join(' · ')}</p>
           )}
+
         </>
+      )}
+
+      {/* Provenance is decided server-side (src/responsible_ai/grounding.py) and
+          arrives on the route, so this UI cannot drift from the citation logic. */}
+      {route.citation_source && (
+        <p className="route__source" title="Responsible AI — data provenance">
+          🔍 Source: {route.citation_source}
+        </p>
       )}
 
       {canBook && (

@@ -2,7 +2,7 @@
 Orchestration Agent FastAPI Server
 Member 1 — System Architect & Orchestrator Lead
 
-Exposes the /chat endpoint consumed by the Streamlit UI (src/app.py).
+Exposes the /chat endpoint consumed by the React frontend (frontend/, :3000).
 The Orchestrator runs on port 8000 by default.
 
 Start:
