@@ -257,6 +257,46 @@ Open your browser and navigate to `http://localhost:8501`.
 
 ---
 
+## 🗂️ Schedule Data & Coverage
+
+Route retrieval reads `data/processed/train_schedules.json` and
+`data/processed/bus_routes.json`. Those fixtures are **hand-curated from published
+timetables**, which keeps every row trustworthy but caps coverage — currently the
+main intercity corridors rather than every SLTB route.
+
+When no direct service runs between two stations, the planner falls back to a
+**one-stop connection** and prefers one that mixes train with bus (for example
+train to Colombo Fort, then a coach onwards). Connections are built from service
+endpoints only, because the fixtures carry no per-stop times, so an itinerary is
+never proposed on invented timings.
+
+### Widening coverage
+
+```bash
+# See which official sources are readable from your network
+python -m src.planner.schedule_ingest --check
+
+# Start a CSV to fill in from an operator's published timetable
+python -m src.planner.schedule_ingest --template data/processed/inbox/buses.csv
+
+# Preview an import, then apply it
+python -m src.planner.schedule_ingest --source csv --csv data/processed/inbox/buses.csv --dry-run
+python -m src.planner.schedule_ingest --source csv --csv data/processed/inbox/buses.csv
+```
+
+The importer holds two rules:
+
+* **It never invents a field.** A row missing an origin, a destination or a valid
+  `HH:MM` departure is skipped and reported, never filled in with a guess.
+* **It never silently overwrites curated data.** Conflicting `route_id`s are
+  reported; only `--force` replaces them.
+
+Every row should record its `source` and `source_url` so a reviewer can check it.
+An unreadable source raises an error instead of returning an empty result, so
+"we could not read the timetable" is never mistaken for "no service exists".
+
+---
+
 ## 📊 Evaluation & Verification Scripts
 
 To replicate the experimental results documented in our technical report:
@@ -272,7 +312,21 @@ python evaluation/evaluate_ir.py
 2. **Run the Security and Redaction Test Suite:**
 ```bash
 pytest evaluation/test_security.py -v
+```
 
+
+3. **Run the full test suite** (NLP parity, retrieval, connections, ingestion):
+```bash
+pytest evaluation/ -q
+```
+
+*Expected:* **175 passed**.
+
+4. **Run the AI vulnerability / prompt-injection harness:**
+```bash
+RT_ORCHESTRATOR_URL=http://localhost:8100 \
+RT_BOOKING_URL=http://localhost:8102 \
+python evaluation/redteam_prompt_injection.py
 ```
 
 
