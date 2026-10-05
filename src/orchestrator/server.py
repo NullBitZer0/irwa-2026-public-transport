@@ -20,6 +20,7 @@ load_dotenv()  # Load .env before importing modules that read env vars
 
 from src.orchestrator.logger import get_logger  # noqa: E402
 from src.orchestrator.main_graph import _bridge, build_graph  # noqa: E402
+from src.security.audit_log import log_security_event  # noqa: E402
 from src.security.gateway import IngressBlocked, enforce_ingress  # noqa: E402
 
 logger = get_logger(__name__)
@@ -157,6 +158,14 @@ async def chat(request: ChatRequest) -> ChatResponse:
 
     try:
         result = await _graph.ainvoke(initial_state)
+
+        # F-07: the audit log previously recorded only *blocked* input, so a
+        # successful injection left no trace. Allowed traffic is now logged too —
+        # metadata only (length and the classified intent), never the text.
+        log_security_event(
+            "QUERY_ALLOWED",
+            f"intent={result.get('intent')} input_length={len(user_query)}",
+        )
 
         messages: list = result.get("messages", [])
         response_text: str = (

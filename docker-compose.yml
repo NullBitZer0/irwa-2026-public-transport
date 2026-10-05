@@ -77,6 +77,20 @@ services:
       - "8002"
     ports:
       - "8102:8002"
+    environment:
+      # Without this the booking store is in-memory and every held seat,
+      # confirmed ticket and purchase-history entry is lost on restart.
+      - BOOKING_DB_PATH=/app/state/booking.db
+    volumes:
+      # A service-level `volumes` list REPLACES the one inherited from the
+      # *agent anchor, it does not merge — so the audit-log mount has to be
+      # repeated here or the agents lose their evidence file.
+      - ./evaluation:/app/evaluation
+      # A bind mount rather than a named volume: Docker seeds a named volume
+      # root-owned, which the non-root runtime user cannot write to.
+      # A dedicated path, because mounting over /app/data would shadow the
+      # timetable fixtures baked into the image.
+      - ./data/booking:/app/state
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://localhost:8002/health"]
       interval: 15s
@@ -125,3 +139,4 @@ services:
 
 volumes:
   opensearch-data:
+  booking-data:

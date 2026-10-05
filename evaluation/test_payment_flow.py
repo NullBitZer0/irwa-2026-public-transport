@@ -133,7 +133,8 @@ def test_settled_ticket_appears_in_purchase_history(client: TestClient) -> None:
     purchases = _purchases(client)
     assert len(purchases) == before + 1
 
-    entry = purchases[-1]
+    # The endpoint returns newest first, so the ticket just bought is at index 0.
+    entry = purchases[0]
     assert entry["booking_reference"] == settled["booking_reference"]
     assert entry["route_id"] == "TRAIN-1001"
     assert entry["seat_count"] == 3
@@ -158,7 +159,7 @@ def test_history_exposes_no_pii(client: TestClient) -> None:
         "/mcp/settle_booking",
         json={"transaction_id": txn_id, "card_last4": "4242"},
     )
-    entry = _purchases(client)[-1]
+    entry = _purchases(client)[0]  # newest first
     # The token is opaque, and no raw NIC/phone can appear.
     assert entry["passenger_token"].startswith("TOKEN_")
     assert "200012345678" not in str(entry)

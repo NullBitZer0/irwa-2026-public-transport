@@ -50,3 +50,6 @@ logs/
 # macOS
 .DS_Store
 
+
+# Booking SQLite database (runtime state, not source)
+data/booking/

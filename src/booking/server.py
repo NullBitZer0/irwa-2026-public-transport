@@ -35,6 +35,7 @@ from pydantic import BaseModel
 from src.booking.mock_gateway import MockTransitGateway
 from src.booking.payment_gateway import MockPaymentGateway
 from src.booking.state_machine import BookingStateMachine
+from src.booking.store import BookingStore
 from src.security.audit_log import log_security_event
 from src.security.guardrails import sanitize_user_input
 from src.security.pii_masker import PIITokenizer
@@ -79,17 +80,17 @@ class ConfirmRequest(BaseModel):
     provider: str = "SLR"
 
 
-# ── Purchase ledger (demo, in-memory) ────────────────────────────────────────
+# ── Purchase ledger ──────────────────────────────────────────────────────────
 #
-# Backs the UI's purchase history. In-memory like the booking state machine, so
-# it resets on restart — a real deployment would persist this to a database.
-# Metadata only: no PII and no card number, just the last four digits a receipt
-# would show anyway.
-PURCHASES: list[dict] = []
+# Backs the UI's purchase history. Persisted in SQLite so a container restart
+# does not erase a traveller's tickets; the service sets BOOKING_DB_PATH to a
+# mounted volume. Metadata only: no PII and no card number, just the last four
+# digits a receipt would show anyway.
+_store = BookingStore.from_env()
 
 
 def record_purchase(ticket: dict, receipt: dict, card_last4: str) -> dict:
-    """Appends one settled ticket to the ledger and returns the entry."""
+    """Appends one settled ticket to the durable ledger and returns the entry."""
     entry = {
         "booking_reference": ticket.get("booking_reference"),
         "transaction_id": ticket.get("transaction_id"),
@@ -103,8 +104,7 @@ def record_purchase(ticket: dict, receipt: dict, card_last4: str) -> dict:
         "amount_paid_lkr": receipt.get("amount_lkr"),
         "card_last4": card_last4,
     }
-    PURCHASES.append(entry)
-    return entry
+    return _store.insert_purchase(entry)
 
 
 class BookTicketRequest(BaseModel):
@@ -361,7 +361,7 @@ def get_purchases() -> dict:
     only the card's last four digits are kept, so this ledger can be displayed
     without exposing PII or card data.
     """
-    return {"status": "SUCCESS", "data": {"purchases": list(PURCHASES)}}
+    return {"status": "SUCCESS", "data": {"purchases": _store.list_purchases()}}
 
 
 @app.get("/mcp/inventory/{route_id}")

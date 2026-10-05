@@ -29,6 +29,12 @@ COPY src/ ./src/
 COPY data/processed/ ./data/processed/
 
 RUN useradd --create-home --uid 1000 appuser && chown -R appuser:appuser /app
+
+# The booking volume is mounted at /app/state. Docker seeds a fresh named volume
+# from this directory's ownership, so creating it here is what lets the
+# non-root runtime user actually write booking.db inside it.
+RUN mkdir -p /app/state && chown appuser:appuser /app/state
+
 USER appuser
 
 EXPOSE 8000 8001 8002

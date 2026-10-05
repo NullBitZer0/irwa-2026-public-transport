@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 from src.planner.connection_planner import (
@@ -29,6 +29,7 @@ from src.planner.connection_planner import (
 from src.planner.hybrid_retriever import HybridTransitRetriever
 from src.planner.journey_search import find_services_at, missing_details
 from src.planner.nlp_parser import extract_transit_intent
+from src.security.gateway import IngressBlocked, enforce_ingress
 
 app = FastAPI(
     title="Planning Agent — IR & NLP Worker",
@@ -56,6 +57,14 @@ async def plan_route(payload: PlanRouteRequest) -> dict:
     Returns hybrid-retrieved route options for the given origin/destination.
     """
     raw_query = payload.raw_query or f"{payload.origin} to {payload.destination}"
+
+    # Defence in depth: the Orchestrator already ran the gateway, but these
+    # endpoints accept raw_query directly, so they enforce the same contract
+    # rather than trusting their caller (the gap S-01 flags).
+    try:
+        raw_query = enforce_ingress(raw_query)
+    except IngressBlocked as exc:
+        raise HTTPException(status_code=400, detail=f"Blocked by security gateway: {exc}")
 
     # NLP extraction (rule-based English + Singlish)
     parsed = extract_transit_intent(raw_query)
@@ -147,6 +156,14 @@ async def plan_journey(payload: PlanRouteRequest) -> dict:
     across the stop sequence, so they are good for ranking, not a timetable.
     """
     raw_query = payload.raw_query or f"{payload.origin} to {payload.destination}"
+
+    # Defence in depth: the Orchestrator already ran the gateway, but these
+    # endpoints accept raw_query directly, so they enforce the same contract
+    # rather than trusting their caller (the gap S-01 flags).
+    try:
+        raw_query = enforce_ingress(raw_query)
+    except IngressBlocked as exc:
+        raise HTTPException(status_code=400, detail=f"Blocked by security gateway: {exc}")
     parsed = extract_transit_intent(raw_query)
 
     origin = payload.origin or (parsed.origin or "")

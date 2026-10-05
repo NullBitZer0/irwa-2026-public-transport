@@ -10,6 +10,9 @@ from groq import Groq
 from pydantic import BaseModel, Field
 from rapidfuzz import fuzz, process
 
+from src.security.audit_log import log_security_event
+from src.security.guardrails import sanitize_user_input
+
 load_dotenv()
 
 
@@ -288,7 +291,19 @@ Rules: If a field is not mentioned, use null (or "ANY"/"TODAY" as shown above)."
 def extract_transit_intent_llm(user_query: str) -> ParsedTransitQuery:
     """
     Groq-backed extraction. Falls back to rule-based on ANY failure.
+
+    Findings F-06 and G-14 applied here. Two changes:
+
+    1. Model output is untrusted, so every field is validated against an
+       allow-list before use. A model that answers `mode: "FREE"` or
+       `intent: "REFUND_NOW"` no longer passes through as if it were valid.
+    2. The sink is dormant by default and only runs when explicitly enabled
+       (NLP_USE_LLM_EXTRACTION=1). Unguarded model output on a live path is a
+       risk with no benefit while the rule-based parser handles Singlish well.
     """
+    if os.getenv("NLP_USE_LLM_EXTRACTION", "0") != "1":
+        return extract_transit_intent(user_query)
+
     api_key = os.getenv("GROQ_API_KEY")
     if not api_key:
         return extract_transit_intent(user_query)
@@ -296,30 +311,63 @@ def extract_transit_intent_llm(user_query: str) -> ParsedTransitQuery:
     try:
         client = Groq(api_key=api_key)
         response = client.chat.completions.create(
-            model="openai/gpt-oss-20b",
+            model=os.getenv("GROQ_EXTRACTOR_MODEL", "openai/gpt-oss-20b"),
             messages=[
                 {"role": "system", "content": GROQ_SYSTEM_PROMPT},
-                {"role": "user", "content": user_query},
+                {"role": "user", "content": sanitize_user_input(user_query)},
             ],
             temperature=0.0,
             response_format={"type": "json_object"},
+            max_tokens=300,
         )
         data = json.loads(response.choices[0].message.content)
+
+        # Validate rather than trust: an unknown value falls back to the
+        # rule-based parse instead of being accepted.
+        mode = data.get("mode")
+        intent = data.get("intent")
+        date = data.get("departure_date")
+
+        if (
+            mode not in ("TRAIN", "BUS", "ANY")
+            or intent not in ("PLAN_ROUTE", "CHECK_SEAT", "GENERAL_FAQ")
+            or date not in ("TODAY", "TOMORROW")
+        ):
+            log_security_event(
+                "LLM_EXTRACTION_REJECTED",
+                detail=f"disallowed_field_values mode={mode!r} intent={intent!r}",
+            )
+            return extract_transit_intent(user_query)
+
         return ParsedTransitQuery(
-            intent=data.get("intent", "PLAN_ROUTE"),
+            intent=intent,
             origin=normalize_station_name(data.get("origin")),
             destination=normalize_station_name(data.get("destination")),
-            mode=data.get("mode", "ANY"),
-            departure_date=data.get("departure_date", "TODAY"),
-            departure_time=data.get("departure_time"),
+            mode=mode,
+            departure_date=date,
+            departure_time=_valid_time(data.get("departure_time")),
         )
     except Exception as e:
-        print(f"[nlp_parser] Groq extraction failed ({e}), using rule-based fallback")
+        print(f"[nlp_parser] Groq extraction failed ({type(e).__name__}), using rule-based fallback")
         return extract_transit_intent(user_query)
 
 
+def _valid_time(value: Optional[str]) -> Optional[str]:
+    """Keeps a model-supplied time only if it is really HH:MM."""
+    if value is None:
+        return None
+    text = str(value).strip()
+    return text if re.fullmatch(r"[01]\d:[0-5]\d", text) else None
+
+
 def normalize_station_name(extracted_name: Optional[str]) -> Optional[str]:
-    """Resolves colloquial/typo'd station names to a canonical SL_STATIONS entry."""
+    """
+    Resolves colloquial/typo'd station names to a canonical SL_STATIONS entry.
+
+    Unrecognised model output returns None rather than an arbitrary string
+    (F-06): passing model-supplied text through unchanged would let a prompt
+    inject a station name that matches nothing and then travel downstream.
+    """
     if not extracted_name:
         return None
     cleaned = extracted_name.strip().lower()
@@ -329,4 +377,4 @@ def normalize_station_name(extracted_name: Optional[str]) -> Optional[str]:
         if station.lower() == cleaned:
             return station
     match, score, _ = process.extractOne(extracted_name, SL_STATIONS, scorer=fuzz.WRatio)
-    return match if score >= 70 else extracted_name.title()
+    return match if score >= 70 else None

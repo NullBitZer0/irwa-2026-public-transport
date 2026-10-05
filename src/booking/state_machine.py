@@ -29,6 +29,8 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
+from src.booking.store import BookingStore
+
 
 class BookingState(str, Enum):
     INITIATED = "INITIATED"
@@ -54,15 +56,33 @@ class BookingTransaction(BaseModel):
 
 class BookingStateMachine:
     """
-    Deterministic, in-memory state machine for the reservation lifecycle.
-    TODO (Member 3, stretch goal): swap the in-memory dict for SQLite/Redis
-    so holds survive a server restart — noted as a limitation in the report.
+    Deterministic state machine for the reservation lifecycle.
+
+    State is cached in memory for fast transitions and written through to a
+    `BookingStore` on every change, so holds and confirmations survive a server
+    restart. The in-memory dict alone was the durability gap this replaced.
     """
 
     HOLD_DURATION_MINUTES: int = 10
 
-    def __init__(self) -> None:
+    def __init__(self, store: Optional[BookingStore] = None) -> None:
         self.transactions: dict[str, BookingTransaction] = {}
+        self.store = store if store is not None else BookingStore.from_env()
+        self._hydrate()
+
+    def _hydrate(self) -> None:
+        """Reload persisted transactions so a restart resumes where it left off."""
+        for row in self.store.load_bookings():
+            try:
+                txn = BookingTransaction.model_validate(_coerce(row))
+            except Exception:  # noqa: BLE001 — a corrupt row must not block boot
+                continue
+            self.transactions[txn.transaction_id] = txn
+
+    def _persist(self, txn: BookingTransaction) -> None:
+        """Write-through: never leave a transition only in memory."""
+        self.transactions[txn.transaction_id] = txn
+        self.store.upsert_booking(txn.model_dump(mode="json"))
 
     def initiate_hold(
         self,
@@ -84,14 +104,14 @@ class BookingStateMachine:
             hold_expires_at=datetime.now(tz=timezone.utc)
             + timedelta(minutes=self.HOLD_DURATION_MINUTES),
         )
-        self.transactions[txn_id] = txn
+        self._persist(txn)
         return txn
 
     def _check_not_expired(self, txn: BookingTransaction) -> None:
         """Shared expiry check used by every step after SEAT_HELD."""
         if txn.hold_expires_at and datetime.now(tz=timezone.utc) > txn.hold_expires_at:
             txn.state = BookingState.EXPIRED
-            self.transactions[txn.transaction_id] = txn
+            self._persist(txn)
             raise ValueError("Hold expired. Please re-select seats.")
 
     def mark_awaiting_payment(self, txn_id: str) -> BookingTransaction:
@@ -105,12 +125,12 @@ class BookingStateMachine:
             raise ValueError(f"Transaction {txn_id} not found.")
         if txn.state != BookingState.SEAT_HELD:
             raise ValueError(
-                f"Cannot move to AWAITING_PAYMENT from state '{txn.state}'. "
+                f"Cannot move to AWAITING_PAYMENT from state '{txn.state.value}'. "
                 f"A seat must be held first."
             )
         self._check_not_expired(txn)
         txn.state = BookingState.AWAITING_PAYMENT
-        self.transactions[txn_id] = txn
+        self._persist(txn)
         return txn
 
     def confirm_payment(self, txn_id: str, reference_no: str) -> BookingTransaction:
@@ -125,13 +145,13 @@ class BookingStateMachine:
             raise ValueError(f"Transaction {txn_id} not found.")
         if txn.state != BookingState.AWAITING_PAYMENT:
             raise ValueError(
-                f"Cannot confirm transaction in state '{txn.state}'. "
+                f"Cannot confirm transaction in state '{txn.state.value}'. "
                 f"Expected AWAITING_PAYMENT."
             )
         self._check_not_expired(txn)
         txn.state = BookingState.CONFIRMED
         txn.booking_reference = reference_no
-        self.transactions[txn_id] = txn
+        self._persist(txn)
         return txn
 
     def cancel(self, txn_id: str) -> BookingTransaction:
@@ -139,10 +159,27 @@ class BookingStateMachine:
         if not txn:
             raise ValueError(f"Transaction {txn_id} not found.")
         if txn.state in (BookingState.CONFIRMED, BookingState.CANCELLED):
-            raise ValueError(f"Cannot cancel a transaction already in state '{txn.state}'.")
+            raise ValueError(f"Cannot cancel a transaction already in state '{txn.state.value}'.")
         txn.state = BookingState.CANCELLED
-        self.transactions[txn_id] = txn
+        self._persist(txn)
         return txn
 
     def get(self, txn_id: str) -> Optional[BookingTransaction]:
         return self.transactions.get(txn_id)
+
+
+def _coerce(row: dict) -> dict:
+    """
+    Converts stored ISO strings back into datetimes so Pydantic can validate.
+
+    SQLite has no native datetime type, so timestamps come back as text.
+    """
+    out = dict(row)
+    for key in ("hold_expires_at", "created_at"):
+        value = out.get(key)
+        if isinstance(value, str) and value:
+            try:
+                out[key] = datetime.fromisoformat(value)
+            except ValueError:
+                out[key] = None
+    return out
