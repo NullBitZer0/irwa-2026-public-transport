@@ -16,7 +16,7 @@
 
 **LankaJourney AI** is a multi-agent system built to navigate Sri Lanka's fragmented public transit landscape. The platform bridges the gap between Sri Lanka Railways (SLR), the Sri Lanka Transport Board (SLTB), and private highway express services.
 
-Commuters can query in colloquial **Singlish**, **Sinhala**, or **English**. The system coordinates three autonomous agents across strict communication protocols to formulate multimodal itineraries, evaluate live disruption notices, and execute ticket reservations under a Responsible AI framework.
+Commuters can query in colloquial **Singlish** or **English** — the two input languages the system actually parses. The system coordinates three autonomous agents across strict communication protocols to formulate multimodal itineraries, evaluate live disruption notices, and execute ticket reservations under a Responsible AI framework.
 
 ---
 
@@ -28,7 +28,7 @@ Commuters can query in colloquial **Singlish**, **Sinhala**, or **English**. The
 ```
                    ┌──────────────────────────────────────────────┐
                    │      React Web Interface (nginx, :3000)     │
-                   │   (Singlish / English / Sinhala Inputs)      │
+                   │        (Singlish / English Inputs)            │
                    └──────────────────────┬───────────────────────┘
                                           │
                                [Sanitized User Prompt]

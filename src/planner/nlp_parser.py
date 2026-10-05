@@ -103,110 +103,6 @@ def _has_word(text: str, words: set[str]) -> bool:
     return any(re.search(rf"\b{re.escape(w)}\b", text) for w in words)
 
 
-# ── Sinhala script (Unicode) support ─────────────────────────────────────────
-#
-# Singlish is Sinhala typed with English letters, so it needed no vocabulary.
-# Native Sinhala script needs a translation step: the parser and the retriever
-# both match on Latin text, so Sinhala would otherwise score nothing and fall
-# through to "no results" — which reads as "no such service exists" rather than
-# "we did not understand the language".
-#
-# Entries are the words that actually decide a journey: place names, the two
-# modes, and the direction markers. Sinhala case endings are stripped before
-# lookup, so ගාල්ලට ("to Galle") resolves like ගාල්ල ("Galle").
-SINHALA_TERMS: dict[str, str] = {
-    # Direction markers. Mapped to the Singlish spellings, not the English ones,
-    # because Sinhala puts the marker in the opposite position: මහනුවර සිට
-    # කොළඹ is "Kandy FROM Colombo" in token order but means Kandy→Colombo, since
-    # සිට follows the place it departs from. English "from" reads the station
-    # after it, which would reverse the journey.
-    "සිට": "indan",
-    "දකුණට": "yanna",
-    "යන": "yanna",
-    "යන්න": "yanna",
-    # Modes
-    "බස්": "bus",
-    "බසු": "bus",
-    "ගිල": "train",
-    "ඉඳුර": "train",
-    "රත්න": "train",
-    "අධිවේගී": "highway",
-    "පිරිගම්": "bus",
-    "දුක්සි": "diesel",
-    # Places
-    "මකුඹුර": "makumbura",
-    "මකුම්බුර": "makumbura",
-    "කොළඹ": "colombo",
-    "මහනුවර": "kandy",
-    "කතරගම": "kandy",
-    "ගාල්ල": "galle",
-    "ගාල්": "galle",
-    "යාපන": "jaffna",
-    "මාතර": "matara",
-    "මතර": "matara",
-    "නුගේගොඩ": "nugegoda",
-    "දුක්සින්": "negombo",
-    "ගජ": "gampaha",
-    "අම්බලන්ගෝම": "ambalangoda",
-    # Time of day and relative days, so a Sinhala query yields the same time slot
-    # as its Singlish equivalent ("හෙට උදේ 6ට" == "heta ude 6ta").
-    "පස්සේ": "after",
-    "උදේ": "morning",
-    "සවස": "evening",
-    "රාත්‍රි": "night",
-    "හෙට": "tomorrow",
-    "අද": "today",
-}
-
-# Sinhala numerals are a separate Unicode block, so "පස්සේ 2ට" (after 2 o'clock)
-# carries a digit the time regex cannot see. Translating them is what lets the
-# time slot parse rather than being silently treated as missing.
-_SINHALA_NUMERALS: dict[str, str] = {
-    "෦": "0", "෧": "1", "෨": "2", "෩": "3", "෪": "4",
-    "෫": "5", "෬": "6", "෭": "7", "෮": "8", "෯": "9",
-}
-
-# Sinhala declensions appended to a place name; stripped before lookup.
-_SINHALA_SUFFIXES = ("ට", "යින්", "ගේ", "ක", "ය", "ටන්", "ග", "යට")
-
-
-def sinhala_to_latin(text: str) -> str:
-    """
-    Replaces Sinhala script words with their Singlish equivalents.
-
-    Longest match first, so මකුම්බුර is not truncated to මකුඹුර's prefix. Words
-    not in the table are left untouched rather than transliterated: a wrong
-    guess would silently corrupt a place name, which is worse than admitting the
-    word was not understood.
-
-    Returns the text unchanged when it contains no Sinhala, so callers can apply
-    it unconditionally.
-    """
-    if not any("඀" <= ch <= "෿" for ch in text):
-        return text
-
-    # Longest keys first so multi-character names win over their prefixes.
-    keys = sorted(SINHALA_TERMS, key=len, reverse=True)
-    out = text
-    for sinhala in keys:
-        if sinhala not in out:
-            continue
-        latin = SINHALA_TERMS[sinhala]
-        out = re.sub(
-            rf"({re.escape(sinhala)}(?:{'|'.join(_SINHALA_SUFFIXES)})?)(?![඀-෿])",
-            latin,
-            out,
-        )
-
-    # Numerals last: they must not be consumed by a word replacement above.
-    for numeral, digit in _SINHALA_NUMERALS.items():
-        out = out.replace(numeral, digit)
-    # "6ට" = "6 o'clock"; the Sinhala case marker is not a time token the regex
-    # recognises, so normalise it to the Singlish form.
-    out = re.sub(r"([0-9])\s*ට(?![඀-෿])", r"\1ta", out)
-    return out
-
-
 def _tokenize(text: str) -> list[str]:
     """Lowercase, strip punctuation, split into whole tokens (keeps direction markers)."""
     return [t for t in re.sub(r"[^\w\s]", " ", text.lower()).split() if t]
@@ -328,9 +224,6 @@ def extract_transit_intent(user_query: str) -> ParsedTransitQuery:
     1. Detect origin/destination via direction markers ("from/to", "indan/yanna")
     2. Word-boundary keyword matching for mode, date, time and intent
     """
-    # Native Sinhala first, so the rest of the pipeline (which matches on Latin
-    # text) handles it exactly like the Singlish it is transliterated from.
-    user_query = sinhala_to_latin(user_query)
     text_lower = user_query.strip().lower()
 
     # Mode

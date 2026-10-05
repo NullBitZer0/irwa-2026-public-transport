@@ -23,7 +23,17 @@ function OperatorContact({ contact }) {
         {contact.customer_care && (
           <div>
             <dt>Customer care</dt>
-            <dd className="mono">{contact.customer_care}</dd>
+            <dd className="mono">
+              {contact.customer_care}
+              {/* These numbers are placeholders, not the operator's real line.
+                  Labelled so nobody dials one expecting a real desk. */}
+              {contact.demo_contact && (
+                <span className="contact__demo" title="Not a real number">
+                  {' '}
+                  demo
+                </span>
+              )}
+            </dd>
           </div>
         )}
         {site && (

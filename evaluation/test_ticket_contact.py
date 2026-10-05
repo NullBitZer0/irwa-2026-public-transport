@@ -99,6 +99,38 @@ def test_every_contact_website_is_https() -> None:
         assert contact_for(code)["website"].startswith("https://")
 
 
+def test_contact_numbers_are_flagged_as_demo() -> None:
+    """
+    A placeholder number must be labelled, or it will be dialled.
+
+    The numbers in this table are deliberately fake: a plausible-looking but
+    wrong customer-care line on a ticket is worse than none, because the
+    traveller trusts it.
+    """
+    for code in ("SLR", "SLTB", "RM", "NTC"):
+        assert contact_for(code)["demo_contact"] is True
+
+
+def test_placeholder_numbers_are_not_plausible_real_lines() -> None:
+    """
+    Guard against a "realistic" number creeping back in.
+
+    Sri Lanka has no reserved fictional-number range, so a plausible number is
+    simply a number that might belong to someone. The placeholder convention is
+    a run of three or more zeros in the subscriber digits, which a real
+    customer-care line will not contain.
+    """
+    for code in ("SLR", "SLTB", "RM", "NTC"):
+        number = contact_for(code)["customer_care"]
+        if number is None:
+            continue
+        digits = "".join(ch for ch in number if ch.isdigit())
+        assert "000" in digits, (
+            f"{code}: {number} has no zero run — a plausible-looking number could "
+            f"belong to a real person or desk"
+        )
+
+
 # ── Settled tickets carry contact details ─────────────────────────────────────
 
 def test_settled_ticket_carries_operator_contact(client: TestClient) -> None:
