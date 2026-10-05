@@ -35,6 +35,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from typing import Any
 
 # ── Data paths ────────────────────────────────────────────────────────────────
@@ -97,6 +98,26 @@ def _rrf_merge(
     ]
 
 
+def _station_key(name: str) -> str:
+    """
+    Canonical comparison key for a station name.
+
+    Only the leading token is significant, which lets adjacent-but-differently-named
+    facilities match: "Colombo Fort" and "Colombo Bastian Mawatha" both key to
+    "colombo", while "Kandy" and "Jaffna" stay distinct.
+    """
+    tokens = [t for t in re.split(r"[^a-z0-9]+", name.lower()) if t]
+    return tokens[0] if tokens else ""
+
+
+def _serves_direction(route: dict[str, Any], origin: str, destination: str) -> bool:
+    """True when the route runs origin → destination (not the reverse)."""
+    return (
+        _station_key(str(route.get("origin", ""))) == _station_key(origin)
+        and _station_key(str(route.get("destination", ""))) == _station_key(destination)
+    )
+
+
 class HybridTransitRetriever:
     """
     Hybrid BM25 + Dense vector retrieval via OpenSearch with RRF fusion.
@@ -123,7 +144,7 @@ class HybridTransitRetriever:
         """
         return None
 
-    def _sparse_search(self, query: str, top_k: int) -> list[dict]:
+    def _sparse_search(self, query: str, top_k: int, pool: list[dict] | None = None) -> list[dict]:
         """
         TODO (Member 2): BM25 query against OpenSearch.
 
@@ -136,7 +157,7 @@ class HybridTransitRetriever:
         """
         # STUB: keyword filter over local JSON
         results = []
-        for s in self.schedules:
+        for s in self._pool(pool):
             text = f"{s.get('origin','')} {s.get('destination','')} {' '.join(s.get('stops',[]))} {s.get('service_name','')}".lower()
             score = sum(0.3 for token in query.lower().split() if len(token) > 3 and token in text)
             if score > 0:
@@ -144,7 +165,7 @@ class HybridTransitRetriever:
         results.sort(key=lambda x: x["_score"], reverse=True)
         return results[:top_k]
 
-    def _dense_search(self, query: str, top_k: int) -> list[dict]:
+    def _dense_search(self, query: str, top_k: int, pool: list[dict] | None = None) -> list[dict]:
         """
         TODO (Member 2): k-NN vector search against OpenSearch.
 
@@ -163,7 +184,7 @@ class HybridTransitRetriever:
         """
         # STUB: origin/destination substring match
         results = []
-        for s in self.schedules:
+        for s in self._pool(pool):
             score = 0.0
             for token in query.lower().split():
                 if token in s.get("origin", "").lower():
@@ -175,6 +196,42 @@ class HybridTransitRetriever:
         results.sort(key=lambda x: x["_score"], reverse=True)
         return results[:top_k]
 
+    def _pool_for_mode(self, mode: str) -> list[dict[str, Any]]:
+        """
+        Restricts candidates by travel mode.
+
+        SLR is the rail operator, so provider identifies trains vs buses here.
+        Filtering before ranking matters: a bus query must never be crowded out
+        by trains that happen to score higher on station names.
+        """
+        if mode == "TRAIN":
+            return [s for s in self.schedules if s.get("provider") == "SLR"]
+        if mode == "BUS":
+            return [s for s in self.schedules if s.get("provider") != "SLR"]
+        return list(self.schedules)
+
+    @staticmethod
+    def _pool(pool: list[dict] | None) -> list[dict]:
+        """Returns the given pool, or an empty list when none was supplied."""
+        return pool if pool is not None else []
+
+    def reverse_direction_options(
+        self,
+        origin: str,
+        destination: str,
+        mode: str = "ANY",
+        top_k: int = 3,
+    ) -> list[dict[str, Any]]:
+        """
+        Services running destination → origin, used to explain that no direct
+        service exists in the direction the user asked for.
+        """
+        if not (origin and destination):
+            return []
+        pool = self._pool_for_mode(mode)
+        matches = [s for s in pool if _serves_direction(s, destination, origin)]
+        return matches[:top_k]
+
     def retrieve_candidates(
         self,
         query: str,
@@ -185,20 +242,28 @@ class HybridTransitRetriever:
     ) -> list[dict[str, Any]]:
         """
         Hybrid retrieval: BM25 (sparse) + k-NN (dense) → RRF fusion.
+
+        When both endpoints are known, only services running in the requested
+        direction are eligible: a stub that scores on token overlap alone will
+        happily return "Colombo Fort → Jaffna" for a "Jaffna → Colombo" query.
         """
         full_query = f"{query} {origin} {destination}".strip()
 
-        sparse_hits = self._sparse_search(full_query, top_k)
-        dense_hits = self._dense_search(full_query, top_k)
+        # Apply the mode filter up front so ranking only ever sees candidates
+        # of the requested mode.
+        pool = self._pool_for_mode(mode)
 
-        # Filter by mode
-        if mode in ("TRAIN", "BUS"):
-            if mode == "TRAIN":
-                sparse_hits = [h for h in sparse_hits if h.get("provider") == "SLR"]
-                dense_hits = [h for h in dense_hits if h.get("provider") == "SLR"]
-            else:
-                sparse_hits = [h for h in sparse_hits if h.get("provider") != "SLR"]
-                dense_hits = [h for h in dense_hits if h.get("provider") != "SLR"]
+        # …and the direction filter, so a reversed service is never presented as
+        # an answer. An empty result here is honest: it is reported upstream.
+        if origin and destination:
+            exact = [s for s in pool if _serves_direction(s, origin, destination)]
+            if not exact:
+                return []
+            pool = exact
+
+        sparse_hits = self._sparse_search(full_query, top_k, pool=pool)
+        dense_hits = self._dense_search(full_query, top_k, pool=pool)
 
         fused = _rrf_merge(sparse_hits, dense_hits, top_k=top_k)
-        return fused if fused else self.schedules[:top_k]
+        # Fall back to the filtered pool, never the raw schedule list.
+        return fused if fused else pool[:top_k]

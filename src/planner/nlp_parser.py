@@ -58,7 +58,8 @@ ORIGIN_MARKERS_BEFORE: set[str] = {
 }
 ORIGIN_MARKERS_AFTER: set[str] = {"from"}
 DEST_MARKERS_BEFORE: set[str] = {
-    "yanna", "yan", "yanawa", "enawa", "enna",  # = to go / to come (Kandy yanna)
+    # = to go / to come (Kandy yanna, Kandy yanawa, Kandy yanne)
+    "yanna", "yan", "yanawa", "yanne", "enawa", "enna", "enne",
 }
 DEST_MARKERS_AFTER: set[str] = {"to"}
 
