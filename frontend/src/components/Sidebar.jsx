@@ -1,4 +1,62 @@
+import { useState } from 'react'
 import { health } from '../api.js'
+
+/**
+ * Renders an operator's contact block, shown when a ticket card is expanded.
+ *
+ * The website is rendered as a link, so the scheme is checked rather than
+ * trusted: a `javascript:` or `data:` URL here would be a script injection
+ * vector the moment any of this data became caller-influenced.
+ */
+function OperatorContact({ contact }) {
+  if (!contact?.name) return null
+
+  const site = safeHttpUrl(contact.website)
+
+  return (
+    <div className="contact">
+      <dl>
+        <div>
+          <dt>Operator</dt>
+          <dd>{contact.name}</dd>
+        </div>
+        {contact.customer_care && (
+          <div>
+            <dt>Customer care</dt>
+            <dd className="mono">{contact.customer_care}</dd>
+          </div>
+        )}
+        {site && (
+          <div>
+            <dt>Website</dt>
+            <dd>
+              <a href={site} target="_blank" rel="noreferrer noopener">
+                {contact.website.replace(/^https?:\/\//, '')}
+              </a>
+            </dd>
+          </div>
+        )}
+        {contact.notes && (
+          <div>
+            <dt>Note</dt>
+            <dd className="muted">{contact.notes}</dd>
+          </div>
+        )}
+      </dl>
+    </div>
+  )
+}
+
+/** Returns the URL only if it is plain http(s); anything else becomes null. */
+function safeHttpUrl(value) {
+  if (typeof value !== 'string' || !value) return null
+  try {
+    const url = new URL(value)
+    return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : null
+  } catch {
+    return null
+  }
+}
 
 const EXAMPLES = [
   'Heta ude Colombo indan Kandy yanna train ekak balanna',
@@ -14,20 +72,36 @@ const EXAMPLES = [
 /**
  * Session sidebar: connection status, purchase history, example prompts and the
  * Zero Trust note.
+ *
+ * The history panel has two kinds of card:
+ *  - a settled ticket, which expands to show the operator's contact details;
+ *  - a booking awaiting payment, which reopens the payment portal, because a
+ *    seat hold only lives 10 minutes and would otherwise be lost silently.
  * @param {{sessionId:string|null, status:string, agentStatus:object|null,
- *          purchases:Array, purchasesLoading:boolean,
- *          onExample:(q:string)=>void, onReset:()=>void, onRefreshPurchases:()=>void}} props
+ *          purchases:Array, pendingHolds:Array, purchasesLoading:boolean,
+ *          onExample:(q:string)=>void, onReset:()=>void,
+ *          onRefreshPurchases:()=>void, onResumePayment:(hold:object)=>void}} props
  */
 export default function Sidebar({
   sessionId,
   status,
   agentStatus,
   purchases,
+  pendingHolds,
   purchasesLoading,
   onExample,
   onReset,
   onRefreshPurchases,
+  onResumePayment,
 }) {
+  const [openContact, setOpenContact] = useState(null)
+
+  // Only one card expands at a time; the sidebar is narrow enough that stacking
+  // contact blocks just pushes the rest of the panel off screen.
+  function toggleContact(reference) {
+    setOpenContact((current) => (current === reference ? null : reference))
+  }
+
   return (
     <aside className="sidebar">
       <div className="sidebar__brand">
@@ -70,27 +144,88 @@ export default function Sidebar({
         )}
 
         <ul className="purchases">
+          {pendingHolds.map((hold) => (
+            <li key={hold.transaction_id} className="purchase purchase--pending">
+              <button
+                type="button"
+                className="purchase__btn"
+                onClick={() => onResumePayment(hold)}
+                title="Complete payment for this booking"
+              >
+                <div className="purchase__top">
+                  <span className="purchase__ref mono">{hold.transaction_id}</span>
+                  <span className="purchase__fare">
+                    LKR {Number(hold.amount_due_lkr ?? hold.fare_lkr ?? 0).toLocaleString('en-LK')}
+                  </span>
+                </div>
+                <div className="purchase__meta">
+                  <span className="mono">{hold.route_id}</span>
+                  {' · '}
+                  {hold.seat_count} seat{hold.seat_count > 1 ? 's' : ''}
+                  {hold.provider ? ` · ${hold.provider}` : ''}
+                </div>
+                <div className="purchase__foot">
+                  <span className="badge badge--pending">⏳ Awaiting payment</span>
+                  {hold.hold_expires_at && (
+                    <span className="muted">
+                      expires {hold.hold_expires_at.replace('T', ' ').slice(11, 16)}
+                    </span>
+                  )}
+                </div>
+                <div className="purchase__cta">Complete payment →</div>
+              </button>
+            </li>
+          ))}
+
           {purchases.map((purchase) => (
-            <li key={purchase.transaction_id ?? purchase.booking_reference} className="purchase">
-              <div className="purchase__top">
-                <span className="purchase__ref mono">{purchase.booking_reference}</span>
-                <span className="purchase__fare">
-                  LKR {Number(purchase.amount_paid_lkr ?? purchase.fare_lkr ?? 0).toLocaleString('en-LK')}
-                </span>
-              </div>
-              <div className="purchase__meta">
-                <span className="mono">{purchase.route_id}</span>
-                {' · '}
-                {purchase.seat_count} seat{purchase.seat_count > 1 ? 's' : ''}
-                {purchase.provider ? ` · ${purchase.provider}` : ''}
-              </div>
-              <div className="purchase__foot">
-                <span>{purchase.purchased_at?.replace('T', ' ').slice(0, 16)}</span>
-                {purchase.card_last4 && <span className="mono">•••• {purchase.card_last4}</span>}
-              </div>
+            <li
+              key={purchase.transaction_id ?? purchase.booking_reference}
+              className="purchase"
+            >
+              <button
+                type="button"
+                className="purchase__btn"
+                onClick={() => toggleContact(purchase.booking_reference)}
+                aria-expanded={openContact === purchase.booking_reference}
+                title="Show operator contact details"
+              >
+                <div className="purchase__top">
+                  <span className="purchase__ref mono">{purchase.booking_reference}</span>
+                  <span className="purchase__fare">
+                    LKR {Number(purchase.amount_paid_lkr ?? purchase.fare_lkr ?? 0).toLocaleString('en-LK')}
+                  </span>
+                </div>
+                <div className="purchase__meta">
+                  <span className="mono">{purchase.route_id}</span>
+                  {' · '}
+                  {purchase.seat_count} seat{purchase.seat_count > 1 ? 's' : ''}
+                  {purchase.provider ? ` · ${purchase.provider}` : ''}
+                </div>
+                <div className="purchase__foot">
+                  <span>{purchase.purchased_at?.replace('T', ' ').slice(0, 16)}</span>
+                  {purchase.card_last4 && <span className="mono">•••• {purchase.card_last4}</span>}
+                </div>
+                {purchase.provider_contact?.name && (
+                  <div className="purchase__cta">
+                    {openContact === purchase.booking_reference
+                      ? 'Hide contact ▲'
+                      : 'Operator contact ▼'}
+                  </div>
+                )}
+              </button>
+
+              {openContact === purchase.booking_reference && (
+                <OperatorContact contact={purchase.provider_contact} />
+              )}
             </li>
           ))}
         </ul>
+
+        {purchases.length === 0 && pendingHolds.length === 0 && (
+          <p className="muted">
+            No tickets yet. Complete a payment and the ticket will appear here.
+          </p>
+        )}
       </section>
 
       <section className="panel">

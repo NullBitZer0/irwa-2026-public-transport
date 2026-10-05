@@ -20,6 +20,7 @@ load_dotenv()  # Load .env before importing modules that read env vars
 
 from src.orchestrator.logger import get_logger  # noqa: E402
 from src.orchestrator.main_graph import _bridge, build_graph  # noqa: E402
+from src.orchestrator.session_store import SLOTS  # noqa: E402
 from src.security.audit_log import log_security_event  # noqa: E402
 from src.security.gateway import IngressBlocked, enforce_ingress  # noqa: E402
 
@@ -126,17 +127,32 @@ async def chat(request: ChatRequest) -> ChatResponse:
 
     parsed = extract_transit_intent(user_query)
 
+    # Fold this turn's entities into the slots gathered so far. Route planning is
+    # a slot-filling conversation: "I need to go to Colombo" then "from Kandy at
+    # 8am" has to combine, or the second turn asks for the destination again.
+    carried = SLOTS.merge(
+        session_id,
+        {
+            "origin": parsed.origin,
+            "destination": parsed.destination,
+            "mode": "ANY" if parsed.mode == "ANY" else parsed.mode,
+            "departure_date": parsed.departure_date,
+            "departure_time": parsed.departure_time,
+        },
+    )
+
     initial_state = {
         "session_id": session_id,
         "user_query": user_query,
         "intent": None,
         "extracted_entities": {
             "passenger_token": request.passenger_token or f"GUEST-{session_id[:8]}",
-            "origin": parsed.origin or "",
-            "destination": parsed.destination or "",
-            "mode": "ANY" if parsed.mode == "ANY" else parsed.mode,
-            "departure_date": parsed.departure_date,
-            "departure_time": parsed.departure_time,
+            # Merged slots: a value given in an earlier turn still applies.
+            "origin": carried.get("origin") or "",
+            "destination": carried.get("destination") or "",
+            "mode": carried.get("mode") or "ANY",
+            "departure_date": carried.get("departure_date") or parsed.departure_date,
+            "departure_time": carried.get("departure_time"),
         },
         "route_options": [],
         "selected_route_id": request.selected_route_id,
@@ -242,6 +258,25 @@ async def purchases() -> dict:
     return {
         "status": "OK",
         "purchases": ((response.data or {}).get("purchases") or []),
+    }
+
+
+@app.get("/pending_holds")
+async def pending_holds() -> dict:
+    """
+    Bookings still awaiting payment, so the UI can offer to resume them.
+
+    A traveller who closes the payment portal or reloads the page mid-checkout
+    would otherwise lose the seat hold with no way back to it.
+    """
+    try:
+        response = await _bridge.fetch_pending_holds()
+    except Exception as exc:
+        logger.error(f"Could not load pending holds: {exc}")
+        return {"status": "UNAVAILABLE", "pending_holds": []}
+    return {
+        "status": "OK",
+        "pending_holds": ((response.data or {}).get("pending_holds") or []),
     }
 
 

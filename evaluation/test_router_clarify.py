@@ -65,11 +65,17 @@ def stub_llm(monkeypatch):
         ("Kandy indan Colombo yanawa", True),
         ("Heta ude Colombo indan Kandy yanna train ekak balanna", True),
         ("Bus from Makumbura to Matara", True),
-        # Only one endpoint, or none at all — the guard leaves these alone, so a
-        # single-station question still reaches clarify_node.
+        # One endpoint plus travel intent: a partial request, which is a route
+        # request missing slots rather than an unintelligible message. The
+        # planner asks for the rest instead of the user hitting a dead end.
+        ("Kandy yanna train ekak thiyeda?", True),
+        ("Galle yanna bus ekak thiyeda?", True),
+        ("I need to go to Colombo", True),
+        ("I want to go to Kandy", True),
+        # A station named without any intent to travel stays out of routing, so
+        # "how is Kandy station?" is not turned into a route search.
         ("Kandy", False),
-        ("Kandy yanna train ekak thiyeda?", False),
-        ("Galle yanna bus ekak thiyeda?", False),
+        ("Kandy station parking", False),
         ("hello there", False),
         ("thanks!", False),
         ("What are the baggage rules on SLR?", False),
@@ -94,14 +100,27 @@ def test_singlish_bare_pair_is_upgraded(stub_llm) -> None:
     assert classify_user_intent("Kandy indan Colombo yanawa") == "PLAN_ROUTE"
 
 
-def test_single_endpoint_is_not_upgraded(stub_llm) -> None:
+def test_partial_travel_request_is_upgraded_to_ask_for_slots(stub_llm) -> None:
     """
-    A destination-only query is left to the classifier: it usually reads as
-    PLAN_ROUTE anyway, and promoting it on one station name alone would send
-    "how is Kandy station?" to a route search.
+    A destination-only travel request must reach the planner, not the dead end.
+
+    "Kandy yanna bus ekak" names one place and clearly means "I want to go
+    somewhere", so the assistant should ask for the origin rather than reply
+    "I didn't quite understand that".
     """
     stub_llm("CLARIFY")
-    assert classify_user_intent("Kandy yanna bus ekak") == "CLARIFY"
+    assert classify_user_intent("Kandy yanna bus ekak") == "PLAN_ROUTE"
+
+
+def test_bare_station_name_is_not_upgraded(stub_llm) -> None:
+    """
+    A station mentioned without any intent to travel is left to the classifier.
+
+    Promoting on one station name alone would send "how is Kandy station?" to a
+    route search, which is the false positive the travel-intent check avoids.
+    """
+    stub_llm("CLARIFY")
+    assert classify_user_intent("Kandy station parking") == "CLARIFY"
 
 
 def test_clarify_is_kept_when_no_endpoints(stub_llm) -> None:

@@ -37,7 +37,14 @@ def supervisor_node(state: TransitSessionState) -> dict:
     It only classifies intent and sets `next_node`.
     """
     has_route = bool(state.get("selected_route_id"))
-    intent = classify_user_intent(state["user_query"], has_selected_route=has_route)
+    # Slots gathered in earlier turns matter here: a reply like "at 8am by train"
+    # answers a question about a journey that is already under way, and judging
+    # it on this message alone would restart the conversation.
+    intent = classify_user_intent(
+        state["user_query"],
+        has_selected_route=has_route,
+        session_slots=state.get("extracted_entities"),
+    )
 
     # Routing logic — order matters
     if has_route and not state.get("hitl_approved"):
@@ -112,19 +119,38 @@ def _journey_clarification_message(missing: list[str], jdata: dict) -> tuple[str
 
     Asking is better than guessing: a confident list of the wrong mode or the
     wrong hour is less useful than one short question.
+
+    It also echoes the slots already filled, so the traveller can see the
+    assistant is keeping track rather than starting over — and so a mis-parsed
+    city name is visible ("did you say Galle?") instead of silently producing
+    results for the wrong place.
     """
     questions = []
     if "mode" in missing:
         questions.append("train or bus?")
     if "time" in missing:
         questions.append("what time do you want to travel?")
+    if "origin" in missing:
+        questions.append("where are you starting from?")
+    if "destination" in missing:
+        questions.append("where are you heading to?")
     if "major_cities" in missing:
-        questions.append("I can plan for major cities only — which city are you heading to?")
-    if "origin" in missing or "destination" in missing:
-        questions.append("where are you travelling from and to?")
+        questions.append(
+            "I can only plan between major cities right now — which city are you going to?"
+        )
+
+    known = []
+    if jdata.get("origin"):
+        known.append(f"from **{jdata['origin']}**")
+    if jdata.get("destination"):
+        known.append(f"to **{jdata['destination']}**")
+    if jdata.get("at_time"):
+        known.append(f"at **{jdata['at_time']}**")
+
+    preamble = f"Got it — you want to travel {' '.join(known)}. Still need: " if known else ""
 
     msg = (
-        f"To get this right I need a little more: **{' and '.join(questions)}**\n\n"
+        f"{preamble}**{' and '.join(questions)}**\n\n"
         f'For example: *"I need to go from Negombo to Colombo at 10am by bus"*'
     )
     options: list[dict] = []

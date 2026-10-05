@@ -28,6 +28,8 @@ numpy>=1.26.0
 ruff>=0.6.0
 mypy>=1.11.0
 pytest>=8.3.0
+# Required by pyproject's asyncio_mode = "auto"; without it the async tests
+# are silently skipped rather than failing loudly.
 pytest-asyncio>=0.24.0
 
 

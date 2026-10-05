@@ -90,3 +90,21 @@ export async function fetchPurchases() {
     return []
   }
 }
+
+/**
+ * Bookings still awaiting payment.
+ *
+ * Lets the history panel keep an interrupted checkout alive: the seat hold only
+ * lasts 10 minutes, so without this a closed payment portal means losing the
+ * seat with no way back.
+ */
+export async function fetchPendingHolds() {
+  try {
+    const res = await fetch(`${BASE}/pending_holds`)
+    if (!res.ok) return []
+    const body = await res.json()
+    return body.pending_holds ?? []
+  } catch {
+    return []
+  }
+}

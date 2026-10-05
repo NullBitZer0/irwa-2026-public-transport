@@ -655,6 +655,94 @@ code {
   gap: 0.5rem;
 }
 
+/* Cards are buttons so a ticket can be clicked open and a held booking can be
+   resumed. The button resets to the .purchase card's own styling so the list
+   still reads as a list of tickets rather than a stack of buttons. */
+.purchase__btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.purchase__btn:hover .purchase__cta,
+.purchase__btn:focus-visible .purchase__cta {
+  color: var(--accent);
+}
+
+.purchase__btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* A booking that still owes money: time-limited, so it reads as urgent and
+   gets an amber edge rather than the settled accent. */
+.purchase--pending {
+  border-left-color: #e8a33d;
+  background: rgba(232, 163, 61, 0.07);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.badge--pending {
+  background: rgba(232, 163, 61, 0.18);
+  color: #e8a33d;
+}
+
+.purchase__cta {
+  margin-top: 0.3rem;
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+/* Operator contact block, revealed by expanding a settled ticket. */
+.contact {
+  margin-top: 0.45rem;
+  padding: 0.45rem 0.55rem;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.contact dl {
+  margin: 0;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.contact dl > div {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  gap: 0.4rem;
+}
+
+.contact dt {
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.contact dd {
+  margin: 0;
+  font-size: 0.72rem;
+}
+
+.contact a {
+  color: var(--accent);
+}
+
 /* ── HITL banner ───────────────────────────────────────────────────────── */
 
 .hitl {

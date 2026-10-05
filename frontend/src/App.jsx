@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { chat, fetchPurchases, health } from './api.js'
+import { chat, fetchPendingHolds, fetchPurchases, health } from './api.js'
 import { renderMarkdown } from './markdown.js'
 import ChatMessage from './components/ChatMessage.jsx'
 import PaymentPortal, { PaymentReceipt } from './components/PaymentPortal.jsx'
@@ -26,6 +26,7 @@ export default function App() {
   const [paymentHold, setPaymentHold] = useState(null)
   const [receipt, setReceipt] = useState(null)
   const [purchases, setPurchases] = useState([])
+  const [pendingHolds, setPendingHolds] = useState([])
   const [purchasesLoading, setPurchasesLoading] = useState(false)
 
   const endRef = useRef(null)
@@ -45,8 +46,28 @@ export default function App() {
   /** Reloads the sidebar purchase history from the booking agent. */
   async function loadPurchases() {
     setPurchasesLoading(true)
-    setPurchases(await fetchPurchases())
+    const [settled, waiting] = await Promise.all([fetchPurchases(), fetchPendingHolds()])
+    setPurchases(settled)
+    setPendingHolds(waiting)
     setPurchasesLoading(false)
+  }
+
+  /**
+   * Reopens the payment portal for a booking that is still awaiting payment.
+   *
+   * Reached from the history card, so it covers the case where the traveller
+   * closed the portal or reloaded the page mid-checkout and the hold is about
+   * to expire.
+   */
+  function handleResumePayment(hold) {
+    setReceipt(null)
+    setPaymentHold({
+      transactionId: hold.transaction_id,
+      amountLkr: hold.amount_due_lkr ?? hold.fare_lkr,
+      seatCount: hold.seat_count,
+      routeId: hold.route_id,
+      provider: hold.provider,
+    })
   }
 
   /** POST a turn and append the agent's reply. */

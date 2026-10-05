@@ -218,6 +218,17 @@ class AgentDispatchBridge:
             res.raise_for_status()
             return AgentResponse(**res.json())
 
+    async def fetch_pending_holds(self) -> AgentResponse:
+        """
+        Bookings awaiting payment, so an interrupted checkout can be resumed.
+
+        Endpoint: GET /mcp/pending_holds
+        """
+        async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
+            res = await client.get(f"{self.booking_url}/mcp/pending_holds")
+            res.raise_for_status()
+            return AgentResponse(**res.json())
+
     # ── Health checks ─────────────────────────────────────────────────────────
 
     async def health_check_planner(self) -> bool:

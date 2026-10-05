@@ -167,6 +167,21 @@ class BookingStateMachine:
     def get(self, txn_id: str) -> Optional[BookingTransaction]:
         return self.transactions.get(txn_id)
 
+    def active_holds(self) -> list[BookingTransaction]:
+        """
+        Transactions still waiting for payment, newest first.
+
+        Only SEAT_HELD and AWAITING_PAYMENT count: a confirmed booking is a
+        purchase, and a cancelled or expired one holds nothing to pay for.
+        """
+        waiting = [
+            txn
+            for txn in self.transactions.values()
+            if txn.state in (BookingState.SEAT_HELD, BookingState.AWAITING_PAYMENT)
+        ]
+        waiting.sort(key=lambda t: t.created_at, reverse=True)
+        return waiting
+
 
 def _coerce(row: dict) -> dict:
     """

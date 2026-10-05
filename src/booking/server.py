@@ -34,6 +34,7 @@ from pydantic import BaseModel
 
 from src.booking.mock_gateway import MockTransitGateway
 from src.booking.payment_gateway import MockPaymentGateway
+from src.booking.providers import contact_for
 from src.booking.state_machine import BookingStateMachine
 from src.booking.store import BookingStore
 from src.security.audit_log import log_security_event
@@ -104,7 +105,11 @@ def record_purchase(ticket: dict, receipt: dict, card_last4: str) -> dict:
         "amount_paid_lkr": receipt.get("amount_lkr"),
         "card_last4": card_last4,
     }
-    return _store.insert_purchase(entry)
+    stored = _store.insert_purchase(entry)
+    # Return the same shape the history endpoint serves, so a caller that uses
+    # this response directly (the UI refreshes right after paying) does not have
+    # to make a second request to render the ticket's contact details.
+    return {**stored, "provider_contact": contact_for(stored.get("provider"), stored.get("route_id"))}
 
 
 class BookTicketRequest(BaseModel):
@@ -336,7 +341,11 @@ async def settle_booking(req: SettleRequest) -> dict:
         ConfirmRequest(
             transaction_id=req.transaction_id,
             checkout_token=checkout_token,
-            provider=req.provider,
+            # The provider recorded when the seat was held, not the one this
+            # request happens to carry: SettleRequest defaults to "SLR", so
+            # trusting it stamped an SLR reference on an SLTB ticket. The
+            # operator is a property of the booking, not of this call.
+            provider=txn.provider,
         )
     )
 
@@ -360,8 +369,57 @@ def get_purchases() -> dict:
     Metadata only: the passenger token is stored as the opaque TOKEN_ value, and
     only the card's last four digits are kept, so this ledger can be displayed
     without exposing PII or card data.
+
+    Each entry carries the operator's contact block so a traveller holding the
+    ticket can reach the company that issued it.
     """
-    return {"status": "SUCCESS", "data": {"purchases": _store.list_purchases()}}
+    purchases = [
+        {**entry, "provider_contact": contact_for(entry.get("provider"), entry.get("route_id"))}
+        for entry in _store.list_purchases()
+    ]
+    return {"status": "SUCCESS", "data": {"purchases": purchases}}
+
+
+@app.get("/mcp/pending_holds")
+def pending_holds() -> dict:
+    """
+    Bookings awaiting payment, so an interrupted checkout can be resumed.
+
+    Without this a traveller who closes the payment portal, or reloads the page
+    between holding a seat and paying, has no way back to it: the hold expires
+    in 10 minutes and the seat is released. The UI lists these so the card
+    itself is the way back into payment.
+
+    Expired holds are excluded — they hold nothing, so offering to pay one would
+    only produce a failure at checkout. Zero-fare holds are also excluded for
+    the same reason: they can never be settled.
+    """
+    now = datetime.now(tz=timezone.utc)
+    entries: list[dict] = []
+
+    for txn in _state_machine.active_holds():
+        if txn.hold_expires_at and now > txn.hold_expires_at:
+            continue
+        if txn.fare_lkr <= 0:
+            continue
+        entries.append(
+            {
+                "transaction_id": txn.transaction_id,
+                "route_id": txn.route_id,
+                "provider": txn.provider,
+                "seat_count": txn.seat_count,
+                "fare_lkr": txn.fare_lkr,
+                "amount_due_lkr": txn.fare_lkr,
+                "state": txn.state.value,
+                "hold_expires_at": txn.hold_expires_at.isoformat()
+                if txn.hold_expires_at
+                else None,
+                "provider_contact": contact_for(txn.provider, txn.route_id),
+            }
+        )
+
+    entries.sort(key=lambda e: e["hold_expires_at"] or "", reverse=True)
+    return {"status": "SUCCESS", "data": {"pending_holds": entries}}
 
 
 @app.get("/mcp/inventory/{route_id}")

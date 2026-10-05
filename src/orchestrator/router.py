@@ -8,7 +8,8 @@ via LiteLLM at temperature=0 for deterministic routing.
 
 import json
 import os
-from typing import Literal
+import re
+from typing import Literal, Optional
 
 from litellm import completion
 
@@ -49,12 +50,19 @@ Respond ONLY with valid JSON (no markdown, no extra text):
 
 def _has_journey_endpoints(query: str) -> bool:
     """
-    True when the deterministic parser can resolve both an origin and a destination.
+    True when the deterministic parser can resolve a usable journey request.
 
     The LLM classifier tends to label bare fragments such as "Colombo to Galle"
     as CLARIFY because they look incomplete. Entity extraction is deterministic
-    and language-agnostic (English and Singlish), so a resolved origin +
-    destination is stronger evidence of a route request than the LLM's verdict.
+    and language-agnostic (English and Singlish), so a resolved endpoint is
+    stronger evidence of a route request than the LLM's verdict.
+
+    Two endpoints ("Kandy to Colombo") speak for themselves. With only one, the
+    message is a partial request — "I need to go to Colombo" — which is still a
+    route request, just one whose origin is not known yet, so it is routed to
+    the planner to be asked for rather than rejected as unintelligible. That
+    only counts when the message also reads as travel; "Is Kandy Fort station
+    accessible?" mentions a station but wants to know about the station.
     """
     try:
         # Imported lazily: the parser belongs to the Planning Agent's module and
@@ -66,12 +74,62 @@ def _has_journey_endpoints(query: str) -> bool:
         logger.warning(f"Endpoint probe failed ({type(exc).__name__}): {exc}")
         return False
 
-    return bool(parsed.origin and parsed.destination)
+    if parsed.origin and parsed.destination:
+        return True
+
+    if parsed.origin or parsed.destination:
+        return _looks_like_travel_request(query, parsed)
+
+    return False
+
+
+def _session_has_journey(slots: Optional[dict]) -> bool:
+    """
+    True when the conversation so far is already a journey in progress.
+
+    Answering a clarification often means naming only what was asked for —
+    "at 8am by train" carries no place name at all. Judged on this message
+    alone that looks like nonsense, but it is the missing slot for a trip whose
+    origin and destination were given a turn earlier, so it must continue the
+    route search rather than restart the conversation.
+    """
+    if not slots:
+        return False
+    return bool(slots.get("origin") and slots.get("destination"))
+
+
+# Words that signal the traveller is trying to go somewhere, as opposed to
+# asking about a place that happens to be named.
+_TRAVEL_INTENT_WORDS: frozenset[str] = frozenset(
+    {
+        "go", "going", "goto", "travel", "travelling", "traveling", "trip",
+        "journey", "catch", "board", "take", "ride", "need", "want", "wanna",
+        "plan", "reach", "get", "leave", "depart", "from", "to",
+        # Singlish
+        "yanna", "yan", "yanawa", "yanne", "enna", "enawa", "inbu", "inne",
+        "yana", "yane", "ganna", "thawa", "hithala", "kanda",
+    }
+)
+
+
+def _looks_like_travel_request(query: str, parsed: object) -> bool:
+    """
+    Does a single-endpoint message read as a request to travel somewhere?
+
+    A time or an explicit mode is itself travel intent, so those count without
+    needing a verb.
+    """
+    if getattr(parsed, "departure_time", None) or getattr(parsed, "mode", "ANY") != "ANY":
+        return True
+
+    tokens = re.findall(r"[a-z]+", query.lower())
+    return any(token in _TRAVEL_INTENT_WORDS for token in tokens)
 
 
 def classify_user_intent(
     query: str,
     has_selected_route: bool = False,
+    session_slots: Optional[dict] = None,
 ) -> Intent:
     """
     Calls Groq via LiteLLM to classify the user's intent.
@@ -79,6 +137,7 @@ def classify_user_intent(
     Args:
         query: The raw user message (English / Singlish / Sinhala).
         has_selected_route: Whether the session already has a route selected.
+        session_slots: Slots gathered in earlier turns of this conversation.
 
     Returns:
         One of: "PLAN_ROUTE", "EXECUTE_BOOKING", "FAQ", "CLARIFY".
@@ -88,6 +147,16 @@ def classify_user_intent(
         f"User message: {query}\n"
         f"Has a route already been selected in this session: {has_selected_route}"
     )
+
+    # A journey already in progress makes this turn a continuation of it, so
+    # telling the classifier about it helps rather than only helping afterwards.
+    if _session_has_journey(session_slots):
+        user_content += (
+            "\nThe traveller is already planning a journey in this conversation"
+            f" (from {session_slots.get('origin')} to {session_slots.get('destination')})."
+            " A short reply naming only a time or a mode is them answering a"
+            " question about that journey."
+        )
 
     try:
         response = completion(
@@ -112,10 +181,18 @@ def classify_user_intent(
 
         logger.info(f"Intent → {intent} | Reason: {reasoning} | Model: {ROUTER_MODEL}")
 
-        # Guard: a resolvable origin + destination means this is a route request,
-        # whatever the classifier decided.
-        if intent == "CLARIFY" and _has_journey_endpoints(query):
-            logger.info("Intent CLARIFY → PLAN_ROUTE (origin and destination detected)")
+        # Guard: a resolvable journey means this is a route request, whatever the
+        # classifier decided. Either this message names the endpoints, or the
+        # conversation already has them and this turn is answering a question.
+        if intent == "CLARIFY" and (
+            _has_journey_endpoints(query) or _session_has_journey(session_slots)
+        ):
+            reason = (
+                "journey already in progress"
+                if _session_has_journey(session_slots)
+                else "origin and destination detected"
+            )
+            logger.info(f"Intent CLARIFY → PLAN_ROUTE ({reason})")
             return "PLAN_ROUTE"
 
         return intent  # type: ignore[return-value]
@@ -124,5 +201,9 @@ def classify_user_intent(
         logger.error(f"Intent classification failed ({type(exc).__name__}): {exc}")
         # The LLM is unavailable — fall back to deterministic entity extraction
         # so a plain route query still works.
-        return "PLAN_ROUTE" if _has_journey_endpoints(query) else "CLARIFY"
+        return (
+            "PLAN_ROUTE"
+            if (_has_journey_endpoints(query) or _session_has_journey(session_slots))
+            else "CLARIFY"
+        )
 

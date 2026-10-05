@@ -267,3 +267,42 @@ def test_corrupt_row_does_not_block_boot(db_path: str) -> None:
 
     assert recovered.get("TXN-BAD") is None
     assert recovered.get("TXN-9") is not None  # good rows still loaded
+
+
+# ── Operator attribution ─────────────────────────────────────────────────────
+
+def test_settled_reference_matches_the_operator_that_was_held() -> None:
+    """
+    An SLTB booking must not be issued an SLR reference.
+
+    The settle request carries its own provider field with an "SLR" default, so
+    trusting it stamped the wrong operator onto the ticket — and onto the contact
+    details the traveller is then shown.
+    """
+    from fastapi.testclient import TestClient
+
+    from src.booking import server as booking_server
+
+    booking_server._state_machine = BookingStateMachine(store=BookingStore(":memory:"))
+    client = TestClient(booking_server.app)
+
+    hold = client.post(
+        "/mcp/begin_booking",
+        json={
+            "route_id": "SLTB-2-COLO-MATA-0930",
+            "provider": "SLTB",
+            "passenger_token": "TOKEN_nic_abc",
+            "seat_count": 1,
+            "fare_lkr": 950.0,
+            "user_confirmed": True,
+        },
+    ).json()["data"]["transaction"]
+    assert hold["provider"] == "SLTB"
+
+    settled = client.post(
+        "/mcp/settle_booking",
+        json={"transaction_id": hold["transaction_id"], "card_last4": "4242"},
+    ).json()["data"]
+
+    assert settled["booking_reference"].startswith("SLTB-")
+    assert settled["ticket"]["provider"] == "SLTB"
