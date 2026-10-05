@@ -1,6 +1,7 @@
 # 🚆 LankaJourney AI: Multi-Agent Public Transit Planning & Booking System
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![CI](https://github.com/your-org/lankajourney-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/lankajourney-ai/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Framework: LangGraph / FastMCP](https://img.shields.io/badge/Orchestration-LangGraph%20%7C%20FastMCP-orange.svg)](https://github.com/langchain-ai/langgraph)
 [![IR: Hybrid BM25 + ChromaDB](https://img.shields.io/badge/IR-Hybrid%20RAG%20(RRF)-purple.svg)](https://www.trychroma.com/)
@@ -26,7 +27,7 @@ Commuters can query in colloquial **Singlish**, **Sinhala**, or **English**. The
 
 ```
                    ┌──────────────────────────────────────────────┐
-                   │          Streamlit Web Interface            │
+                   │      React Web Interface (nginx, :3000)     │
                    │   (Singlish / English / Sinhala Inputs)      │
                    └──────────────────────┬───────────────────────┘
                                           │
@@ -133,20 +134,38 @@ lanka-journey-ai/
 │   ├── booking/                    # Agent 3: Action & Ticketing
 │   │   ├── **init**.py
 │   │   ├── state_machine.py        # Reservation lifecycle engine
+│   │   ├── store.py                # SQLite persistence for bookings & ledger
+│   │   ├── providers.py            # Operator contact details per provider
 │   │   ├── mock_gateway.py         # Simulated SLR & SLTB eSeat endpoints
 │   │   └── server.py               # Booking Agent FastMCP microservice
 │   ├── security/                   # Security & Privacy Gateway
-│   │   ├── **init**.py
+│   │   ├── **init__.py
 │   │   ├── pii_masker.py           # Ephemeral tokenization for NIC & phone
+│   │   ├── audit_log.py            # Append-only JSONL security audit trail
+│   │   ├── gateway.py              # Ingress enforcement used by every agent
 │   │   └── guardrails.py           # Prompt injection & adversarial filtering
 │   ├── responsible_ai/
-│   │   ├── **init**.py
+│   │   ├── **init__.py
 │   │   └── grounding.py            # Citation verification & data provenance
-│   └── app.py                      # Streamlit frontend application
+│   └── app.py                      # Legacy Streamlit UI (superseded, unused)
+├── frontend/                       # React UI (the shipped interface)
+│   └── src/
+│       ├── App.jsx                 # Chat, HITL gate, payment portal
+│       ├── api.js                  # Client for the orchestrator /api routes
+│       ├── markdown.js             # Escaping Markdown renderer
+│       └── components/             # Sidebar, ChatMessage, PaymentPortal
+├── data/booking/                   # SQLite booking DB (runtime state)
 ├── evaluation/
 │   ├── benchmark_queries.json      # 30 transit validation test cases
 │   ├── evaluate_ir.py              # IR metrics calculator (MRR & NDCG@5)
-│   └── test_security.py            # Automated PII & injection tests
+│   ├── redteam_prompt_injection.py # 33-test injection & jailbreak harness
+│   ├── redteam_evidence.json       # Latest harness evidence
+│   ├── security_audit_log.jsonl    # Security audit trail
+│   ├── test_security.py            # Automated PII & injection tests
+│   ├── test_slot_filling.py        # Multi-turn slot accumulation
+│   ├── test_guardrail_hardening.py # Obfuscation evasion + false positives
+│   ├── test_booking_persistence.py # Restart survival & state integrity
+│   └── test_ticket_contact.py      # Ticket contact details & resumable holds
 ├── docs/
 │   ├── system_architecture.png     # Full architecture diagram
 │   └── commercialization_model.md  # Detailed unit economics
@@ -230,16 +249,45 @@ uvicorn src.booking.server:app --port 8002 --reload
 
 
 
-### 2. Launch the Web Interface (Terminal 3)
+### 2. Launch the Web Interface
+
+The shipped interface is the React frontend, served by nginx on port 3000.
+The quickest path is Docker Compose, which brings up the whole stack:
 
 ```bash
-streamlit run src/app.py
-
+docker compose up -d --build
 ```
 
-Open your browser and navigate to `http://localhost:8501`.
+Open your browser and navigate to `http://localhost:3000`.
 
-### 3. Example Test Queries
+<details>
+<summary>Running the agents locally without Docker</summary>
+
+```bash
+streamlit run src/app.py   # legacy interface, superseded by the React UI
+```
+
+</details>
+
+### 3. Bookings, payment and ticket history
+
+Booking is staged and human-in-the-loop: the agent holds a seat for 10 minutes,
+asks for approval, then stops at the payment step. **Only the last four card
+digits are ever sent** — no PAN or CVV reaches any agent.
+
+In the sidebar's purchase history:
+
+- A **settled ticket** is clickable and expands to show the operator's contact
+  details — name, customer-care line and website — for the company that issued it.
+- A booking that is **still awaiting payment** is clickable and reopens the
+  payment portal. Since a hold expires after 10 minutes, this is what keeps an
+  interrupted checkout recoverable instead of silently losing the seat.
+
+Bookings and the purchase ledger are persisted in SQLite (`data/booking.db`),
+so they survive a container restart. Without `BOOKING_DB_PATH` the store is
+in-memory, which is what the test suite uses.
+
+### 4. Example Test Queries
 
 * **Route Discovery (Singlish):**
 > *"Heta ude 6ta Kandy indan Galle yanna train ekak thiyeda?"*
@@ -248,6 +296,29 @@ Open your browser and navigate to `http://localhost:8501`.
 * **Multimodal Expressway Query (English):**
 > *"Find me a highway bus from Makumbura MMC to Galle tomorrow evening around 5:00 PM."*
 
+
+### Multi-turn slot filling
+
+A route request is a conversation, not a single query. The assistant collects the
+details it needs — and only what is still missing — then answers:
+
+```
+Traveller: I need to go to Colombo
+Assistant: Got it — you want to travel to Colombo Fort. Still need:
+           where are you starting from? and train or bus? and what time?
+
+Traveller: from Kandy
+Assistant: Got it — you want to travel from Kandy to Colombo Fort.
+           Still need: train or bus? and what time do you want to travel?
+
+Traveller: at 8am by train
+Assistant: Here are the train options from Kandy to Colombo Fort around 08:00…
+```
+
+Each turn is a delta: slots gathered earlier are carried in the session, so
+answering a question never resets the ones already answered, and a short reply
+naming only a time or a mode is understood as an answer to the question that was
+asked.
 
 * **Security & Redaction Demonstration:**
 > *"Please reserve 2 seats for Route TRAIN-1005. My NIC is 200012345678 and mobile is 0771234567."*
@@ -320,14 +391,19 @@ pytest evaluation/test_security.py -v
 pytest evaluation/ -q
 ```
 
-*Expected:* **175 passed**.
+*Expected:* **328 passed**.
 
 4. **Run the AI vulnerability / prompt-injection harness:**
 ```bash
 RT_ORCHESTRATOR_URL=http://localhost:8100 \
 RT_BOOKING_URL=http://localhost:8102 \
-python evaluation/redteam_prompt_injection.py
+python evaluation/redteam_prompt_injection.py --strict
 ```
+
+Add `--strict` in CI: it also fails on an inconclusive result, and on an
+unreachable service, so a dead stack cannot quietly "pass" on fewer tests.
+
+*Expected:* **33 tests | 0 vulnerable | 0 inconclusive**.
 
 
 

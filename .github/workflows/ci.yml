@@ -1,0 +1,132 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend lint & tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.docker.txt
+
+      # The container runtime deps plus the test/lint tooling. Installing from
+      # requirements.txt instead would pull sentence-transformers and PyTorch
+      # (~2GB) for a code path no test exercises.
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.docker.txt
+          pip install "pytest>=8.3.0" "pytest-asyncio>=0.24.0" "ruff>=0.6.0"
+
+      - name: Ruff
+        run: ruff check src/ evaluation/
+
+      - name: Pytest
+        run: pytest evaluation/ -q
+
+      # Type checking is informational: numpy's bundled stubs do not currently
+      # parse on 3.12, and this is tracked separately. Kept non-blocking rather
+      # than removed so it starts reporting once that is fixed.
+      - name: Mypy (non-blocking)
+        continue-on-error: true
+        run: |
+          pip install "mypy>=1.11.0" || true
+          mypy src/ || true
+
+  frontend:
+    name: Frontend build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build
+        working-directory: frontend
+        run: npm run build
+
+  redteam:
+    name: Red-team suite (live stack)
+    runs-on: ubuntu-latest
+    # The security assessment is only meaningful against the running system:
+    # the harness calls the real orchestrator, booking and planner endpoints.
+    needs: backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Write .env
+        run: |
+          cat > .env <<'EOF'
+          # CI values only. The GROQ key is deliberately absent: the router and
+          # the parser both have deterministic fallbacks, which is what the
+          # harness should be exercising anyway.
+          OPENSEARCH_INITIAL_ADMIN_PASSWORD=Ci_Tr@nsit_SriLanka_2026
+          LOG_LEVEL=WARNING
+          DEBUG_MODE=False
+          EOF
+
+      - name: Build images
+        run: docker compose build
+
+      - name: Start the stack
+        run: docker compose up -d
+        env:
+          DOCKER_UID: 1000
+          DOCKER_GID: 1000
+
+      - name: Wait for health
+        run: |
+          for i in $(seq 1 40); do
+            healthy=$(docker compose ps --format '{{.Service}} {{.Health}}' \
+              | awk '$2=="healthy"' | wc -l)
+            if [ "$healthy" -ge 4 ]; then
+              echo "stack healthy"; exit 0
+            fi
+            sleep 5
+          done
+          echo "stack did not become healthy"
+          docker compose ps
+          docker compose logs --tail=50
+          exit 1
+
+      - name: Run the red-team suite
+        env:
+          RT_ORCHESTRATOR_URL: http://localhost:8100
+          RT_BOOKING_URL: http://localhost:8102
+          RT_PLANNER_URL: http://localhost:8101
+        run: |
+          python -m venv .venv-ci
+          . .venv-ci/bin/activate
+          pip install -r requirements.docker.txt
+          python evaluation/redteam_prompt_injection.py --strict
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: redteam-evidence
+          path: |
+            evaluation/redteam_evidence.json
+            evaluation/security_audit_log.jsonl

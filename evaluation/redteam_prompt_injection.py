@@ -684,6 +684,12 @@ def services_up() -> tuple[bool, bool]:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Prompt-injection red team run")
     parser.add_argument("--offline", action="store_true", help="unit-level only")
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="fail on INCONCLUSIVE as well as VULNERABLE, and fail if a live "
+        "service was unreachable (CI uses this so a dead stack cannot pass)",
+    )
     args = parser.parse_args()
 
     print("=" * 78)
@@ -697,11 +703,15 @@ def main() -> int:
     print("\n[D] Static architecture analysis")
     test_static_coverage()
 
+    stack_unreachable = False
     if args.offline:
         print("\n(live tests skipped: --offline)")
     else:
         orch, book = services_up()
         if not orch:
+            # Skipping is right for a laptop, wrong for CI: a stack that is down
+            # would silently "pass" on far fewer tests than the suite intends.
+            stack_unreachable = True
             print("\n[!] Orchestrator not reachable on :8000 — live tests skipped")
         else:
             print("\n[B] Live prompt injection / leakage / jailbreak")
@@ -740,8 +750,24 @@ def main() -> int:
           f"SECURE {len(secure)} | INCONCLUSIVE {len(inconclusive)}")
     print(f"Evidence written: {EVIDENCE_PATH}")
     print("=" * 78)
+
+    if vulnerable:
+        print(f"\n[FAIL] {len(vulnerable)} vulnerable test(s)")
+    elif inconclusive:
+        print(f"\n[WARN] {len(inconclusive)} inconclusive test(s)")
+    else:
+        print(f"\n[PASS] all {len(secure)} tests secure")
+
     time.sleep(0.2)
-    return 1 if vulnerable else 0
+
+    if vulnerable:
+        return 1
+    if args.strict and inconclusive:
+        return 1
+    if args.strict and stack_unreachable:
+        print("[FAIL] --strict: live services were unreachable")
+        return 1
+    return 0
 
 
 if __name__ == "__main__":
