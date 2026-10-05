@@ -19,3 +19,5 @@
 {"timestamp": "2026-10-05T17:54:09.983751+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=159"}
 {"timestamp": "2026-10-05T17:54:12.454559+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
 {"timestamp": "2026-10-05T17:54:12.953522+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='<script[\\\\s>]' input_length=46"}
+{"timestamp": "2026-10-05T19:15:07.534148+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T19:16:23.870316+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}

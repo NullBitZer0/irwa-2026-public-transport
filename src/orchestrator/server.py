@@ -151,8 +151,11 @@ async def chat(request: ChatRequest) -> ChatResponse:
         "error": None,
     }
 
+    # Log the gateway-processed text, never the raw request: the raw string can
+    # still contain an NIC or phone number, and this line goes to stdout.
+    logger.info(f"[{session_id}] Query received: {user_query[:80]}…")
+
     try:
-        logger.info(f"[{session_id}] Query received: {request.query[:80]}…")
         result = await _graph.ainvoke(initial_state)
 
         messages: list = result.get("messages", [])
