@@ -144,3 +144,145 @@
 {"timestamp": "2026-10-05T13:29:28.924741+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
 {"timestamp": "2026-10-05T13:29:28.927184+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
 {"timestamp": "2026-10-05T13:29:28.942261+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=55"}
+{"timestamp": "2026-10-05T14:10:13.649081+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:10:13.651575+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
+{"timestamp": "2026-10-05T14:10:13.653875+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:10:13.656408+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
+{"timestamp": "2026-10-05T14:10:13.659138+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:10:13.663427+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=57"}
+{"timestamp": "2026-10-05T14:10:13.664859+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='set\\\\s+fare\\\\s+to\\\\s+0' input_length=34"}
+{"timestamp": "2026-10-05T14:10:13.666251+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='<script[\\\\s>]' input_length=29"}
+{"timestamp": "2026-10-05T14:10:13.667718+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='drop\\\\s+table' input_length=43"}
+{"timestamp": "2026-10-05T14:10:13.669142+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='grant\\\\s+admin\\\\s+access' input_length=22"}
+{"timestamp": "2026-10-05T14:10:13.680203+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:10:13.682286+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:10:13.698236+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=55"}
+{"timestamp": "2026-10-05T14:10:22.028166+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:10:22.030502+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
+{"timestamp": "2026-10-05T14:10:22.033025+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:10:22.035769+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
+{"timestamp": "2026-10-05T14:10:22.038330+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:10:22.042837+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=57"}
+{"timestamp": "2026-10-05T14:10:22.044418+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='set\\\\s+fare\\\\s+to\\\\s+0' input_length=34"}
+{"timestamp": "2026-10-05T14:10:22.046030+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='<script[\\\\s>]' input_length=29"}
+{"timestamp": "2026-10-05T14:10:22.047555+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='drop\\\\s+table' input_length=43"}
+{"timestamp": "2026-10-05T14:10:22.048913+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='grant\\\\s+admin\\\\s+access' input_length=22"}
+{"timestamp": "2026-10-05T14:10:22.058809+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:10:22.060619+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:10:22.077280+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=55"}
+{"timestamp": "2026-10-05T14:14:27.145376+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:14:27.147544+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
+{"timestamp": "2026-10-05T14:14:27.149391+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:14:27.151395+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
+{"timestamp": "2026-10-05T14:14:27.153409+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:14:27.158668+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=57"}
+{"timestamp": "2026-10-05T14:14:27.160839+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='set\\\\s+fare\\\\s+to\\\\s+0' input_length=34"}
+{"timestamp": "2026-10-05T14:14:27.162911+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='<script[\\\\s>]' input_length=29"}
+{"timestamp": "2026-10-05T14:14:27.165131+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='drop\\\\s+table' input_length=43"}
+{"timestamp": "2026-10-05T14:14:27.166598+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='grant\\\\s+admin\\\\s+access' input_length=22"}
+{"timestamp": "2026-10-05T14:14:27.178894+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:14:27.180863+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:14:27.196731+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=55"}
+{"timestamp": "2026-10-05T14:15:21.891502+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=32"}
+{"timestamp": "2026-10-05T14:15:21.891810+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='system\\\\s+override' input_length=15"}
+{"timestamp": "2026-10-05T14:15:21.892048+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='set\\\\s+fare\\\\s+to\\\\s+0' input_length=13"}
+{"timestamp": "2026-10-05T14:15:21.892276+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='<script[\\\\s>]' input_length=25"}
+{"timestamp": "2026-10-05T14:29:03.684197+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:29:03.686353+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
+{"timestamp": "2026-10-05T14:29:03.688275+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:29:03.690201+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
+{"timestamp": "2026-10-05T14:29:03.692198+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:29:03.697101+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=57"}
+{"timestamp": "2026-10-05T14:29:03.698647+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='set\\\\s+fare\\\\s+to\\\\s+0' input_length=34"}
+{"timestamp": "2026-10-05T14:29:03.700004+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='<script[\\\\s>]' input_length=29"}
+{"timestamp": "2026-10-05T14:29:03.701301+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='drop\\\\s+table' input_length=43"}
+{"timestamp": "2026-10-05T14:29:03.702750+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='grant\\\\s+admin\\\\s+access' input_length=22"}
+{"timestamp": "2026-10-05T14:29:03.712349+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:29:03.714742+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:29:03.730403+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=55"}
+{"timestamp": "2026-10-05T14:29:48.084597+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:29:48.087244+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
+{"timestamp": "2026-10-05T14:29:48.089341+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:29:48.091303+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
+{"timestamp": "2026-10-05T14:29:48.093598+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:29:48.099105+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=57"}
+{"timestamp": "2026-10-05T14:29:48.100689+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='set\\\\s+fare\\\\s+to\\\\s+0' input_length=34"}
+{"timestamp": "2026-10-05T14:29:48.102068+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='<script[\\\\s>]' input_length=29"}
+{"timestamp": "2026-10-05T14:29:48.103452+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='drop\\\\s+table' input_length=43"}
+{"timestamp": "2026-10-05T14:29:48.104808+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='grant\\\\s+admin\\\\s+access' input_length=22"}
+{"timestamp": "2026-10-05T14:29:48.114146+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:29:48.116201+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:29:48.133000+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=55"}
+{"timestamp": "2026-10-05T14:30:13.089975+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:30:13.093283+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
+{"timestamp": "2026-10-05T14:30:13.095451+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:30:13.097452+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
+{"timestamp": "2026-10-05T14:30:13.099428+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:30:13.104888+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=57"}
+{"timestamp": "2026-10-05T14:30:13.106503+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='set\\\\s+fare\\\\s+to\\\\s+0' input_length=34"}
+{"timestamp": "2026-10-05T14:30:13.108047+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='<script[\\\\s>]' input_length=29"}
+{"timestamp": "2026-10-05T14:30:13.110266+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='drop\\\\s+table' input_length=43"}
+{"timestamp": "2026-10-05T14:30:13.112231+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='grant\\\\s+admin\\\\s+access' input_length=22"}
+{"timestamp": "2026-10-05T14:30:13.123603+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:30:13.125641+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T14:30:13.142709+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=55"}
+{"timestamp": "2026-10-05T14:31:21.786404+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=32"}
+{"timestamp": "2026-10-05T14:31:21.786755+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='system\\\\s+override' input_length=15"}
+{"timestamp": "2026-10-05T14:31:21.787042+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='set\\\\s+fare\\\\s+to\\\\s+0' input_length=13"}
+{"timestamp": "2026-10-05T14:31:21.787218+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='<script[\\\\s>]' input_length=25"}
+{"timestamp": "2026-10-05T15:08:35.544851+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T15:08:35.547332+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
+{"timestamp": "2026-10-05T15:08:35.549380+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T15:08:35.551226+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
+{"timestamp": "2026-10-05T15:08:35.553339+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T15:08:35.559542+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=57"}
+{"timestamp": "2026-10-05T15:08:35.561221+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='set\\\\s+fare\\\\s+to\\\\s+0' input_length=34"}
+{"timestamp": "2026-10-05T15:08:35.562792+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='<script[\\\\s>]' input_length=29"}
+{"timestamp": "2026-10-05T15:08:35.564295+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='drop\\\\s+table' input_length=43"}
+{"timestamp": "2026-10-05T15:08:35.565683+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='grant\\\\s+admin\\\\s+access' input_length=22"}
+{"timestamp": "2026-10-05T15:08:35.575695+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T15:08:35.577941+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T15:08:35.594893+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=55"}
+{"timestamp": "2026-10-05T15:10:14.119902+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T15:10:14.122634+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
+{"timestamp": "2026-10-05T15:10:14.125024+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T15:10:14.126955+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
+{"timestamp": "2026-10-05T15:10:14.129213+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T15:10:14.134316+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=57"}
+{"timestamp": "2026-10-05T15:10:14.135864+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='set\\\\s+fare\\\\s+to\\\\s+0' input_length=34"}
+{"timestamp": "2026-10-05T15:10:14.137389+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='<script[\\\\s>]' input_length=29"}
+{"timestamp": "2026-10-05T15:10:14.138797+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='drop\\\\s+table' input_length=43"}
+{"timestamp": "2026-10-05T15:10:14.140276+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='grant\\\\s+admin\\\\s+access' input_length=22"}
+{"timestamp": "2026-10-05T15:10:14.150942+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T15:10:14.153159+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T15:10:14.168726+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=55"}
+{"timestamp": "2026-10-05T15:13:28.609602+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T15:13:28.612703+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
+{"timestamp": "2026-10-05T15:13:28.615451+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T15:13:28.617678+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
+{"timestamp": "2026-10-05T15:13:28.619671+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T15:13:28.626732+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=57"}
+{"timestamp": "2026-10-05T15:13:28.628373+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='set\\\\s+fare\\\\s+to\\\\s+0' input_length=34"}
+{"timestamp": "2026-10-05T15:13:28.629907+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='<script[\\\\s>]' input_length=29"}
+{"timestamp": "2026-10-05T15:13:28.631977+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='drop\\\\s+table' input_length=43"}
+{"timestamp": "2026-10-05T15:13:28.633494+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='grant\\\\s+admin\\\\s+access' input_length=22"}
+{"timestamp": "2026-10-05T15:13:28.643835+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T15:13:28.645742+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T15:13:28.662267+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=55"}
+{"timestamp": "2026-10-05T15:16:30.911328+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T15:16:30.913922+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
+{"timestamp": "2026-10-05T15:16:30.915904+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T15:16:30.917796+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
+{"timestamp": "2026-10-05T15:16:30.919624+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T15:16:30.925928+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=57"}
+{"timestamp": "2026-10-05T15:16:30.928209+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='set\\\\s+fare\\\\s+to\\\\s+0' input_length=34"}
+{"timestamp": "2026-10-05T15:16:30.930142+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='<script[\\\\s>]' input_length=29"}
+{"timestamp": "2026-10-05T15:16:30.931689+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='drop\\\\s+table' input_length=43"}
+{"timestamp": "2026-10-05T15:16:30.933061+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='grant\\\\s+admin\\\\s+access' input_length=22"}
+{"timestamp": "2026-10-05T15:16:30.944538+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T15:16:30.946629+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-05T15:16:30.964198+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=55"}
+{"timestamp": "2026-10-05T15:17:48.120488+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=32"}
+{"timestamp": "2026-10-05T15:17:48.120778+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='system\\\\s+override' input_length=15"}
+{"timestamp": "2026-10-05T15:17:48.120931+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='set\\\\s+fare\\\\s+to\\\\s+0' input_length=13"}
+{"timestamp": "2026-10-05T15:17:48.121107+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='<script[\\\\s>]' input_length=25"}
