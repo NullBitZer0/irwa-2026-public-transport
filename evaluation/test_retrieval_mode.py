@@ -227,7 +227,7 @@ def test_reverse_direction_options_explains_the_gap(
 
 
 def test_direction_filter_respects_mode(retriever: HybridTransitRetriever) -> None:
-    """A bus request must not be satisfied by a reversed train."""
+    """A bus request must be satisfied by a bus, never by a train."""
     results = retriever.retrieve_candidates(
         "Jaffna idala Colombo yanna",
         origin="Jaffna",
@@ -235,7 +235,8 @@ def test_direction_filter_respects_mode(retriever: HybridTransitRetriever) -> No
         mode="BUS",
         top_k=5,
     )
-    assert results == []
+    assert results, "SLTB route 87 runs Jaffna → Colombo"
+    assert all(_is_bus(r) for r in results), [r["route_id"] for r in results]
 
 
 def test_endpoint_reports_direction_note(client: TestClient) -> None:

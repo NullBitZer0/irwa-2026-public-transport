@@ -74,7 +74,15 @@ function RouteCard({ route, onSelect }) {
               route.service_name
             )}
           </h3>
-          <span className="route__id">{route.route_id}</span>
+          <span className="route__id">
+            {route.route_id}
+            {route.route_number && (
+              <>
+                {' · '}
+                <span title="Operator route number">Route {route.route_number}</span>
+              </>
+            )}
+          </span>
         </div>
         <span className="route__fare">
           LKR {Number(route.base_fare_lkr ?? 0).toLocaleString('en-LK')}
@@ -98,7 +106,12 @@ function RouteCard({ route, onSelect }) {
             </div>
             <div>
               <dt>Arrives</dt>
-              <dd>{route.arrival_time ?? '—'}</dd>
+              <dd>
+                {route.arrival_time ?? '—'}
+                {route.arrival_next_day && (
+                  <span className="conn__nextDay"> +1 day</span>
+                )}
+              </dd>
             </div>
             <div>
               <dt>Provider</dt>

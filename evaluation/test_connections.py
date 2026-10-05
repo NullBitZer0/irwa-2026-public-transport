@@ -141,14 +141,63 @@ def test_connection_respects_minimum_changeover(services) -> None:
     assert best["transfer_minutes"] >= 20, best["transfer_minutes"]
 
 
-def test_connection_window_is_capped_at_24_hours(services) -> None:
+def test_long_changeover_is_offered_but_flagged_overnight() -> None:
     """
-    A changeover longer than a day is not a connection, it is an unrelated service.
+    A long changeover is still a real connection, but it must be flagged.
 
-    The Kandy → Colombo train arrives 18:05; the earliest coach onwards leaves the
-    next morning, so nothing may be offered once the window is exceeded.
+    Synthetic services keep this independent of the fixture data: the feeder
+    arrives 12:00 and the only onward service leaves at 23:00 the next day, an
+    11 hour wait.
     """
-    assert find_connections(services, "Kandy", "Jaffna", min_transfer_minutes=25 * 60) == []
+    sparse = [
+        {
+            "route_id": "SYN-1",
+            "service_name": "Synthetic feeder",
+            "provider": "SLR",
+            "origin": "OriginTown",
+            "destination": "HubTown",
+            "departure_time": "08:00",
+            "arrival_time": "12:00",
+            "base_fare_lkr": 100.0,
+            "stops": ["OriginTown", "HubTown"],
+            "classes": ["2nd Class Reserved"],
+            "transit_type": "EXPRESS_TRAIN",
+        },
+        {
+            "route_id": "SYN-2",
+            "service_name": "Synthetic connector",
+            "provider": "SLTB",
+            "origin": "HubTown",
+            "destination": "DestTown",
+            "departure_time": "23:00",  # next day: an 11h change at the hub
+            "arrival_time": "02:00",
+            "base_fare_lkr": 100.0,
+            "stops": ["HubTown", "DestTown"],
+            "classes": ["Ordinary"],
+            "transit_type": "EXPRESS_BUS",
+        },
+    ]
+
+    connections = find_connections(sparse, "OriginTown", "DestTown")
+    assert connections, "an 11h change should still be offered"
+    assert connections[0]["transfer_minutes"] == 11 * 60
+    assert connections[0]["overnight_change"] is True
+    assert connections[0]["mixed_mode"] is True
+
+
+def test_no_connection_is_ever_more_than_a_day_after_readiness(services) -> None:
+    """
+    The search window is 24 hours wide from the moment the traveller is ready,
+    so no offered connection can ever exceed min_transfer + 24h.
+    """
+    for origin, destination in [
+        ("Kandy", "Jaffna"),
+        ("Jaffna", "Kandy"),
+        ("Kandy", "Galle"),
+        ("Jaffna", "Colombo Fort"),
+    ]:
+        for connection in find_connections(services, origin, destination):
+            assert connection["transfer_minutes"] <= 20 + 24 * 60, (origin, connection)
 
 
 def test_overnight_change_is_flagged(services) -> None:

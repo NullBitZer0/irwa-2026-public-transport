@@ -63,6 +63,7 @@ TIME_PATTERN = re.compile(r"^([01]\d|2[0-3]):[0-5]\d$")
 
 CSV_COLUMNS = [
     "route_id",
+    "route_number",
     "service_name",
     "provider",
     "origin",
@@ -97,6 +98,12 @@ class ServiceRecord:
     stops: list[str] = field(default_factory=list)
     classes: list[str] = field(default_factory=list)
     transit_type: str = ""
+    # Operator's own route number, e.g. SLTB "87" for Colombo <-> Jaffna.
+    # Distinct from our internal route_id.
+    route_number: str = ""
+    # True when the service arrives after midnight, so a bare arrival_time would
+    # look earlier than the departure.
+    arrival_next_day: bool = False
     # Provenance — kept alongside the row so a reviewer can check it.
     source: str = ""
     source_url: str = ""
@@ -107,7 +114,7 @@ class ServiceRecord:
 
     def to_fixture(self) -> dict[str, Any]:
         """Shape matching the existing fixture files (no provenance fields)."""
-        return {
+        fixture = {
             "route_id": self.route_id,
             "service_name": self.service_name,
             "provider": self.provider,
@@ -121,6 +128,11 @@ class ServiceRecord:
             "transit_type": self.transit_type
             or ("INTERCITY_EXPRESS" if self.is_train() else "EXPRESS_BUS"),
         }
+        if self.route_number:
+            fixture["route_number"] = self.route_number
+        if self.arrival_next_day:
+            fixture["arrival_next_day"] = True
+        return fixture
 
 
 def validate(record: ServiceRecord) -> list[str]:
@@ -177,6 +189,9 @@ def read_csv_rows(path: str) -> list[ServiceRecord]:
                     stops=[s.strip() for s in (clean.get("stops") or "").split(";") if s.strip()],
                     classes=[c.strip() for c in (clean.get("classes") or "").split(";") if c.strip()],
                     transit_type=clean.get("transit_type", ""),
+                    route_number=clean.get("route_number", ""),
+                    arrival_next_day=(clean.get("arrival_next_day", "") or "").lower()
+                    in ("1", "true", "yes", "y"),
                     source=clean.get("source", ""),
                     source_url=clean.get("source_url", ""),
                     confidence=clean.get("confidence", "curated"),
