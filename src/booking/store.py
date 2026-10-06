@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS bookings (
     passenger_token  TEXT NOT NULL,
     seat_count       INTEGER NOT NULL,
     fare_lkr         REAL NOT NULL,
+    amount_lkr       REAL NOT NULL DEFAULT 0,
     state            TEXT NOT NULL,
     hold_expires_at  TEXT,
     booking_reference TEXT,
@@ -75,6 +76,7 @@ _BOOKING_COLUMNS = (
     "passenger_token",
     "seat_count",
     "fare_lkr",
+    "amount_lkr",
     "state",
     "hold_expires_at",
     "booking_reference",
@@ -184,6 +186,10 @@ class BookingStore:
         added: dict[str, list[tuple[str, str]]] = {
             "bookings": [
                 ("session_id", "TEXT NOT NULL DEFAULT 'anonymous'"),
+                # Defaults are chosen so an existing single-seat row reads back
+                # correctly: amount defaults to the per-seat fare rather than 0,
+                # which would look like a free ticket.
+                ("amount_lkr", "REAL NOT NULL DEFAULT 0"),
             ],
         }
 

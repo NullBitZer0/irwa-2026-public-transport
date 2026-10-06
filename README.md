@@ -422,7 +422,8 @@ index.
 **Coverage note:** the timetable corpus has 12 trains. The Kandy → Jaffna
 corridor was added from `data/curated/kandy_jaffna_train.csv` through the
 supported ingestion path — real endpoints and intermediate stations, with the
-generated times and fare flagged `synthetic` and named in `synthetic_fields`. It
+generated times and fare flagged `synthetic` in the API and named in
+`synthetic_fields`, which the UI no longer surfaces. It
 is northbound only, so the reverse query correctly returns nothing.
 
 ### 4. Live weather and news
@@ -500,9 +501,7 @@ cannot tell whether the target was protected is not evidence.
 Two views in the sidebar, both served from the same corpus as the chat.
 
 **Timetables** lists bus and train services sorted by departure time, filterable
-by mode and searchable by town, route or operator. Synthetic services are labelled
-*demo data* with the generated fields named — a timetable that does not say which
-rows were invented is a lie told in a table.
+by mode and searchable by town, route or operator.
 
 **Route map** draws the available routes on a real outline of Sri Lanka as inline
 SVG, so it works offline and leaks no viewport to a tile server. Click a line for
@@ -584,6 +583,10 @@ Notes on that flow:
   the order a trip is planned — from, to, when, how — after echoing what has
   already been established. Partial answers are answered with the single
   remaining question, not a repeat of the full list.
+- **Seat count is settled before any hold.** Ask for it in the reply with one-tap
+  choices, or just say it: *"for 2 seats"*, *"3 tickets"*, *"a family of 4"*.
+  It is remembered across turns and can be corrected. The agent does not ask again
+  once you have answered, and never quotes one seat and bills for four.
 - **Incident checking is off until you switch it on.** The *Simulate incident*
   toggle in the sidebar arms it; nothing is looked for, and no disruption is
   mentioned, until then. Un-checking removes the simulated incident and stops the
@@ -618,6 +621,17 @@ count; clicking one opens the transcript in read-only view.
 Booking is staged and human-in-the-loop: the agent holds a seat for 10 minutes,
 asks for approval, then stops at the payment step. **Only the last four card
 digits are ever sent** — no PAN or CVV reaches any agent.
+
+Seats are priced per seat and the total is charged. The confirmation states both
+— *"LKR 850 per seat (LKR 2,550 for 3 seats)"* — because a traveller being asked
+to approve a charge should see the amount, not the unit price. The total is
+carried on the transaction (`amount_lkr`), so the reply, the receipt and the
+purchase ledger cannot disagree about it.
+
+This was a real bug: the amount charged was the per-seat fare whatever the seat
+count, so a three-seat booking cost the price of one. Nothing caught it while
+every booking happened to be a single seat in the UI, and a test had encoded the
+wrong total as expected behaviour.
 
 In the sidebar's purchase history:
 

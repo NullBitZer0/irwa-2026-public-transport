@@ -427,6 +427,16 @@ async def chat(request: ChatRequest, user: dict = Depends(current_user)) -> Chat
             "mode": "ANY" if parsed.mode == "ANY" else parsed.mode,
             "departure_date": parsed.departure_date,
             "departure_time": parsed.departure_time,
+            # Seats too, or "for 3 seats" is forgotten by the next turn — and
+            # the traveller is asked how many seats they want after saying it.
+            #
+            # Passed only when stated. The merge skips "I did not say" values, and
+            # that is the rule every other slot relies on; a seat count of 1 is a
+            # *default*, not an answer, so passing it unconditionally made the
+            # next turn — "8am by train", which says nothing about seats —
+            # quietly reset three seats back to one.
+            "passengers": parsed.passengers if parsed.seat_count_stated else None,
+            "seat_count_stated": True if parsed.seat_count_stated else None,
         },
     )
 
@@ -442,6 +452,11 @@ async def chat(request: ChatRequest, user: dict = Depends(current_user)) -> Chat
             "mode": carried.get("mode") or "ANY",
             "departure_date": carried.get("departure_date") or parsed.departure_date,
             "departure_time": carried.get("departure_time"),
+            # Seats and whether they were stated. Rebuilt field by field here, so
+            # a new slot that is not listed is silently dropped before the graph
+            # ever sees it — which is exactly what happened to these.
+            "passengers": int(carried.get("passengers") or 1),
+            "seat_count_stated": bool(carried.get("seat_count_stated")),
         },
         "route_options": [],
         "selected_route_id": request.selected_route_id,

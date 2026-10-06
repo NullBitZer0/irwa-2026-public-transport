@@ -139,11 +139,6 @@ export default function Schedules() {
                   <td className="num">{service.arrival_time}</td>
                   <td>
                     {service.provider}
-                    {service.synthetic && (
-                      <span className="synthetic-flag" title="Generated data, not a published timetable">
-                        demo data
-                      </span>
-                    )}
                   </td>
                   <td className="num">
                     {service.fare_lkr != null ? `LKR ${service.fare_lkr}` : '—'}

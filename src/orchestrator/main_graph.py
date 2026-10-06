@@ -136,6 +136,22 @@ async def planning_agent_node(state: TransitSessionState) -> dict:
     if services:
         # Remember the proposals: a later bare "yes" needs something to point at.
         SLOTS.propose(state["session_id"], services)
+
+        # Seat count is asked before any hold, not discovered at payment. A
+        # traveller who is quoted for one seat and billed for four has been
+        # mis-sold, so the count is settled while it is still cheap to change.
+        if not entities.get("seat_count_stated"):
+            message = _prepend_conditions(
+                advisory,
+                _journey_services_message(services, jdata)
+                + "\n\nHow many seats do you need?",
+            )
+            return {
+                "messages": [message],
+                "route_options": _with_provenance(services),
+                "clarification": {"missing": ["seats"], "options": _seat_options()},
+                "conditions": advisory,
+            }
         return {
             "messages": [
                 _prepend_conditions(advisory, _journey_services_message(services, jdata))
@@ -257,6 +273,19 @@ def _journey_services_message(services: list[dict], jdata: dict) -> str:
         + "\n\nAre you ready to book? Reply **yes** and I'll hold the first one "
         "for you, or name a different service from the list above."
     )
+
+
+def _seat_options() -> list[dict]:
+    """
+    One-tap seat counts. Asking in the reply beats a second round trip.
+
+    Singular for one seat, in both the label and the value it sends — "1 seats"
+    is the kind of small wrongness that makes an agent feel machine-made.
+    """
+    return [
+        {"label": f"{n} seat" + ("s" if n > 1 else ""), "value": f"{n} seat" + ("s" if n > 1 else "")}
+        for n in (1, 2, 3, 4)
+    ]
 
 
 async def _keyword_route_search(state: TransitSessionState, entities: dict) -> dict:
@@ -405,10 +434,21 @@ async def hitl_checkpoint_node(state: TransitSessionState) -> dict:
             "error": str(exc),
         }
 
+    # Quote per seat and the total when they differ. "LKR 850" for three seats
+    # is true of one seat and misleading about the bill, and the traveller is
+    # being asked to approve a charge here.
+    seats = int(entities.get("passengers", 1) or 1)
+    price = (
+        f"**LKR {fare:,.0f} per seat** (LKR {fare * seats:,.0f} for {seats} seat"
+        f"{'s' if seats > 1 else ''})"
+        if seats > 1
+        else f"**LKR {fare:,.0f}**"
+    )
+
     msg = (
         f"⚠️ **Human-in-the-Loop Confirmation Required**\n\n"
-        f"You are about to hold a seat on route **`{route_id}`** at "
-        f"**LKR {fare:,.0f}**.\n\n"
+        f"You are about to hold **{seats} seat{'s' if seats > 1 else ''}** on "
+        f"route **`{route_id}`** at {price}.\n\n"
         f"Please confirm by:\n"
         f"- Clicking **✅ Confirm & Hold Seat** in the sidebar, or\n"
         f"- Sending: *\"YES confirm {route_id}\"*"
@@ -466,15 +506,20 @@ async def booking_agent_node(state: TransitSessionState) -> dict:
         txn = data.get("transaction") or {}
 
         ref = txn.get("transaction_id") or data.get("booking_reference") or "N/A"
-        amount = txn.get("fare_lkr")
+        # The total the gateway will charge, which is fare × seats. Showing the
+        # per-seat figure alone here would under-quote the amount due.
+        amount = txn.get("amount_lkr") or txn.get("fare_lkr")
         seats = txn.get("seat_count")
+        per_seat = txn.get("fare_lkr")
         # A missing fare must not crash the formatter or read as free.
         amount_text = f"LKR {amount:,.0f}" if isinstance(amount, (int, float)) else "not available"
         msg = (
             f"✅ **Seat held!**\n\n"
             f"**Transaction:** `{ref}`\n"
             f"**Seats:** {seats if seats is not None else '—'}\n"
-            f"**Amount due:** {amount_text}\n\n"
+            f"**Fare per seat:** "
+            + (f"LKR {per_seat:,.0f}\n" if isinstance(per_seat, (int, float)) else "—\n")
+            + f"**Amount due:** {amount_text}\n\n"
             f"⏱️ You have **10 minutes** to complete payment before the hold expires.\n\n"
             f"💳 Continue to the secure payment portal to pay and get your e-ticket."
         )

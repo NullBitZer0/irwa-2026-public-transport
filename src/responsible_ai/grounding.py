@@ -69,21 +69,3 @@ def format_grounded_response(
 > *Retrieval Confidence (RRF Score):* `{rrf}`
 """.strip()
     return card
-
-
-def attach_hallucination_warning(response: str, has_routes: bool) -> str:
-    """
-    Appends a hallucination disclaimer if no grounded routes were found.
-
-    Ported to the shipped React UI in ChatMessage.jsx, which shows the same
-    disclaimer when a route search returns nothing — an empty result should read
-    as "nothing verified", not as "no such service exists".
-    """
-    if not has_routes:
-        return (
-            response
-            + "\n\n⚠️ *No verified routes found in our timetable database. "
-            "Please check official sources before travelling.*"
-        )
-    return response
-

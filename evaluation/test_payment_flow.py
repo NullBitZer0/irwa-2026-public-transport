@@ -110,7 +110,11 @@ def test_settlement_issues_a_ticket_and_receipt(client: TestClient) -> None:
     assert body["booking_reference"], "a booking reference must be issued"
     assert body["receipt"]["status"] == "PAID"
     assert body["receipt"]["receipt_id"].startswith("PAY-")
-    assert body["receipt"]["amount_lkr"] == 850.0
+    # Two seats at 850 each. This asserted 850 before — the amount charged was
+    # the per-seat fare whatever the seat count, so a two-seat booking cost the
+    # price of one. Nothing caught it because every booking happened to be one
+    # seat in the UI even though the API accepted more.
+    assert body["receipt"]["amount_lkr"] == 1700.0
     assert body["ticket"]["state"] == "CONFIRMED"
 
 
@@ -157,7 +161,8 @@ def test_settled_ticket_appears_in_purchase_history(client: TestClient) -> None:
     assert entry["booking_reference"] == settled["booking_reference"]
     assert entry["route_id"] == "TRAIN-1001"
     assert entry["seat_count"] == 3
-    assert entry["amount_paid_lkr"] == 1200.0
+    # 3 × 1200, not 1200.
+    assert entry["amount_paid_lkr"] == 3600.0
     assert entry["card_last4"] == "4242"
     assert entry["purchased_at"]
 

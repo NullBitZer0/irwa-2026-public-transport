@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime, timezone
+from typing import Any
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
@@ -121,6 +122,7 @@ def record_purchase(ticket: dict, receipt: dict, card_last4: str) -> dict:
         "passenger_token": ticket.get("passenger_token"),
         "purchased_at": datetime.now(tz=timezone.utc).isoformat(timespec="seconds"),
         "receipt_id": receipt.get("receipt_id"),
+        # What the gateway was actually charged, not the per-seat fare.
         "amount_paid_lkr": receipt.get("amount_lkr"),
         "card_last4": card_last4,
     }
@@ -230,6 +232,20 @@ async def hold_seat(req: HoldRequest) -> dict:
     }
 
 
+def _amount_due(txn: Any) -> float:
+    """
+    What this transaction is owed.
+
+    Falls back to the per-seat fare for a row written before `amount_lkr` existed,
+    rather than to zero: a fallback of zero would charge nothing and look like a
+    free ticket.
+    """
+    amount = getattr(txn, "amount_lkr", 0) or 0
+    if amount > 0:
+        return float(amount)
+    return float(getattr(txn, "fare_lkr", 0) or 0) * max(int(getattr(txn, "seat_count", 1) or 1), 1)
+
+
 @app.post("/mcp/await_payment")
 async def await_payment(req: AwaitPaymentRequest) -> dict:
     """
@@ -275,7 +291,7 @@ async def charge(req: ChargeRequest) -> dict:
         raise HTTPException(status_code=404, detail="Transaction not found.")
 
     checkout_token = _payment_gateway.tokenize_card(req.card_last4)
-    receipt = _payment_gateway.charge(checkout_token, txn.fare_lkr)
+    receipt = _payment_gateway.charge(checkout_token, _amount_due(txn))
 
     return {"status": "SUCCESS", "receipt": receipt}
 
@@ -366,7 +382,7 @@ async def begin_booking(req: BookTicketRequest) -> dict:
         AwaitPaymentRequest(transaction_id=txn_id, hitl_token=req.hitl_token)
     )
 
-    fare = _state_machine.get(txn_id).fare_lkr
+    fare = _amount_due(_state_machine.get(txn_id))
     if fare <= 0:
         # Refusing here is the last line of defence: a zero fare must never be
         # treated as a free ticket, whatever the caller sent.
@@ -405,7 +421,7 @@ async def settle_booking(req: SettleRequest) -> dict:
         raise HTTPException(status_code=404, detail="Transaction not found.")
 
     checkout_token = _payment_gateway.tokenize_card(req.card_last4)
-    receipt = _payment_gateway.charge(checkout_token, txn.fare_lkr)
+    receipt = _payment_gateway.charge(checkout_token, _amount_due(txn))
 
     confirm_result = await confirm_booking(
         ConfirmRequest(

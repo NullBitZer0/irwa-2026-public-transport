@@ -767,16 +767,6 @@ code {
   padding-top: 0.3rem;
 }
 
-.msg__disclaimer {
-  margin: 0.5rem 0 0;
-  padding: 0.45rem 0.6rem;
-  border-left: 3px solid #e8a33d;
-  background: rgba(232, 163, 61, 0.08);
-  border-radius: 0 6px 6px 0;
-  color: var(--muted);
-  font-size: 0.76rem;
-}
-
 /* ── Chat history (read-only) ───────────────────────────────────────────── */
 
 .history {

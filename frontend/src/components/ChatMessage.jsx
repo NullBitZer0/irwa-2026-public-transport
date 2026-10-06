@@ -27,15 +27,6 @@ export default function ChatMessage({ message }) {
           dangerouslySetInnerHTML={{ __html: renderMarkdown(message.text) }}
         />
 
-        {/* Responsible AI: say so when nothing could be verified, rather than
-            letting an empty result read as "no such service exists". */}
-        {!isUser && message.intent === 'PLAN_ROUTE' && (message.routes?.length ?? 0) === 0 && (
-          <p className="msg__disclaimer">
-            ⚠️ No verified routes found in our timetable database. Please check
-            official sources before travelling.
-          </p>
-        )}
-
         {message.routes?.length > 0 && (
           <div className="routes">
             {message.routes.map((route) => (

@@ -31,7 +31,13 @@ from typing import Any, Optional
 
 # Slots carried across turns. `passenger_token` is deliberately absent: it is
 # derived per session by the caller, not accumulated from user text.
-SLOT_KEYS = ("origin", "destination", "mode", "departure_date", "departure_time")
+SLOT_KEYS = (
+    "origin", "destination", "mode", "departure_date", "departure_time",
+    "passengers",
+    # Kept alongside the count, or the agent forgets the traveller already said
+    # "2 seats" and asks them again a turn later.
+    "seat_count_stated",
+)
 
 # Services the planner last proposed for this session, so a plain "yes" can mean
 # "book that one". Kept separate from SLOT_KEYS because these are not things the

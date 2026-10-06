@@ -28,6 +28,7 @@ from src.orchestrator.conversations import (  # noqa: E402
     ConversationStore,
     conversation_title_from,
 )
+from src.orchestrator.session_store import SLOTS  # noqa: E402
 
 
 @pytest.fixture()
@@ -534,3 +535,136 @@ def test_a_transaction_binding_survives_a_restart(tmp_path) -> None:
     assert ConversationStore(db).transaction_owner("TXN-1")["conversation_id"] == (
         conversation_id
     )
+
+
+# ── Seat counts ──────────────────────────────────────────────────────────────
+
+
+@pytest.mark.parametrize(
+    "query,expected",
+    [
+        ("Colombo to Galle bus at 2pm for 2 seats", 2),
+        ("I need 3 tickets to Kandy", 3),
+        ("2 tickets from Kandy to Colombo", 2),
+        ("a family of 4 going to Jaffna", 4),
+        ("tickets for 2 please", 2),
+        ("two seats to Matara", 2),
+        ("one seat please", 1),
+        ("Colombo to Galle bus at 2pm", 1),
+        # "two" without a seat word is prose, not a party size.
+        ("there are two trains to Kandy", 1),
+    ],
+)
+def test_seat_counts_are_read_from_how_the_traveller_asks(query: str, expected: int) -> None:
+    from src.planner.nlp_parser import extract_seat_count
+
+    assert extract_seat_count(query)[0] == expected
+
+
+def test_a_stated_seat_count_is_distinguishable_from_the_default() -> None:
+    """
+    One seat is both the default and a real answer.
+
+    Without this distinction the agent asks "how many seats?" again after being
+    told "1", which reads as not having listened.
+    """
+    from src.planner.nlp_parser import extract_seat_count
+
+    assert extract_seat_count("Colombo to Galle at 2pm") == (1, False)
+    assert extract_seat_count("1 seat to Galle") == (1, True)
+
+
+def test_absurd_seat_counts_are_capped() -> None:
+    """
+    The number goes straight into a fare calculation, so an unbounded "99 seats"
+    would quote a five-figure total nobody asked for.
+    """
+    from src.planner.nlp_parser import MAX_SEATS, extract_seat_count
+
+    assert extract_seat_count("99 seats")[0] == MAX_SEATS
+    assert extract_seat_count("0 seats")[0] == 1
+
+
+def test_the_ticket_total_is_the_fare_times_the_seats() -> None:
+    """
+    The bug this enables: a multi-seat booking used to cost one fare.
+
+    Nothing caught it while every booking was a single seat in the UI, even
+    though the API accepted more, and a test had encoded the wrong total as
+    expected behaviour.
+    """
+    from fastapi.testclient import TestClient
+
+    from src.booking.server import app
+
+    client = TestClient(app)
+    hold = client.post(
+        "/mcp/hold_seat",
+        json={
+            "route_id": "TRAIN-1001",
+            "provider": "SLR",
+            "passenger_token": "RT-SEATS-1",
+            "seat_count": 3,
+            "fare_lkr": 850.0,
+            "session_id": "seat-test",
+        },
+    )
+    transaction = hold.json()["data"]["transaction"]
+
+    assert transaction["seat_count"] == 3
+    assert transaction["fare_lkr"] == 850.0, "the per-seat fare is unchanged"
+    assert transaction["amount_lkr"] == 2550.0
+
+
+def test_an_old_row_without_a_total_still_charges_the_right_amount() -> None:
+    """A transaction stored before this field existed must not charge zero."""
+    from src.booking.server import _amount_due
+
+    class OldTransaction:
+        fare_lkr = 850.0
+        seat_count = 2
+        amount_lkr = 0.0
+
+    assert _amount_due(OldTransaction()) == 1700.0
+
+
+def test_seat_count_survives_later_turns() -> None:
+    """Saying "3 seats" early still applies when the booking is made."""
+    SLOTS._sessions.clear()
+    SLOTS.merge("seat-session", {"origin": "Kandy", "passengers": 3})
+
+    assert SLOTS.get("seat-session")["passengers"] == 3, "seats did not persist"
+
+
+def test_a_later_turn_does_not_reset_the_seat_count() -> None:
+    """
+    A seat count of 1 is a default, not an answer.
+
+    Every other slot relies on the merge skipping "I did not say" values. A
+    numeric default broke that rule: "Colombo to Kandy for 3 seats" followed by
+    "8am by train" reset three seats to one, and the agent asked again.
+    """
+    from src.planner.nlp_parser import extract_transit_intent
+
+    SLOTS._sessions.clear()
+
+    def merge(text: str) -> dict:
+        parsed = extract_transit_intent(text)
+        return SLOTS.merge(
+            "seat-reset-probe",
+            {
+                "origin": parsed.origin,
+                "destination": parsed.destination,
+                "mode": "ANY" if parsed.mode == "ANY" else parsed.mode,
+                "departure_date": parsed.departure_date,
+                "departure_time": parsed.departure_time,
+                "passengers": parsed.passengers if parsed.seat_count_stated else None,
+                "seat_count_stated": True if parsed.seat_count_stated else None,
+            },
+        )
+
+    merge("Colombo to Kandy for 3 seats")
+    assert merge("8am by train")["passengers"] == 3, "a silent turn reset the seats"
+    # And a correction still wins.
+    merge("change it to 2 seats")
+    assert merge("actually 5pm")["passengers"] == 2

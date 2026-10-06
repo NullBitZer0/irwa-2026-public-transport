@@ -50,7 +50,15 @@ class BookingTransaction(BaseModel):
     session_id: str = "anonymous"
     passenger_token: str
     seat_count: int
+    # What one seat costs. Kept separate from the total because the fare is
+    # quoted per seat and a traveller comparing two services needs to see that.
     fare_lkr: float
+    # What the traveller is actually charged: fare × seats.
+    #
+    # Added because the total used to be implied by `fare_lkr`, which meant a
+    # three-seat booking cost the price of one. Nothing caught it while every
+    # booking was a single seat.
+    amount_lkr: float = 0.0
     state: BookingState = BookingState.INITIATED
     hold_expires_at: Optional[datetime] = None
     booking_reference: Optional[str] = None
@@ -105,6 +113,10 @@ class BookingStateMachine:
             passenger_token=passenger_token,
             seat_count=seats,
             fare_lkr=fare,
+            # The fare is per seat. Multiplying here rather than at the gateway
+            # means every consumer of the transaction — the amount shown, the
+            # receipt, the ticket — reads the same total.
+            amount_lkr=round(fare * max(seats, 1), 2),
             state=BookingState.SEAT_HELD,
             hold_expires_at=datetime.now(tz=timezone.utc)
             + timedelta(minutes=self.HOLD_DURATION_MINUTES),

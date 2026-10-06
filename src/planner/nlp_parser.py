@@ -24,6 +24,11 @@ class ParsedTransitQuery(BaseModel):
     departure_date: str = Field(default="TODAY")
     departure_time: Optional[str] = Field(default=None)
     passengers: int = Field(default=1)
+    # Whether the traveller actually said a number. `passengers == 1` is
+    # ambiguous — one seat is both the default and a real answer — and asking
+    # "how many seats?" again after being told "1" is a small way to make the
+    # agent feel like it was not listening.
+    seat_count_stated: bool = False
 
 
 SL_STATIONS: list[str] = [
@@ -218,6 +223,64 @@ def _detect_origin_destination(raw_query: str) -> tuple[Optional[str], Optional[
     return origin, destination
 
 
+# How many seats, as the traveller says it. Number words included because people
+# write "two seats" at least as often as "2 seats", and Singlish travellers write
+# "tickets kanna thiyeda".
+NUMBER_WORDS = {
+    "one": 1, "a": 1, "single": 1,
+    "two": 2, "pair": 2, "couple": 2, "both": 2,
+    "three": 3, "four": 4, "five": 5, "six": 6,
+    "seven": 7, "eight": 8,
+}
+
+SEAT_WORDS = {"seat", "seats", "ticket", "tickets", "person", "people", "passenger", "passengers",
+              "tickets", "seat", "maan", "මනු"}
+
+# "family of 4", "for 3 people", "2 tickets", "tickets for 2", "3 seats"
+SEAT_COUNT_PATTERNS = [
+    re.compile(r"\b(?:family|group|party)\s+of\s+(\d{1,2})\b"),
+    re.compile(r"\b(\d{1,2})\s*(?:seats?|tickets?|persons?|people|passengers?|maan)\b"),
+    re.compile(r"\b(?:tickets?|seats?|persons?|people|passengers?)\s+(?:for\s+)?(\d{1,2})\b"),
+]
+
+MAX_SEATS = 8
+
+
+def extract_seat_count(user_query: str) -> tuple[int, bool]:
+    """
+    How many seats the traveller asked for, and whether they said so.
+
+    Clamped to MAX_SEATS because this number goes straight into a fare
+    calculation: an unbounded "99 seats" from a mistyped query would otherwise
+    produce a five-figure total nobody asked for. Better to cap it and let the
+    traveller correct us than to quote a nonsense amount.
+
+    Deterministically extracted rather than left to the model, because the model
+    is optional here and this value is money.
+    """
+    text = user_query.strip().lower()
+
+    for pattern in SEAT_COUNT_PATTERNS:
+        match = pattern.search(text)
+        if match:
+            try:
+                count = int(match.group(1))
+            except (TypeError, ValueError):
+                continue
+            if count > 0:
+                return min(count, MAX_SEATS), True
+
+    # Number words, but only next to a seat word, or "two" in a journey query
+    # would silently become two tickets.
+    for word, value in NUMBER_WORDS.items():
+        if not _has_word(text, {word}):
+            continue
+        if _has_word(text, SEAT_WORDS):
+            return min(value, MAX_SEATS), True
+
+    return 1, False
+
+
 def extract_transit_intent(user_query: str) -> ParsedTransitQuery:
     """
     Simplify-first rule-based extraction (English + Singlish).
@@ -254,6 +317,8 @@ def extract_transit_intent(user_query: str) -> ParsedTransitQuery:
     elif _has_word(text_lower, {"seat", "available"}):
         intent = "CHECK_SEAT"
 
+    seat_count, seat_count_stated = extract_seat_count(user_query)
+
     # Stations (English + Singlish direction markers, with fallback ordering)
     origin, destination = _detect_origin_destination(user_query)
 
@@ -264,6 +329,8 @@ def extract_transit_intent(user_query: str) -> ParsedTransitQuery:
         mode=mode,
         departure_date=date,
         departure_time=departure_time,
+        passengers=seat_count,
+        seat_count_stated=seat_count_stated,
     )
 
 
