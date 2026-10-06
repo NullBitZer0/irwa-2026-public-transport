@@ -28,9 +28,9 @@ from src.conditions.analysis import (
     advisory_sentence,
     build_advisory,
     classify,
-    disarmed_sentence,
 )
 from src.conditions.gather import (
+    HEADLINES,
     active_simulations,
     arm_incident_check,
     fetch_forecast_window,
@@ -38,6 +38,8 @@ from src.conditions.gather import (
     fetch_weather,
     incident_check_armed,
     set_simulated_incident,
+    start_headline_worker,
+    stop_headline_worker,
 )
 from src.security.gateway import IngressBlocked, enforce_ingress
 
@@ -80,28 +82,37 @@ async def conditions(req: ConditionsRequest) -> dict:
             status_code=400, detail=f"Blocked by security gateway: {exc}"
         ) from exc
 
-    origin_weather = fetch_weather(origin or None)
-    destination_weather = fetch_weather(destination or None)
+    # Weather is only reported for a journey that exists. With half a route the
+    # agent still checks for incidents — that is unconditional — but saying
+    # "weather looks fine" before the traveller has said where they are going
+    # answers a question they did not ask about a trip that does not exist.
+    route_complete = bool(origin and destination)
+    if route_complete:
+        origin_weather = fetch_weather(origin or None)
+        destination_weather = fetch_weather(destination or None)
+    else:
+        origin_weather = {"status": "UNKNOWN", "reason": "route not established yet"}
+        destination_weather = {"status": "UNKNOWN", "reason": "route not established yet"}
 
     # The forecast at departure time, for the departure point. The agent owns
     # every weather decision: the caller is told what it found, including the
     # fact that there is no usable forecast, and decides how to phrase it.
     forecast = fetch_forecast_window(origin or None, req.departure_time)
 
-    headlines: list[dict[str, str]] = []
+    headlines: list[dict[str, Any]] = []
     news_available = False
 
-    # Incidents are only looked for when the traveller has armed the check.
-    # Weather is unconditional; a disruption warning on every journey is not.
-    if incident_check_armed():
-        try:
-            headlines = fetch_news_headlines()
-            # An empty list is a legitimate answer ("nothing transit-relevant"),
-            # but only if the fetch actually worked. feedparser returns an empty
-            # list on failure too, so "no entries parsed at all" is unavailable.
-            news_available = True
-        except Exception:
-            news_available = False
+    # Incidents are always checked. A real reported strike must never need a
+    # toggle switched on to be mentioned — that would mean reporting a route is
+    # clear simply because nobody asked. The demo toggle governs the *simulated*
+    # incident alone.
+    try:
+        headlines = fetch_news_headlines()
+        # An empty list is a legitimate answer ("nothing transit-relevant"), but
+        # only if the scrape actually worked.
+        news_available = True
+    except Exception:
+        news_available = False
 
     # Only reports about places on this journey are considered: a landslide on
     # the Badulla line should not mark a Colombo–Galle bus as disrupted.
@@ -119,18 +130,21 @@ async def conditions(req: ConditionsRequest) -> dict:
     # own; the planner uses `avoid_modes` to *suggest* an alternative. Recorded
     # here so the reasoning is visible in the payload.
     advisory["requested_mode"] = req.travel_mode
-    advisory["incident_check_armed"] = incident_check_armed()
+    advisory["route_complete"] = route_complete
 
-    # A disarmed check is not "all clear": nothing was looked for, so the wording
-    # has to say that rather than imply there is nothing to report.
-    # Armed -> the real advisory. Disarmed -> wording that says nothing was
-    # checked. (An earlier version of this line had the branches the wrong way
-    # round and silently returned no sentence at all while armed.)
-    sentence = (
-        advisory_sentence(advisory)
-        if incident_check_armed()
-        else disarmed_sentence(advisory)
-    )
+    # Whether a *simulated* incident is switched on. Real headlines are always
+    # checked; only a fabricated one needs to be asked for.
+    advisory["simulated_incident_active"] = bool(active_simulations())
+
+    # No route means nothing can honestly be said about *this* journey.
+    # Incidents are still fetched and counted — the work is done — but no claim
+    # is made about "your route" while there isn't one, and no mode is suppressed
+    # on a route the traveller has not described yet.
+    sentence = advisory_sentence(advisory) if route_complete else None
+    if not route_complete:
+        advisory["avoid_modes"] = []
+        advisory["travel_disrupted"] = False
+
     advisory["requested_mode_affected"] = bool(
         req.travel_mode in advisory.get("avoid_modes", [])
     )
@@ -142,12 +156,49 @@ async def conditions(req: ConditionsRequest) -> dict:
             "forecast": forecast,
             "sentence": sentence,
             "news_count": len(headlines),
-            "incident_check_armed": incident_check_armed(),
+            "cache": HEADLINES.stats(),
         },
         "message": (
             f"Conditions: {advisory['severity']}"
             + (f" — {advisory['news']['reasons'][0]}" if advisory["news"]["reasons"] else "")
         ),
+    }
+
+
+@app.on_event("startup")
+def _start_worker() -> None:
+    """
+    Scrape once now and every ten minutes after.
+
+    Keeping the cache warm in the background is what makes "checked for
+    incidents" mean something: the answer is a few minutes old at worst rather
+    than however long ago someone last asked.
+    """
+    start_headline_worker()
+
+
+@app.on_event("shutdown")
+def _stop_worker() -> None:
+    stop_headline_worker()
+
+
+@app.get("/mcp/headline_cache")
+def headline_cache() -> dict:
+    """
+    What the scraper is doing, and what it currently holds.
+
+    Exposed because a background job nobody can inspect is a background job
+    nobody can trust: if this says `overdue: true`, "no incidents reported" means
+    "nobody has looked", and that is a very different answer.
+    """
+    return {
+        "status": "SUCCESS",
+        "data": {
+            **HEADLINES.stats(),
+            "headline_text": [e["headline"] for e in HEADLINES.entries()],
+            "simulated_active": active_simulations(),
+        },
+        "message": "Headline cache status.",
     }
 
 
@@ -221,12 +272,12 @@ async def simulate_incident(req: SimulateRequest) -> dict:
             "status": "SUCCESS",
             "data": {
                 "active": active_simulations(),
-                "incident_check_armed": armed,
+                "simulated_incident_active": armed,
             },
             "message": (
-                "Incident check off."
+                "Simulated incident off. Real headlines are still checked."
                 if not armed
-                else "Simulated incident cleared; incident check still on."
+                else "Simulated incident cleared; real headlines still checked."
             ),
         }
 
@@ -247,7 +298,7 @@ async def simulate_incident(req: SimulateRequest) -> dict:
             "active": active_simulations(),
             "label": spec["label"],
             "simulated": True,
-            "incident_check_armed": True,
+            "simulated_incident_active": True,
         },
         "message": f"Simulated incident switched on: {spec['label']}",
     }

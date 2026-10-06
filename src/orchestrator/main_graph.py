@@ -170,15 +170,18 @@ def _journey_clarification_message(missing: list[str], jdata: dict) -> tuple[str
     city name is visible ("did you say Galle?") instead of silently producing
     results for the wrong place.
     """
+    # Ordered the way a traveller thinks about a trip — from, to, when, how —
+    # and with one question per line. A run-on "train or bus? and what time?" is
+    # harder to answer than a short list, and people answer the first line.
     questions = []
-    if "mode" in missing:
-        questions.append("train or bus?")
-    if "time" in missing:
-        questions.append("what time do you want to travel?")
     if "origin" in missing:
-        questions.append("where are you starting from?")
+        questions.append("Where are you starting from?")
     if "destination" in missing:
-        questions.append("where are you heading to?")
+        questions.append("Where are you heading to?")
+    if "time" in missing:
+        questions.append("What time do you want to travel?")
+    if "mode" in missing:
+        questions.append("Train or bus?")
     if "major_cities" in missing:
         questions.append(
             "I can only plan between major cities right now — which city are you going to?"
@@ -192,11 +195,20 @@ def _journey_clarification_message(missing: list[str], jdata: dict) -> tuple[str
     if jdata.get("at_time"):
         known.append(f"at **{jdata['at_time']}**")
 
-    preamble = f"Got it — you want to travel {' '.join(known)}. Still need: " if known else ""
+    preamble = (
+        f"Got it — you want to travel {' '.join(known)}.\n\n"
+        if known
+        else "Happy to plan that.\n\n"
+    )
 
+    # One question per line, and only the ones still outstanding. Echoing what
+    # has been established is what makes the next answer a single word.
+    asked = "\n".join(f"- **{question}**" for question in questions)
     msg = (
-        f"{preamble}**{' and '.join(questions)}**\n\n"
-        f'For example: *"I need to go from Negombo to Colombo at 10am by bus"*'
+        f"{preamble}I still need "
+        + ("these" if len(questions) > 1 else "this")
+        + f":\n\n{asked}\n\n"
+        f'You can answer in one go: *"I need to go from Negombo to Colombo at 10am by bus"*'
     )
     options: list[dict] = []
     if "mode" in missing:

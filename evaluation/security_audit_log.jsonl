@@ -1424,3 +1424,26 @@
 {"timestamp": "2026-10-06T18:20:06.862511+00:00", "event_type": "BOOKING_BLOCKED_NO_HITL", "detail": "transaction_id=TXN-313B2465 reason=Confirmation token signature does not verify."}
 {"timestamp": "2026-10-06T18:20:06.866436+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=CLARIFY input_length=63"}
 {"timestamp": "2026-10-06T18:20:07.043271+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=CLARIFY input_length=63"}
+{"timestamp": "2026-10-06T18:27:29.950418+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=23"}
+{"timestamp": "2026-10-06T18:27:48.610139+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=CLARIFY input_length=5"}
+{"timestamp": "2026-10-06T18:33:05.972707+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=23"}
+{"timestamp": "2026-10-06T18:33:06.653226+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=34"}
+{"timestamp": "2026-10-06T18:33:07.214478+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=43"}
+{"timestamp": "2026-10-06T18:33:07.731801+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=34"}
+{"timestamp": "2026-10-06T18:33:08.524246+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=3"}
+{"timestamp": "2026-10-06T18:33:18.546560+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=23"}
+{"timestamp": "2026-10-06T18:33:19.081535+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=43"}
+{"timestamp": "2026-10-06T18:33:19.234791+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=CONDITIONS input_length=18"}
+{"timestamp": "2026-10-06T18:33:30.898625+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=23"}
+{"timestamp": "2026-10-06T18:41:00.229961+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=23"}
+{"timestamp": "2026-10-06T18:41:01.129818+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=15"}
+{"timestamp": "2026-10-06T18:41:01.941240+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=8"}
+{"timestamp": "2026-10-06T18:48:01.282383+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=23"}
+{"timestamp": "2026-10-06T18:48:02.060718+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=15"}
+{"timestamp": "2026-10-06T18:48:11.380564+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=34"}
+{"timestamp": "2026-10-06T18:48:12.143559+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=10"}
+{"timestamp": "2026-10-06T18:48:12.737826+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=34"}
+{"timestamp": "2026-10-06T18:48:13.816636+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=10"}
+{"timestamp": "2026-10-06T18:48:14.395075+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=34"}
+{"timestamp": "2026-10-06T18:48:15.043499+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=12"}
+{"timestamp": "2026-10-06T18:48:15.218925+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=3"}

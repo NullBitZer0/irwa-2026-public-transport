@@ -356,10 +356,12 @@ def _weather_digest(weather: dict[str, Any]) -> dict[str, Any]:
 
 def disarmed_sentence(advisory: dict[str, Any]) -> str:
     """
-    What to say when the incident check has not been armed.
+    What to say when only the weather could be checked.
 
-    Distinct from "everything is fine" on purpose: nothing was looked for, so
-    claiming there is nothing to report would be a claim we never checked.
+    Kept for the case where the news feed is unavailable and the weather was
+    read: "I didn't look" is a different claim from "there's nothing to report",
+    and only the first is honest. Incident checking itself is unconditional now,
+    so this is reached on feed failure rather than on a setting.
     """
     weather = advisory.get("weather") or {}
     parts = []

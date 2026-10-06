@@ -29,8 +29,9 @@ from __future__ import annotations
 
 import os
 import re
+import threading
 import time
-from typing import Any, Optional
+from typing import Any, Iterable, Optional
 
 import feedparser
 import httpx
@@ -378,10 +379,25 @@ RSS_FEEDS: list[str] = [
 
 MAX_HEADLINES_PER_FEED = 25
 MAX_HEADLINE_CHARS = 160
-NEWS_TTL_SECONDS = 20 * 60
+# Scrape cadence and how long a headline is considered current.
+#
+# The gap between the two matters: a headline stays visible for 5 hours so a
+# traveller planning an afternoon trip still sees a morning strike, while the
+# 10-minute cadence means a new report appears within ten minutes of publication
+# instead of waiting for someone to ask a question.
+NEWS_SCRAPE_INTERVAL_SECONDS = 10 * 60
+NEWS_TTL_SECONDS = 5 * 60 * 60
 
 # Transit vocabulary, split by what it implies for the journey.
-DISRUPTION_TERMS = {
+# Words that describe an *incident*. A headline must contain one of these to be
+# captured at all.
+#
+# Previously this list also held bare context words — "disruption", "railway",
+# "train", "bus" — so headlines like "software stocks scale as AI disruption
+# worries" were collected and, once incident checking became unconditional,
+# surfaced as a warning on a route. A generic noun is not evidence of a
+# disruption, and over-warning is the failure this agent is most careful about.
+INCIDENT_TERMS = {
     "strike": "severe",
     "protest": "severe",
     "sabotage": "severe",
@@ -399,6 +415,37 @@ DISRUPTION_TERMS = {
     "washout": "severe",
     "delay": "advisory",
     "delayed": "advisory",
+}
+
+# Words that make a headline *about transport at all*.
+#
+# A headline has to match an incident word AND one of these to be captured. Both
+# halves are needed: "AI disruption worries" has an incident-adjacent word and no
+# transport, and "SpaceX launches crew after delay" has "delay" and no transport.
+# Neither is a disruption to anybody's journey, and with incident checking now
+# unconditional, capturing them would warn about every route in the country.
+# Matched on word boundaries, not substrings: "bus" occurs in "business" and
+# "port" in "Spaceport", and both were putting ordinary business and space news
+# into a transit incident cache.
+TRANSPORT_TERMS = {
+    "railway", "rail", "train", "trains", "slr", "platform", "commuter",
+    "bus", "buses", "sltb", "coach", "expressway", "highway", "motorway",
+    "transport", "transit", "flight", "airport", "petrol", "fuel",
+    "fare", "ticket", "terminal", "public transport",
+}
+
+
+def mentions_any(text: str, terms: set[str] | Iterable[str]) -> bool:
+    """True when any term appears as a whole word, not as a fragment of one."""
+    for term in terms:
+        if re.search(rf"\b{re.escape(term)}\b", text):
+            return True
+    return False
+
+# Words that make a headline *about transport*, used by the classifier to judge
+# severity and to decide whether the incident concerns the requested mode. They
+# qualify nothing on their own — see INCIDENT_TERMS above.
+CONTEXT_TERMS = {
     "disruption": "advisory",
     "expressway": "advisory",
     "railway": "advisory",
@@ -409,7 +456,103 @@ DISRUPTION_TERMS = {
     "station": "advisory",
 }
 
-_CACHE: dict[str, Any] = {"headlines": [], "fetched_at": 0.0}
+class HeadlineCache:
+    """
+    Time-limited store of transit headlines, refreshed on a timer.
+
+    Three decisions worth stating:
+
+    - **Age is measured from when we saw the headline, not when it was
+      published.** Feed timestamps are missing or wrong often enough that
+      trusting them would silently expire live reports. Being slightly generous
+      is safer than dropping a real strike.
+    - **Expired entries are evicted, not hidden.** The point of a TTL here is that
+      a five-hour-old "services suspended" headline should stop being treated as
+      current news, and a cache that keeps them forever fails at exactly that.
+    - **It is a cache, so it is in memory.** Nothing here is a record of record:
+      losing it on restart costs at most one scrape interval.
+    """
+
+    def __init__(self, ttl_seconds: int = NEWS_TTL_SECONDS) -> None:
+        self.ttl_seconds = ttl_seconds
+        self._entries: dict[str, dict[str, Any]] = {}
+        self._lock = threading.RLock()
+        self.last_scrape_at: float = 0.0
+        self.last_scrape_ok: bool | None = None
+        self.scrape_count: int = 0
+        self.evicted_count: int = 0
+
+    @staticmethod
+    def _key(entry: dict[str, Any]) -> str:
+        # Same headline from two feeds is one item, not two.
+        return str(entry.get("headline", "")).strip().lower()
+
+    def store(self, entries: list[dict[str, Any]], now: float | None = None) -> int:
+        """Adds or refreshes entries and evicts anything past its TTL."""
+        moment = now if now is not None else time.time()
+        with self._lock:
+            for entry in entries:
+                key = self._key(entry)
+                if not key:
+                    continue
+                existing = self._entries.get(key)
+                self._entries[key] = {
+                    **entry,
+                    # A repeat sighting refreshes the clock, so a story still being
+                    # reported stays current.
+                    "first_seen_at": existing["first_seen_at"] if existing else moment,
+                    "last_seen_at": moment,
+                }
+            self.last_scrape_at = moment
+            self.scrape_count += 1
+            return self.evict(now=moment)
+
+    def evict(self, now: float | None = None) -> int:
+        moment = now if now is not None else time.time()
+        with self._lock:
+            stale = [
+                key
+                for key, entry in self._entries.items()
+                if moment - entry["last_seen_at"] > self.ttl_seconds
+            ]
+            for key in stale:
+                del self._entries[key]
+            self.evicted_count += len(stale)
+            return len(stale)
+
+    def entries(self, now: float | None = None) -> list[dict[str, Any]]:
+        """Current entries, oldest first, after evicting anything expired."""
+        self.evict(now=now)
+        with self._lock:
+            return sorted(self._entries.values(), key=lambda e: e["last_seen_at"])
+
+    def stats(self, now: float | None = None) -> dict[str, Any]:
+        moment = now if now is not None else time.time()
+        with self._lock:
+            live = [e for e in self._entries.values() if moment - e["last_seen_at"] <= self.ttl_seconds]
+            # 0.0 means "never scraped", which is the most overdue state there
+            # is — not a fresh cache at epoch zero.
+            scraped_at = self.last_scrape_at or None
+            age = moment - scraped_at if scraped_at else None
+            return {
+                "headlines": len(live),
+                "ttl_seconds": self.ttl_seconds,
+                "scrape_interval_seconds": NEWS_SCRAPE_INTERVAL_SECONDS,
+                "scrape_count": self.scrape_count,
+                "evicted_count": self.evicted_count,
+                "last_scrape_at": (
+                    time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(scraped_at))
+                    if scraped_at
+                    else None
+                ),
+                "age_seconds": round(age, 1) if age is not None else None,
+                # Never scraped counts as overdue: it means nobody has looked.
+                "overdue": age is None or age > NEWS_SCRAPE_INTERVAL_SECONDS * 2,
+                "last_scrape_ok": self.last_scrape_ok,
+            }
+
+
+HEADLINES = HeadlineCache()
 
 # Demo incidents currently switched on, as {incident_id: {...}}. In-memory and
 # per-process: a demo control should not outlive the process, and persisting it
@@ -447,6 +590,11 @@ def active_simulations() -> list[str]:
 _INCIDENT_CHECK_ARMED = False
 
 
+_WORKER_THREAD: Optional[threading.Thread] = None
+_WORKER_STOP = threading.Event()
+_WORKER_LOCK = threading.Lock()
+
+
 def arm_incident_check(armed: bool) -> bool:
     """Turns incident checking on or off. Returns the previous state."""
     global _INCIDENT_CHECK_ARMED
@@ -463,22 +611,14 @@ def incident_check_armed() -> bool:
     return _INCIDENT_CHECK_ARMED
 
 
-def fetch_news_headlines(force_refresh: bool = False) -> list[dict[str, str]]:
+def scrape_headlines() -> list[dict[str, Any]]:
     """
-    Transit-relevant headlines from public RSS.
+    Fetches every feed and returns the transit-relevant headlines.
 
-    Entries are returned as *data only*. They are never used as instructions and
-    never included in a model prompt; `analysis.py` reduces them to categories.
+    Kept separate from the cache so the background worker and a
+    request-triggered refresh do exactly the same thing.
     """
-    if not _INCIDENT_CHECK_ARMED:
-        # Disarmed: no fetch at all, so there is nothing to act on.
-        return []
-
-    now = time.time()
-    if not force_refresh and _CACHE["headlines"] and now - _CACHE["fetched_at"] < NEWS_TTL_SECONDS:
-        return list(_CACHE["headlines"]) + list(_ACTIVE_SIMULATIONS.values())
-
-    collected: list[dict[str, str]] = []
+    collected: list[dict[str, Any]] = []
     for feed_url in RSS_FEEDS:
         try:
             parsed = feedparser.parse(feed_url)
@@ -491,7 +631,9 @@ def fetch_news_headlines(force_refresh: bool = False) -> list[dict[str, str]]:
             if not title:
                 continue
             lowered = title.lower()
-            if not any(term in lowered for term in DISRUPTION_TERMS):
+            if not mentions_any(lowered, INCIDENT_TERMS):
+                continue
+            if not mentions_any(lowered, TRANSPORT_TERMS):
                 continue
             # Drop anything carrying what looks like an injected instruction, so
             # a compromised feed cannot smuggle text past the classifier into a
@@ -505,15 +647,89 @@ def fetch_news_headlines(force_refresh: bool = False) -> list[dict[str, str]]:
                     "source": feed_url,
                 }
             )
+    return collected
 
-    _CACHE.update({"headlines": collected, "fetched_at": now})
 
-    # Simulated incidents are appended to the live list rather than replacing it,
-    # so a demo exercises the same classification path a real headline takes.
-    # Fetched first from the cache: a demo control must respond instantly, even
-    # with the cache warm.
-    combined = list(_CACHE["headlines"]) + list(_ACTIVE_SIMULATIONS.values())
-    return combined
+def refresh_headlines() -> int:
+    """One scrape into the cache. Returns how many entries are now live."""
+    try:
+        entries = scrape_headlines()
+    except Exception:
+        # A total failure must not clear a cache that still holds headlines
+        # inside their five-hour window.
+        HEADLINES.last_scrape_ok = False
+        return len(HEADLINES.entries())
+
+    HEADLINES.last_scrape_ok = True
+    HEADLINES.store(entries)
+    return len(HEADLINES.entries())
+
+
+def fetch_news_headlines(force_refresh: bool = False) -> list[dict[str, Any]]:
+    """
+    Transit-relevant headlines from public RSS, plus any simulated incident.
+
+    Served from the cache, which a background worker keeps warm every ten
+    minutes. A request that finds the cache overdue refreshes it inline rather
+    than reporting no news: the traveller asked a question now, and the
+    alternative is telling them a route is clear because nobody has looked
+    recently.
+
+    Real headlines are always checked. Only the *simulated* incident is behind
+    the demo toggle — a fabricated accident must be requested, but a real
+    reported strike must never need permission to be mentioned.
+    """
+    if force_refresh or time.time() - HEADLINES.last_scrape_at > NEWS_SCRAPE_INTERVAL_SECONDS * 2:
+        refresh_headlines()
+
+    return HEADLINES.entries() + list(_ACTIVE_SIMULATIONS.values())
+
+
+_WORKER_THREAD: Optional[threading.Thread] = None
+_WORKER_STOP = threading.Event()
+_WORKER_LOCK = threading.Lock()
+
+
+def start_headline_worker(interval_seconds: int = NEWS_SCRAPE_INTERVAL_SECONDS) -> Optional[threading.Thread]:
+    """
+    Starts the background scraper. Safe to call more than once.
+
+    A daemon thread rather than an event-loop task: scraping is blocking I/O to
+    third-party feeds, and holding a worker for several seconds every ten minutes
+    would stall request handling for no benefit.
+    """
+    global _WORKER_THREAD
+
+    with _WORKER_LOCK:
+        if _WORKER_THREAD is not None and _WORKER_THREAD.is_alive():
+            return _WORKER_THREAD
+
+        _WORKER_STOP.clear()
+        refresh_headlines()  # populate immediately, so the first question is not blind
+
+        def loop() -> None:
+            while not _WORKER_STOP.wait(interval_seconds):
+                try:
+                    refresh_headlines()
+                except Exception:
+                    # The worker is a convenience. If it fails, the cache ages
+                    # out and requests refresh it inline.
+                    HEADLINES.last_scrape_ok = False
+
+        thread = threading.Thread(target=loop, name="headline-scraper", daemon=True)
+        thread.start()
+        _WORKER_THREAD = thread
+        return thread
+
+
+def stop_headline_worker() -> None:
+    """Stops the worker and forgets the thread. Used by tests."""
+    global _WORKER_THREAD
+
+    _WORKER_STOP.set()
+    with _WORKER_LOCK:
+        if _WORKER_THREAD is not None:
+            _WORKER_THREAD = None
 
 
 def _clean_text(value: Any) -> str:

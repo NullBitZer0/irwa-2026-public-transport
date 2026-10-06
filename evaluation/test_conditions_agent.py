@@ -26,6 +26,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import time
 
 import pytest
 
@@ -478,24 +479,278 @@ def test_no_forecast_is_invented_without_a_departure_time(monkeypatch) -> None:
     assert gather.fetch_forecast_window("Kandy", None) is None
 
 
+# ── Incidents are checked without a toggle ───────────────────────────────────
+
+
+def test_a_generic_disruption_word_is_not_an_incident() -> None:
+    """
+    "AI disruption worries" is not a transit disruption.
+
+    Incident checking being unconditional means this vocabulary is now load
+    bearing: a bare context word used to be a harmless nothing to report, and
+    became a false warning on a real route. Capturing a headline requires an
+    actual incident word.
+    """
+    assert "disruption" not in gather.INCIDENT_TERMS
+    assert "disruption" in gather.CONTEXT_TERMS
+
+    # The classifier is deliberately permissive about *national* headlines — an
+    # unplaceable one is kept, because a network-wide strike really does affect
+    # everyone. The precision therefore has to come from the scraper, which must
+    # never hand the classifier a headline that is not about transport.
+    noise = [
+        "US software stocks scale fresh highs as AI disruption worries",
+        "SpaceX launches 13th crew to International Space Station after delay",
+        # The substring trap: "bus" inside "business", "port" inside "Spaceport".
+        "Business disruption worries continue across sectors",
+    ]
+    for headline in noise:
+        lowered = headline.lower()
+        captured = (
+            gather.mentions_any(lowered, gather.INCIDENT_TERMS)
+            and gather.mentions_any(lowered, gather.TRANSPORT_TERMS)
+        )
+        assert not captured, f"would warn about: {headline}"
+
+    # And real transit incidents still get through both halves of the filter.
+    for real in (
+        "SLR railway engineers announce strike; train services suspended",
+        "Accident reported at Negombo highway entrance",
+    ):
+        lowered = real.lower()
+        assert gather.mentions_any(lowered, gather.INCIDENT_TERMS), real
+        assert gather.mentions_any(lowered, gather.TRANSPORT_TERMS), real
+
+
+def test_term_matching_ignores_substrings() -> None:
+    """
+    Whole words only. This is not pedantry: "bus" inside "business" and "port"
+    inside "Spaceport" is what put space and business news into a transit
+    incident cache.
+    """
+    assert not gather.mentions_any("business disruption", {"bus"})
+    assert not gather.mentions_any("spaceport closed", {"port"})
+    assert gather.mentions_any("the bus is cancelled", {"bus"})
+
+
+def test_nothing_is_claimed_about_a_route_that_does_not_exist_yet() -> None:
+    """
+    Incidents are still checked; nothing is asserted about "your route".
+    """
+    from fastapi.testclient import TestClient
+
+    from src.conditions.server import app
+
+    data = TestClient(app).post(
+        "/mcp/conditions", json={"origin": "", "destination": "Colombo"}
+    ).json()["data"]
+    advisory = data["advisory"]
+
+    assert advisory["route_complete"] is False
+    assert data["sentence"] is None, "a claim was made with no journey"
+    assert advisory["avoid_modes"] == [], "modes suppressed on an unknown route"
+
+
+def test_a_complete_route_still_gets_a_verdict() -> None:
+    from fastapi.testclient import TestClient
+
+    from src.conditions.server import app
+
+    data = TestClient(app).post(
+        "/mcp/conditions", json={"origin": "Kandy", "destination": "Colombo"}
+    ).json()["data"]
+
+    assert data["advisory"]["route_complete"] is True
+    assert data["cache"]["ttl_seconds"] == 5 * 60 * 60
+
+
+# ── The headline cache and its background worker ─────────────────────────────
+
+
+def test_headlines_expire_after_the_ttl() -> None:
+    """
+    A five-hour-old "services suspended" headline must stop counting as news.
+
+    This is the whole point of the TTL: without eviction the cache grows and the
+    classifier keeps reporting yesterday's strike as a live disruption, which is
+    the over-warning failure this agent's tests exist to prevent.
+    """
+    cache = gather.HeadlineCache(ttl_seconds=5 * 60 * 60)
+    cache.store([{"headline": "SRI LANKAN RAILWAY STRIKE", "source": "t"}], now=1000.0)
+
+    assert len(cache.entries(now=1000.0 + 60)) == 1
+    # Just inside five hours: still there.
+    assert len(cache.entries(now=1000.0 + 5 * 60 * 60 - 1)) == 1
+    # Past five hours: gone, and counted.
+    assert cache.entries(now=1000.0 + 5 * 60 * 60 + 1) == []
+    assert cache.evicted_count == 1
+
+
+def test_a_reseen_headline_does_not_expire() -> None:
+    """
+    A story still being reported stays current, because each sighting refreshes
+    the clock rather than preserving the original timestamp.
+    """
+    cache = gather.HeadlineCache(ttl_seconds=1000)
+    cache.store([{"headline": "BUS STRIKE ENTERS DAY TWO", "source": "t"}], now=0.0)
+    cache.store([{"headline": "BUS STRIKE ENTERS DAY TWO", "source": "t"}], now=900.0)
+
+    assert len(cache.entries(now=950.0)) == 1
+    assert cache.entries(now=0.0 + 1000 + 1)[0]["last_seen_at"] == 900.0
+
+
+def test_the_same_headline_from_two_feeds_is_one_entry() -> None:
+    """Both feeds carrying a wire story must not double the warning."""
+    cache = gather.HeadlineCache()
+    cache.store([
+        {"headline": "SRI LANKAN RAILWAY STRIKE", "source": "a"},
+        {"headline": "sri lankan railway strike", "source": "b"},
+    ])
+
+    assert len(cache.entries()) == 1
+
+
+def test_cache_stats_are_honest_about_being_overdue() -> None:
+    """
+    "No incidents reported" means something very different when nobody has
+    scraped for an hour, so staleness is reported rather than hidden.
+    """
+    cache = gather.HeadlineCache()
+    assert cache.stats()["overdue"] is True, "never scraped counts as overdue"
+
+    cache.store([{"headline": "STRIKE", "source": "t"}], now=1000.0)
+    fresh = cache.stats(now=1010.0)
+    assert fresh["overdue"] is False
+    assert fresh["headlines"] == 1
+    assert fresh["age_seconds"] == 10.0
+
+    stale = cache.stats(now=1000.0 + gather.NEWS_SCRAPE_INTERVAL_SECONDS * 3)
+    assert stale["overdue"] is True
+
+
+def test_a_failed_scrape_does_not_clear_the_cache(monkeypatch) -> None:
+    """
+    A feed outage must not turn into "no incidents". The headlines we already
+    have are still inside their five hours and still true.
+    """
+    monkeypatch.setattr(gather, "scrape_headlines", lambda: [
+        {"headline": "SRI LANKAN RAILWAY STRIKE", "source": "t"}
+    ])
+    refresh_headlines = gather.refresh_headlines()
+    assert refresh_headlines >= 1
+
+    def boom() -> list:
+        raise RuntimeError("feed unreachable")
+
+    monkeypatch.setattr(gather, "scrape_headlines", boom)
+    gather.refresh_headlines()
+
+    assert gather.HEADLINES.last_scrape_ok is False
+    assert any("STRIKE" in h["headline"] for h in gather.HEADLINES.entries())
+
+
+def test_the_worker_scrapes_immediately_and_is_idempotent(monkeypatch) -> None:
+    """
+    It populates at startup so the first question is not answered blind, and a
+    second call does not start a second scraper.
+    """
+    monkeypatch.setattr(gather, "scrape_headlines", lambda: [
+        {"headline": "SRI LANKAN RAILWAY STRIKE", "source": "t"}
+    ])
+    gather.HEADLINES.last_scrape_at = 0.0
+
+    first = gather.start_headline_worker(interval_seconds=600)
+    try:
+        assert first is not None and first.is_alive()
+        assert gather.HEADLINES.last_scrape_at > 0, "no scrape happened at startup"
+        assert gather.start_headline_worker() is first, "started a second worker"
+    finally:
+        gather.stop_headline_worker()
+
+
+def test_the_worker_keeps_scraping_on_its_interval(monkeypatch) -> None:
+    """
+    The cadence is the feature: a report appears within ten minutes without
+    anyone having to ask a question.
+    """
+    calls = {"n": 0}
+
+    def counting_scrape() -> list:
+        calls["n"] += 1
+        return [{"headline": f"STRIKE UPDATE {calls['n']}", "source": "t"}]
+
+    monkeypatch.setattr(gather, "scrape_headlines", counting_scrape)
+    gather.HEADLINES.last_scrape_at = 0.0
+    gather.start_headline_worker(interval_seconds=0.05)
+    try:
+        deadline = time.time() + 3.0
+        while calls["n"] < 3 and time.time() < deadline:
+            time.sleep(0.02)
+        assert calls["n"] >= 3, f"worker only scraped {calls['n']} times"
+    finally:
+        gather.stop_headline_worker()
+
+
+def test_the_cache_endpoint_reports_what_the_scraper_is_doing() -> None:
+    """
+    A background job nobody can inspect is a background job nobody can trust.
+    """
+    from fastapi.testclient import TestClient
+
+    from src.conditions.server import app
+
+    data = TestClient(app).get("/mcp/headline_cache").json()["data"]
+
+    assert "ttl_seconds" in data
+    assert data["ttl_seconds"] == 5 * 60 * 60
+    assert data["scrape_interval_seconds"] == 10 * 60
+    assert "overdue" in data
+
+
 # ── Arming the check ─────────────────────────────────────────────────────────
 
 
-def test_incidents_are_invisible_until_the_check_is_armed() -> None:
+def test_real_headlines_are_always_checked(monkeypatch) -> None:
     """
-    Nothing is looked for until the traveller asks for it.
+    A real reported strike must never need a toggle switched on.
 
-    The switch in the sidebar is the only thing that arms this. A traveller who
-    never touches it must never be told about a disruption, because the first
-    such warning they see is the one they learn to ignore.
+    The demo control governs the *fabricated* incident only. Gating real headlines
+    behind it meant the system could report a route as clear simply because
+    nobody had pressed a button — the most dangerous way to be wrong about
+    disruptions.
     """
-    spec = SIMULATED_INCIDENTS["negombo_highway_accident"]
-    gather.set_simulated_incident("negombo_highway_accident", spec)
+    monkeypatch.setattr(gather, "scrape_headlines", lambda: [
+        {"headline": "SRI LANKAN RAILWAY ENGINEERS ANNOUNCE STRIKE", "source": "test"}
+    ])
+
+    # Nothing armed, nothing requested.
     gather.arm_incident_check(False)
-
-    assert gather.active_simulations() == []  # un-arming drops it
-    assert gather.fetch_news_headlines() == []  # and nothing is fetched at all
     assert gather.incident_check_armed() is False
+    headlines = gather.fetch_news_headlines(force_refresh=True)
+
+    assert any("STRIKE" in h["headline"] for h in headlines)
+
+
+def test_a_simulated_incident_still_needs_the_toggle(monkeypatch) -> None:
+    """Fabricated news is opt-in. Real news is not."""
+    monkeypatch.setattr(gather, "scrape_headlines", lambda: [
+        {"headline": "SRI LANKAN RAILWAY ENGINEERS ANNOUNCE STRIKE", "source": "test"}
+    ])
+    spec = SIMULATED_INCIDENTS["negombo_highway_accident"]
+
+    gather.arm_incident_check(False)
+    monkeypatch.setattr(gather, "_ACTIVE_SIMULATIONS", {})
+    off = gather.fetch_news_headlines(force_refresh=True)
+    assert not any(h.get("simulated") for h in off)
+
+    gather.arm_incident_check(True)
+    monkeypatch.setattr(gather, "_ACTIVE_SIMULATIONS", {"negombo_highway_accident": dict(spec, simulated="true")})
+    on = gather.fetch_news_headlines()
+    assert any(h.get("simulated") for h in on)
+
+    gather.arm_incident_check(False)
+    monkeypatch.setattr(gather, "_ACTIVE_SIMULATIONS", {})
+    assert not any(h.get("simulated") for h in gather.fetch_news_headlines())
 
 
 def test_arming_the_check_makes_simulated_incidents_visible() -> None:
@@ -508,17 +763,25 @@ def test_arming_the_check_makes_simulated_incidents_visible() -> None:
     assert any(h.get("incident_id") == "negombo_highway_accident" for h in headlines)
 
 
-def test_unchecking_removes_a_live_simulation_again() -> None:
-    """Switching off must undo the switch, not merely stop new ones."""
+def test_unchecking_removes_the_simulation_but_not_the_real_headlines() -> None:
+    """
+    Switching off removes what was fabricated and keeps what is true.
+
+    Earlier this cleared everything, which was only correct while the toggle also
+    controlled the news feed. Now it must not: turning the demo off cannot make
+    a real strike disappear from the cache.
+    """
     spec = SIMULATED_INCIDENTS["negombo_highway_accident"]
     gather.arm_incident_check(True)
     gather.set_simulated_incident("negombo_highway_accident", spec)
+    gather.HEADLINES.store([{"headline": "SRI LANKAN RAILWAY STRIKE ENTERS DAY 3", "source": "test"}])
 
     gather.arm_incident_check(False)
 
-    assert gather.incident_check_armed() is False
     assert gather.active_simulations() == []
-    assert gather.fetch_news_headlines() == []
+    headlines = gather.fetch_news_headlines()
+    assert not any(h.get("simulated") for h in headlines)
+    assert any("STRIKE ENTERS DAY 3" in h["headline"] for h in headlines)
 
 
 def test_disarmed_wording_does_not_claim_everything_is_fine() -> None:

@@ -104,6 +104,43 @@ The system uses a **Supervisor-Worker** design pattern adhering to the **Model C
 
 ---
 
+## 📰 The incident scraper
+
+The Conditions Agent keeps a cache of transit headlines and refreshes it on a
+background timer, so "checked for incidents" means something rather than
+depending on when someone last asked a question.
+
+| Setting | Value | Why |
+|---|---|---|
+| Scrape interval | **10 minutes** | A report appears within ten minutes of publication without anyone asking. |
+| Headline TTL | **5 hours** | An afternoon trip still sees a morning strike. |
+| Storage | In-memory | It is a cache, not a record of record; a restart costs one interval. |
+| Age measured from | When *we* saw it | Feed timestamps are missing or wrong often enough that trusting them would expire live reports. |
+
+Expired entries are **evicted**, not hidden: a five-hour-old "services suspended"
+headline must stop counting as a current disruption, or the classifier warns about
+yesterday's strike forever.
+
+Inspect it any time:
+
+```bash
+curl -s localhost:8103/mcp/headline_cache | python3 -m json.tool
+```
+
+`overdue: true` means nobody has scraped recently — so "no incidents reported"
+currently means "nobody has looked". That distinction is reported rather than
+glossed over.
+
+Two filters keep the noise out, and both are needed:
+
+- A headline must contain an **incident** word (*strike, protest, suspended,
+  accident, landslide…*). A bare context word is not evidence of a disruption.
+- It must also contain a **transport** word (*railway, bus, expressway, SLR…*).
+
+Matching is on **word boundaries**, so "bus" inside *business* and "port" inside
+*Spaceport* do not match — without that, ordinary business and space news was
+being cached and reported as a warning on real routes.
+
 ## 🌦️ Weather sources
 
 The Conditions Agent is the only component that decides anything about the
@@ -539,6 +576,14 @@ Notes on that flow:
   answer "how is the weather?" from a destination alone, because weather for one
   place is not weather for a journey and "looks fine on your route" implies a
   route that does not exist.
+- **Incidents are always checked.** No toggle, no permission: a real reported
+  strike must never depend on someone pressing a button, because the failure mode
+  of gating it is confidently reporting a route as clear because nobody asked.
+  The sidebar toggle controls the *simulated* incident only.
+- **Every reply asks for whatever is still missing**, one question per line, in
+  the order a trip is planned — from, to, when, how — after echoing what has
+  already been established. Partial answers are answered with the single
+  remaining question, not a repeat of the full list.
 - **Incident checking is off until you switch it on.** The *Simulate incident*
   toggle in the sidebar arms it; nothing is looked for, and no disruption is
   mentioned, until then. Un-checking removes the simulated incident and stops the
