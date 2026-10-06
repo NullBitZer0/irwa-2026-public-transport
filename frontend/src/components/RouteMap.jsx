@@ -5,25 +5,46 @@
  * works offline, it renders the same in CI, and it cannot leak the traveller's
  * viewport to a tile server as a side effect of looking at a bus route.
  *
- * What it is: city-level corridors from the timetable, plotted on a coarse
- * schematic outline. What it is not: a survey map. Stops inside Greater Colombo
- * are clustered into Colombo, and services that never leave their city have no
- * line to draw — both are stated on screen, because a map that quietly omits a
- * fifth of the network reads as "that route does not exist".
+ * The island outline is real Natural Earth 1:10m boundary data served by the
+ * planner, including the offshore islands — Mannar is a town on Mannar Island, so
+ * drawing only the main landmass would put it in the sea. Bounds come from the
+ * server with the geometry, so the projection cannot drift out of step with the
+ * shape it is projecting.
+ *
+ * What it is: city-level corridors from the timetable, plotted on that boundary.
+ * What it is not: a survey map. Stops inside Greater Colombo are clustered into
+ * Colombo, and services that never leave their city have no line to draw — both
+ * are stated on screen, because a map that quietly omits a fifth of the network
+ * reads as "that route does not exist".
  */
 import { useEffect, useMemo, useState } from 'react'
 import { getMapRoutes } from '../api.js'
 
-// Island bounds with a little margin, in degrees.
-const BOUNDS = { minLat: 5.75, maxLat: 9.95, minLng: 79.6, maxLng: 81.95 }
-const VIEW = { width: 720, height: 900 }
+// Fallback extent in degrees, used only before the server responds. The real
+// bounds arrive with the geometry.
+const FALLBACK_BOUNDS = { min_lat: 5.86, max_lat: 9.89, min_lng: 79.6, max_lng: 81.95 }
+const VIEW_HEIGHT = 900
 
-/** Equirectangular projection: degrees to SVG pixels, north up. */
-function project(lat, lng) {
-  const x = ((lng - BOUNDS.minLng) / (BOUNDS.maxLng - BOUNDS.minLng)) * VIEW.width
-  // Latitude increases northward and SVG y increases downward, so it flips.
-  const y = ((BOUNDS.maxLat - lat) / (BOUNDS.maxLat - BOUNDS.minLat)) * VIEW.height
-  return [x, y]
+/**
+ * Equirectangular projection, built from the bounds the server sent.
+ *
+ * Width follows the data's own aspect ratio, so the island is not stretched: a
+ * fixed viewBox would deform every circle-ish feature on the coast and quietly
+ * move plotted towns a few degrees off their real positions.
+ */
+function makeProjection(bounds) {
+  const latSpan = bounds.max_lat - bounds.min_lat
+  const lngSpan = bounds.max_lng - bounds.min_lng
+  const width = Math.round((lngSpan / latSpan) * VIEW_HEIGHT)
+  const project = (lat, lng) => {
+    const x = ((lng - bounds.min_lng) / lngSpan) * width
+    // Latitude increases northward and SVG y increases downward, so it flips.
+    const y = ((bounds.max_lat - lat) / latSpan) * VIEW_HEIGHT
+    return [x, y]
+  }
+  project.width = width
+  project.height = VIEW_HEIGHT
+  return project
 }
 
 const MODES = [
@@ -59,11 +80,19 @@ export default function RouteMap() {
     return () => { cancelled = true }
   }, [mode])
 
-  const outlinePath = useMemo(() => {
-    const points = (data?.outline || []).map(([lat, lng]) => project(lat, lng))
-    if (points.length < 3) return ''
-    return `M ${points.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' L ')} Z`
-  }, [data])
+  const project = useMemo(() => makeProjection(data?.bounds || FALLBACK_BOUNDS), [data?.bounds])
+
+  // One path per ring: the main island plus the significant offshore islands.
+  const islandPaths = useMemo(() => {
+    const rings = data?.rings?.length ? data.rings : data?.outline || []
+    return rings
+      .map((ring) => {
+        const points = ring.map(([lat, lng]) => project(lat, lng))
+        if (points.length < 3) return null
+        return `M ${points.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' L ')} Z`
+      })
+      .filter(Boolean)
+  }, [data, project])
 
   // Only the busiest corridors are drawn by default: 92 lines is a grey wash,
   // not a map. The rest are one click away.
@@ -108,12 +137,16 @@ export default function RouteMap() {
       <div className="map-layout">
         <div className="map-canvas">
           <svg
-            viewBox={`0 0 ${VIEW.width} ${VIEW.height}`}
+            viewBox={`0 0 ${project.width} ${project.height}`}
             className="sri-lanka-map"
             role="img"
             aria-label="Map of Sri Lanka showing available bus and train corridors"
           >
-            <path d={outlinePath} className="map-island" />
+            <g className="map-islands">
+              {islandPaths.map((d, index) => (
+                <path key={index} d={d} className="map-island" />
+              ))}
+            </g>
 
             <g className="map-corridors">
               {corridors.map((corridor) => {
@@ -219,6 +252,13 @@ export default function RouteMap() {
                 {data.coverage.drawn_as_corridors} of {data.coverage.services_in_scope} services
                 drawn · {data.coverage.intra_city_not_drawn} run within a single city
               </p>
+              {data.boundary_source && (
+                <p className="map-coverage-source">
+                  Outline: {data.boundary_source}. City markers use settlement
+                  centres, so a coastal town can sit a couple of kilometres off
+                  this generalised coastline.
+                </p>
+              )}
               {data.coverage.unmapped_places?.length > 0 && (
                 <p className="map-flag">
                   {data.coverage.unmapped_places.length} place(s) we cannot place on the

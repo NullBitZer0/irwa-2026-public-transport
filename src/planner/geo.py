@@ -14,23 +14,35 @@ Two things this deliberately does not do:
   town was misspelled is a bug a user would report as "the map is missing my
   bus".
 
-The island outline is a coarse schematic traced from the coast, not a survey
-boundary. It is only there to give the plotted corridors a shape to sit on.
+The outline is real geography, not a traced approximation: it is Natural Earth
+1:10m admin-0 boundary data for Sri Lanka, baked into `data/geo/` so the map
+works offline and renders the same everywhere. The significant offshore islands
+are kept too — dropping Mannar Island, for instance, would put the town of Mannar
+in the sea.
 """
 
 from __future__ import annotations
 
+import json
+import os
 from typing import Any, Iterable, Optional
 
-# City nodes. Coordinates are city centres, good to about a kilometre, which is
-# the right resolution for a corridor map and no better than that.
+# City nodes. Coordinates are settlement centres, and they are checked against the
+# Natural Earth gazetteer in evaluation/test_schedules_and_map.py where an entry
+# exists for them — which is what caught Moratuwa sitting 8.5 km off.
+#
+# The coastline in BOUNDARY_RINGS is generalised outward by a few kilometres, so a
+# coastal town can plot a little into the sea: Galle, genuinely on the shore, sits
+# 2.4 km off this line, and so do Kalutara and Aluthgama. That is the dataset's
+# resolution, not a misplaced pin, and the tests assert the distance rather than
+# pretending it is zero.
 CITY_COORDS: dict[str, tuple[float, float]] = {
     # Greater Colombo (its stops are clustered into one node)
     "Colombo": (6.9271, 79.8612),
     "Katunayake": (7.1795, 79.8971),
     "Panadura": (6.8465, 79.8912),
     "Gampaha": (7.1983, 80.0980),
-    "Moratuwa": (6.8035, 79.9535),  # Dehiwala / Nugegoda / Maharagama cluster
+    "Moratuwa": (6.7804, 79.8800),  # Dehiwala / Nugegoda / Maharagama cluster
     "Kaduwela": (6.9368, 79.9535),
     "Nittambuwa": (7.2636, 79.8980),
     "Kalutara": (6.5854, 79.9000),
@@ -40,7 +52,7 @@ CITY_COORDS: dict[str, tuple[float, float]] = {
     "Matara": (5.9485, 80.5350),
     "Tangalle": (6.0246, 80.7906),
     "Hambantota": (6.1244, 81.1181),
-    "Deniyaya": (5.9214, 80.6428),
+    "Deniyaya": (5.9600, 80.6380),
     "Nuwara Eliya": (6.9729, 80.7830),
     "Ella": (6.8668, 81.0460),
     "Bandarawela": (6.8297, 81.0460),
@@ -183,48 +195,106 @@ STOP_CITY: dict[str, str] = {
     "Jaffna": "Jaffna",
 }
 
-# A coarse outline of the island, traced clockwise from the north-west cape.
-# Schematic: it exists so the plotted corridors sit on a recognisable shape.
-ISLAND_OUTLINE: list[tuple[float, float]] = [
-    (8.98, 79.72),   # Mannar, north-west
-    (8.55, 79.73),
-    (8.15, 79.80),
-    (8.03, 79.83),   # Puttalam
-    (7.97, 79.78),   # Chilaw
-    (7.70, 79.83),
-    (7.40, 79.83),
-    (7.21, 79.84),   # Negombo
-    (7.05, 79.85),
-    (6.93, 79.86),   # Colombo
-    (6.72, 79.88),
-    (6.55, 79.90),   # Kalutara
-    (6.34, 79.98),
-    (6.12, 80.06),   # Aluthgama
-    (6.03, 80.22),   # Galle
-    (5.98, 80.38),
-    (5.95, 80.54),   # Matara
-    (6.00, 80.72),
-    (6.12, 81.12),   # Hambantota
-    (6.37, 81.28),
-    (6.72, 81.57),
-    (6.95, 81.85),
-    (7.40, 81.83),   # Kalmunai
-    (7.72, 81.70),   # Batticaloa
-    (7.95, 81.60),
-    (8.20, 81.42),
-    (8.57, 81.23),   # Trincomalee
-    (8.62, 81.05),
-    (8.95, 80.70),
-    (9.35, 80.45),
-    (9.62, 80.35),
-    (9.82, 80.37),   # Point Pedro
-    (9.78, 79.98),
-    (9.66, 80.03),   # Jaffna
-    (9.50, 80.05),
-    (9.30, 79.95),
-    (9.05, 79.85),
-    (8.98, 79.72),   # back to the start
+# Real boundary data, loaded once at import. Falls back to the coarse trace below
+# if the data file is missing, so the map degrades instead of failing.
+_BOUNDARY_FILE = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+    "data", "geo", "sri_lanka_boundary.json",
+)
+
+# A last-resort trace of the coast: about the shape of the island, in case the
+# data file is ever absent. Enough to orient a reader, not to map against.
+_FALLBACK_OUTLINE: list[tuple[float, float]] = [
+    (8.98, 79.72), (8.55, 79.73), (8.15, 79.80), (8.03, 79.83), (7.97, 79.78),
+    (7.70, 79.83), (7.40, 79.83), (7.21, 79.84), (7.05, 79.85), (6.93, 79.86),
+    (6.72, 79.88), (6.55, 79.90), (6.34, 79.98), (6.12, 80.06), (6.03, 80.22),
+    (5.98, 80.38), (5.95, 80.54), (6.00, 80.72), (6.12, 81.12), (6.37, 81.28),
+    (6.72, 81.57), (6.95, 81.85), (7.40, 81.83), (7.72, 81.70), (7.95, 81.60),
+    (8.20, 81.42), (8.57, 81.23), (8.62, 81.05), (8.95, 80.70), (9.35, 80.45),
+    (9.62, 80.35), (9.82, 80.37), (9.78, 79.98), (9.66, 80.03), (9.50, 80.05),
+    (9.30, 79.95), (9.05, 79.85),
 ]
+
+
+def _load_boundary() -> tuple[list[list[tuple[float, float]]], Optional[dict[str, float]], Optional[str]]:
+    """
+    Reads the coastline rings and their extent from the data file.
+
+    Returns (rings, bounds, source). An unreadable file is not an error: the map
+    falls back to the coarse trace and says so via `boundary_source()`.
+    """
+    try:
+        with open(_BOUNDARY_FILE, encoding="utf-8") as handle:
+            payload = json.load(handle)
+        rings = [[(lat, lng) for lat, lng in ring] for ring in payload["rings"]]
+        if not rings or len(rings[0]) < 50:
+            raise ValueError("boundary data has too few points to be a coastline")
+        return rings, payload.get("bounds"), payload.get("source")
+    except (OSError, ValueError, KeyError, TypeError):
+        return [list(_FALLBACK_OUTLINE)], None, None
+
+
+ISLAND_RINGS, BOUNDARY_BOUNDS, BOUNDARY_SOURCE = _load_boundary()
+
+# The main island, kept as its own name: most consumers want one shape.
+ISLAND_OUTLINE: list[tuple[float, float]] = ISLAND_RINGS[0]
+
+
+def boundary_source() -> str:
+    """Where the outline came from, for display and for tests."""
+    if BOUNDARY_SOURCE is None:
+        return (
+            "built-in approximate trace (data/geo/sri_lanka_boundary.json not found)"
+        )
+    return BOUNDARY_SOURCE
+
+
+def map_bounds(margin_deg: float = 0.06) -> dict[str, float]:
+    """
+    The extent the map should draw: the coastline plus every city node.
+
+    Derived rather than hardcoded in the frontend, so a correction here (a moved
+    city, a different boundary file) cannot leave routes plotted off-canvas.
+    """
+    if BOUNDARY_BOUNDS:
+        lats = [BOUNDARY_BOUNDS["min_lat"], BOUNDARY_BOUNDS["max_lat"]]
+        lngs = [BOUNDARY_BOUNDS["min_lng"], BOUNDARY_BOUNDS["max_lng"]]
+    else:
+        lats = [lat for lat, _ in ISLAND_OUTLINE]
+        lngs = [lng for _, lng in ISLAND_OUTLINE]
+
+    for lat, lng in CITY_COORDS.values():
+        lats.append(lat)
+        lngs.append(lng)
+
+    return {
+        "min_lat": min(lats) - margin_deg,
+        "max_lat": max(lats) + margin_deg,
+        "min_lng": min(lngs) - margin_deg,
+        "max_lng": max(lngs) + margin_deg,
+    }
+
+
+def point_in_boundary(lat: float, lng: float) -> bool:
+    """
+    Is this point on land, according to the boundary rings?
+
+    Ray casting over every ring. Used to check that our own city coordinates do
+    not put a town in the sea, which is a data bug that a map hides rather than
+    shows.
+    """
+    for ring in ISLAND_RINGS:
+        inside = False
+        for index in range(len(ring) - 1):
+            y1, x1 = ring[index]
+            y2, x2 = ring[index + 1]
+            if (y1 > lat) != (y2 > lat):
+                crossing_x = (x2 - x1) * (lat - y1) / (y2 - y1) + x1
+                if lng < crossing_x:
+                    inside = not inside
+        if inside:
+            return True
+    return False
 
 
 def resolve(place: Optional[str]) -> Optional[tuple[str, float, float]]:

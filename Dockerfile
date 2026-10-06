@@ -27,6 +27,10 @@ COPY pyproject.toml ./
 COPY src/ ./src/
 # The planner's retriever scores against these fixtures at request time.
 COPY data/processed/ ./data/processed/
+# Coastline data for the route map. Copied, not bind-mounted: it is read-only
+# reference data that never changes at runtime, and the planner has no reason to
+# see the git-ignored runtime directories the other agents mount.
+COPY data/geo/ ./data/geo/
 
 RUN useradd --create-home --uid 1000 appuser && chown -R appuser:appuser /app
 

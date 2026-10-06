@@ -27,11 +27,11 @@ from src.planner.connection_planner import (
     rank_connections,
 )
 from src.planner.geo import (
-    ISLAND_OUTLINE as _OUTLINE,
-)
-from src.planner.geo import (
+    ISLAND_RINGS,
+    boundary_source,
     city_nodes,
     corridors,
+    map_bounds,
     resolve,
     unmapped_places,
 )
@@ -367,7 +367,12 @@ def map_routes(mode: str = "ALL") -> dict:
     return {
         "status": "SUCCESS",
         "data": {
-            "outline": [[lat, lng] for lat, lng in _OUTLINE],
+            # Every ring, not just the main island: Mannar is a town on Mannar
+            # Island, and dropping the smaller rings put it in the sea.
+            "rings": [[[lat, lng] for lat, lng in ring] for ring in ISLAND_RINGS],
+            "outline": [[lat, lng] for lat, lng in ISLAND_RINGS[0]],
+            "bounds": map_bounds(),
+            "boundary_source": boundary_source(),
             "nodes": city_nodes(schedules),
             "corridors": all_routes,
             "coverage": {

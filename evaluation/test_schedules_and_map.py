@@ -11,8 +11,11 @@ Run:
 
 from __future__ import annotations
 
+import json
+import math
 import os
 import sys
+from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
@@ -22,6 +25,12 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from src.planner import geo  # noqa: E402
 from src.planner.hybrid_retriever import HybridTransitRetriever  # noqa: E402
 from src.planner.server import app as planner_app  # noqa: E402
+
+# The gazetteer used to check our city coordinates. Natural Earth only lists
+# major settlements, so it covers some of our table and not all of it.
+GAZETTEER = json.loads(
+    (Path(__file__).resolve().parent.parent / "data" / "geo" / "lka_places.json").read_text()
+)["places"]
 
 SCHEDULES = HybridTransitRetriever().schedules
 
@@ -99,25 +108,116 @@ def test_colombo_suburbs_cluster_into_one_city_node() -> None:
         )
 
 
+def _km(a: tuple[float, float], b: tuple[float, float]) -> float:
+    (lat1, lon1), (lat2, lon2) = a, b
+    return 6371 * math.hypot(
+        math.radians(lat2 - lat1), math.radians(lon2 - lon1) * math.cos(math.radians(lat1))
+    )
+
+
+def _distance_to_coast_km(lat: float, lng: float) -> float:
+    return min(_km((lat, lng), point) for ring in geo.ISLAND_RINGS for point in ring)
+
+
 def test_coordinates_are_inside_the_declared_map_bounds() -> None:
     """Otherwise a route draws outside the viewport and vanishes."""
-    bounds = {
-        "minLat": 5.75, "maxLat": 9.95, "minLng": 79.6, "maxLng": 81.95,
-    }
+    bounds = geo.map_bounds()
 
     for city, (lat, lng) in geo.CITY_COORDS.items():
-        assert bounds["minLat"] <= lat <= bounds["maxLat"], city
-        assert bounds["minLng"] <= lng <= bounds["maxLng"], city
+        assert bounds["min_lat"] <= lat <= bounds["max_lat"], city
+        assert bounds["min_lng"] <= lng <= bounds["max_lng"], city
 
 
-def test_the_outline_is_a_closed_loop_within_bounds() -> None:
-    outline = geo.ISLAND_OUTLINE
+def test_the_map_bounds_contain_every_city_and_the_whole_coastline() -> None:
+    """
+    The extent is derived from the data, not hardcoded in the frontend.
 
-    assert len(outline) > 10
-    # A path that does not return to its start renders as an open shape.
-    assert outline[0] == outline[-1]
-    for lat, lng in outline:
-        assert 5.75 <= lat <= 9.95 and 79.6 <= lng <= 81.95
+    If it were hardcoded, a corrected coordinate would plot off-canvas and look
+    like a missing route rather than an out-of-date constant.
+    """
+    bounds = geo.map_bounds()
+
+    for ring in geo.ISLAND_RINGS:
+        for lat, lng in ring:
+            assert bounds["min_lat"] <= lat <= bounds["max_lat"]
+            assert bounds["min_lng"] <= lng <= bounds["max_lng"]
+
+
+def test_the_outline_is_real_boundary_data_not_a_hand_trace() -> None:
+    """
+    The coarse fallback exists for when the data file is missing, and it is fine
+    for orientation — but shipping it by accident would be a silent downgrade.
+    """
+    assert "Natural Earth" in geo.boundary_source()
+
+    main = geo.ISLAND_RINGS[0]
+    assert len(main) > 500, "a traced outline is nowhere near this detailed"
+    assert main[0] == main[-1], "an unclosed ring renders as an open shape"
+    for lat, lng in main:
+        assert 5.8 <= lat <= 9.9 and 79.6 <= lng <= 81.95
+
+
+def test_the_offshore_islands_are_kept() -> None:
+    """
+    Mannar is a town on Mannar Island. Dropping the smaller rings — which an
+    earlier version did, keeping only the largest — put it in the sea.
+    """
+    assert len(geo.ISLAND_RINGS) >= 3
+    assert sum(len(r) for r in geo.ISLAND_RINGS) > len(geo.ISLAND_RINGS[0])
+
+    mannar = geo.resolve("Mannar")
+    assert mannar is not None
+    assert geo.point_in_boundary(mannar[1], mannar[2]), "Mannar is not on any drawn landmass"
+
+
+def test_every_city_is_on_land_or_within_the_coastline_resolution() -> None:
+    """
+    No city may be stranded in the sea.
+
+    The tolerance is not a fudge: this boundary is generalised outward by a few
+    kilometres, and Galle — genuinely on the shore — sits 2.4 km off it, so
+    Kalutara and Aluthgama do too. A real data error looks nothing like this:
+    Deniyaya was a coastal latitude for an inland town, and asserting "inside
+    the outline" alone would have let a few-kilometre mistake through.
+    """
+    for city, (lat, lng) in geo.CITY_COORDS.items():
+        if geo.point_in_boundary(lat, lng):
+            continue
+        assert _distance_to_coast_km(lat, lng) <= 6, (
+            f"{city} plots {_distance_to_coast_km(lat, lng):.1f} km out to sea"
+        )
+
+
+def test_our_city_coordinates_agree_with_the_gazetteer() -> None:
+    """
+    The coordinate table is hand-entered, so it is checked against a source.
+
+    This is what caught Moratuwa sitting 8.5 km from where Natural Earth puts
+    it. Coverage is partial — only major settlements are listed — so the test
+    asserts agreement where an entry exists rather than demanding one.
+    """
+    tolerance_km = 6.0
+    checked = 0
+
+    for name, (lat, lng) in geo.CITY_COORDS.items():
+        reference = GAZETTEER.get(name)
+        if reference is None:
+            continue
+        checked += 1
+        distance = _km((lat, lng), (reference[0], reference[1]))
+        assert distance <= tolerance_km, (
+            f"{name} is {distance:.1f} km from the gazetteer's position"
+        )
+
+    assert checked >= 10, f"only {checked} cities cross-checked — gazetteer mismatch?"
+
+
+def test_deniyaya_is_placed_inland() -> None:
+    """Guards a correction: an inland town that had been given a coastal latitude."""
+    deniyaya = geo.resolve("Deniyaya")
+    assert deniyaya is not None
+    assert deniyaya[1] > 5.93, "Deniyaya is inland; 5.92 put it on the south coast"
+    assert geo.point_in_boundary(deniyaya[1], deniyaya[2])
 
 
 def test_corridors_aggregate_and_report_fares() -> None:
@@ -206,6 +306,8 @@ def test_synthetic_services_are_flagged_in_the_payload(client: TestClient) -> No
 def test_map_returns_an_outline_nodes_and_corridors(client: TestClient) -> None:
     data = client.get("/mcp/map_routes").json()["data"]
 
+    assert len(data["rings"]) >= 3, "offshore islands are part of the shape"
+    assert data["bounds"] and data["boundary_source"]
     assert len(data["outline"]) > 10
     assert data["nodes"] and data["corridors"]
     node = data["nodes"][0]

@@ -132,7 +132,7 @@ lanka-journey-ai/
 │   │   ├── nlp_parser.py           # Singlish/English entity extraction
 │   │   ├── hybrid_retriever.py     # BM25 + ChromaDB + Reciprocal Rank Fusion
 │   │   ├── live_disruptions.py     # Read-only RSS news feed ingestor
-│   │   ├── geo.py                  # Place coordinates, corridors, map outline
+│   │   ├── geo.py                  # Boundary rings, city coordinates, corridors
 │   │   └── server.py               # Planning Agent FastMCP microservice
 │   ├── booking/                    # Agent 3: Action & Ticketing
 │   │   ├── **init**.py
@@ -443,9 +443,25 @@ by mode and searchable by town, route or operator. Synthetic services are labell
 *demo data* with the generated fields named — a timetable that does not say which
 rows were invented is a lie told in a table.
 
-**Route map** draws the available routes on a schematic outline of Sri Lanka as
-inline SVG, so it works offline and leaks no viewport to a tile server. Click a
-line for its services, operators and fare range; line thickness is service count.
+**Route map** draws the available routes on a real outline of Sri Lanka as inline
+SVG, so it works offline and leaks no viewport to a tile server. Click a line for
+its services, operators and fare range; line thickness is service count.
+
+The coastline is **Natural Earth 1:10m admin-0 boundary data**, baked into
+`data/geo/sri_lanka_boundary.json` (public domain): 757 points for the main
+island plus four significant offshore islands. Mannar is a town on Mannar Island,
+so an outline that kept only the largest ring put it in the sea. Drawing bounds
+are served with the geometry rather than hardcoded in the frontend, so the
+projection cannot drift out of step with the shape it projects. If the data file
+is ever missing, the map falls back to a coarse built-in trace and says so on
+screen.
+
+City markers use settlement centres from `src/planner/geo.py`, cross-checked
+against the Natural Earth gazetteer where it has an entry — which is how Moratuwa
+was found sitting 8.5 km off. The coastline is generalised outward by a couple of
+kilometres, so a coastal town can plot slightly into the sea (Galle, genuinely on
+the shore, sits 2.4 km off this line), and the tests assert that distance rather
+than pretending it is zero.
 
 The map is honest about what it is:
 

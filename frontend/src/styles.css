@@ -1399,6 +1399,7 @@ code {
 .map-coverage h4 { margin: 0 0 0.35rem; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted, #94a3b8); }
 .map-coverage p { margin: 0 0 0.4rem; font-size: 0.76rem; color: var(--muted, #94a3b8); line-height: 1.5; }
 .map-coverage-numbers { font-family: ui-monospace, monospace; }
+.map-coverage-source { opacity: 0.8; font-style: italic; }
 
 .sr-only {
   position: absolute;
