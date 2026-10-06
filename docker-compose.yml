@@ -37,7 +37,11 @@ services:
       - discovery.type=single-node
       - plugins.security.disabled=true
       - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
-      - "OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_INITIAL_ADMIN_PASSWORD:-Tr@nsit_SriLanka_2026!}"
+      # No default value, on purpose. A password committed to the repository is
+      # a leaked credential, and a shared "default" is exactly how that happens:
+      # it gets copied, reused and published. This fails fast with instructions
+      # instead, so the secret only ever lives in your untracked .env.
+      - "OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_INITIAL_ADMIN_PASSWORD:?Set it in .env (see .env.example) or run: echo OPENSEARCH_INITIAL_ADMIN_PASSWORD=$(openssl rand -base64 18) >> .env}"
     ports:
       - "9200:9200"
     volumes:

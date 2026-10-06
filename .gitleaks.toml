@@ -1,0 +1,28 @@
+# Gitleaks configuration.
+#
+# Deliberately minimal: the goal is to fail on real credentials, so the
+# allowlist is kept to the narrowest scope that stops the project's own security
+# tests from being reported as leaks.
+
+title = "LankaJourney AI gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = """
+Known-safe strings that secret scanners misread.
+
+Each entry is scoped to one path and one exact string. Nothing here is a
+credential: the one value is a base64-encoded prompt-injection payload used as
+test input by the red-team harness, which is exactly the sort of high-entropy
+string a generic scanner flags.
+"""
+paths = [
+  '''evaluation/redteam_evidence\.json''',
+]
+regexes = [
+  # "ignore all previous instructions" — an attack payload, base64-encoded, used
+  # as test input. Not a key.
+  '''aWdub3JlIGFsbCBwcmV2aW91cyBpbnN0cnVjdGlvbnMg''',
+]

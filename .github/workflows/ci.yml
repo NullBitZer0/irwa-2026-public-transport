@@ -11,6 +11,24 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  secrets:
+    name: Secret scan (gitleaks)
+    runs-on: ubuntu-latest
+    # GitGuardian flagged a committed OpenSearch password. That is a
+    # self-hosted gate for the same class of finding: it fails on any secret in
+    # the tree, not only on the ones a vendor has already catalogued.
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Scan the full history
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITLEAKS_LICENSE: ""
+        with:
+          args: detect --source . --redact --verbose
+
   backend:
     name: Backend lint & tests
     runs-on: ubuntu-latest
@@ -78,14 +96,16 @@ jobs:
 
       - name: Write .env
         run: |
-          cat > .env <<'EOF'
-          # CI values only. The GROQ key is deliberately absent: the router and
-          # the parser both have deterministic fallbacks, which is what the
-          # harness should be exercising anyway.
-          OPENSEARCH_INITIAL_ADMIN_PASSWORD=Ci_Tr@nsit_SriLanka_2026
-          LOG_LEVEL=WARNING
-          DEBUG_MODE=False
-          EOF
+          # Generated per run, never committed: a password in this workflow file
+          # would be a credential in the repository and in its history.
+          {
+            echo "OPENSEARCH_INITIAL_ADMIN_PASSWORD=$(openssl rand -base64 18)"
+            # The GROQ key is deliberately absent: the router and the parser both
+            # have deterministic fallbacks, which is what the harness should be
+            # exercising anyway.
+            echo "LOG_LEVEL=WARNING"
+            echo "DEBUG_MODE=False"
+          } > .env
 
       - name: Build images
         run: docker compose build
