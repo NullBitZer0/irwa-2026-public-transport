@@ -896,3 +896,40 @@
 {"timestamp": "2026-10-06T10:14:47.518440+00:00", "event_type": "BOOKING_BLOCKED_NO_HITL", "detail": "transaction_id=TXN-38BA512E reason=Confirmation token signature does not verify."}
 {"timestamp": "2026-10-06T10:14:47.522816+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=CLARIFY input_length=63"}
 {"timestamp": "2026-10-06T10:14:47.669531+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=CLARIFY input_length=63"}
+{"timestamp": "2026-10-06T10:28:43.032544+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=32"}
+{"timestamp": "2026-10-06T10:28:43.033064+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='system\\\\s+override' input_length=15"}
+{"timestamp": "2026-10-06T10:28:43.033481+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='set\\\\s+fare\\\\s+to\\\\s+0' input_length=13"}
+{"timestamp": "2026-10-06T10:28:43.033879+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='script\\\\s*(alert|src)' input_length=25"}
+{"timestamp": "2026-10-06T10:28:43.034375+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='disregard.*instructions?' input_length=60"}
+{"timestamp": "2026-10-06T10:28:43.035030+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='system\\\\s+(override|prompt|message)' input_length=55"}
+{"timestamp": "2026-10-06T10:28:43.035526+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=44"}
+{"timestamp": "2026-10-06T10:28:43.035885+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=44"}
+{"timestamp": "2026-10-06T10:28:43.036168+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=33"}
+{"timestamp": "2026-10-06T10:28:43.036674+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='you\\\\s+are\\\\s+now\\\\s+(a\\\\s+)?(dan|developer\\\\s+mode|jailbroken)' input_length=65"}
+{"timestamp": "2026-10-06T10:28:43.037297+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='system\\\\s+(override|prompt|message)' input_length=63"}
+{"timestamp": "2026-10-06T10:28:43.037948+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='(make|change|force|reduce|lower|adjust).*fare.*(0|zero|o|free)' input_length=51"}
+{"timestamp": "2026-10-06T10:28:43.038601+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='<[^>]*\\\\son\\\\w+\\\\s*=' input_length=42"}
+{"timestamp": "2026-10-06T10:28:43.038982+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='union\\\\s+select' input_length=32"}
+{"timestamp": "2026-10-06T10:28:43.116910+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=56"}
+{"timestamp": "2026-10-06T10:28:43.134861+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=56"}
+{"timestamp": "2026-10-06T10:28:45.733329+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=46"}
+{"timestamp": "2026-10-06T10:28:45.751924+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=159"}
+{"timestamp": "2026-10-06T10:28:47.299251+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=109"}
+{"timestamp": "2026-10-06T10:28:49.141118+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=175"}
+{"timestamp": "2026-10-06T10:28:49.160095+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='system\\\\s+(override|prompt|message)' input_length=39"}
+{"timestamp": "2026-10-06T10:28:49.177466+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='repeat\\\\s+(the\\\\s+)?(above|everything)' input_length=65"}
+{"timestamp": "2026-10-06T10:28:50.090554+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=80"}
+{"timestamp": "2026-10-06T10:28:50.110365+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='do\\\\s+anything\\\\s+now' input_length=179"}
+{"timestamp": "2026-10-06T10:28:50.201295+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=CLARIFY input_length=135"}
+{"timestamp": "2026-10-06T10:28:50.292737+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=CLARIFY input_length=61"}
+{"timestamp": "2026-10-06T10:28:50.313425+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=3"}
+{"timestamp": "2026-10-06T10:28:51.175640+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=78"}
+{"timestamp": "2026-10-06T10:28:52.202121+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=59"}
+{"timestamp": "2026-10-06T10:28:52.221985+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='script\\\\s*(alert|src)' input_length=46"}
+{"timestamp": "2026-10-06T10:28:53.848002+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=29"}
+{"timestamp": "2026-10-06T10:28:55.797912+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=106"}
+{"timestamp": "2026-10-06T10:28:55.940095+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=CLARIFY input_length=63"}
+{"timestamp": "2026-10-06T10:28:56.121979+00:00", "event_type": "BOOKING_BLOCKED_NO_HITL", "detail": "transaction_id=TXN-15B94D40 reason=Confirmation token signature does not verify."}
+{"timestamp": "2026-10-06T10:28:56.130838+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=CLARIFY input_length=63"}
+{"timestamp": "2026-10-06T10:28:56.291909+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=CLARIFY input_length=63"}
+{"timestamp": "2026-10-06T10:28:59.688122+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=28"}

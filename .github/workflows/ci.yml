@@ -115,9 +115,14 @@ jobs:
           pip install -r requirements.docker.txt
           pip install "pytest>=8.3.0" "pytest-asyncio>=0.24.0"
 
+      - name: Write .env
+        # Same script as the red-team job: compose interpolates the whole file,
+        # so this job needs the same required variables even though it only
+        # starts opensearch.
+        run: .github/scripts/write-ci-env.sh
+
       - name: Start OpenSearch
         run: |
-          echo "OPENSEARCH_INITIAL_ADMIN_PASSWORD=$(openssl rand -base64 18)" >> .env
           docker compose up -d opensearch
           for i in $(seq 1 40); do
             if curl -fsS http://localhost:9200 >/dev/null 2>&1; then
@@ -152,31 +157,12 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Write .env
-        run: |
-          # Generated per run, never committed: a password in this workflow file
-          # would be a credential in the repository and in its history.
-          {
-            echo "OPENSEARCH_INITIAL_ADMIN_PASSWORD=$(openssl rand -base64 18)"
-            # Signs the HITL confirmation tokens. Required with no default, so the
-            # booking agent would refuse to clear the gate without it.
-            echo "HITL_TOKEN_SECRET=$(openssl rand -hex 24)"
-            # The GROQ key is deliberately absent: the router and the parser both
-            # have deterministic fallbacks, which is what the harness should be
-            # exercising anyway.
-            echo "LOG_LEVEL=WARNING"
-            echo "DEBUG_MODE=False"
-            # The agents run as this uid so they can write the bind-mounted audit
-            # log. It has to be the runner's own uid, not a hardcoded 1000: the
-            # workspace is owned by the runner, so a mismatch makes every
-            # bind-mounted write fail. Hardcoding it broke the booking store
-            # with "sqlite3.OperationalError: unable to open database file".
-            echo "DOCKER_UID=$(id -u)"
-            echo "DOCKER_GID=$(id -g)"
-          } > .env
+        run: .github/scripts/write-ci-env.sh
 
-          # data/booking is git-ignored, so it does not exist in a fresh checkout
-          # and Docker would create it root-owned, which the agents cannot write.
-          mkdir -p data/booking
+      - name: Prepare bind-mount directories
+        # data/booking is git-ignored, so it does not exist in a fresh checkout
+        # and Docker would create it root-owned, which the agents cannot write.
+        run: mkdir -p data/booking
 
       - name: Build images
         run: docker compose build
