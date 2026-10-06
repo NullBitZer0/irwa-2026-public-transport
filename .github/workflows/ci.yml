@@ -130,11 +130,23 @@ jobs:
 
       - name: Wait for health
         run: |
+          # Count the services that actually define a healthcheck, rather than
+          # hardcoding a number: a hardcoded threshold silently stops covering a
+          # service when one is added, which is how an unhealthy agent can pass.
+          # python3 rather than jq: it is guaranteed on the runner, and this is
+          # not worth a step that can fail on a missing tool.
+          expected=$(docker compose config --format json | python3 -c '
+          import json, sys
+          services = json.load(sys.stdin)["services"]
+          print(sum(1 for s in services.values() if s.get("healthcheck")))
+          ')
+          echo "waiting for $expected healthchecked services"
           for i in $(seq 1 40); do
             healthy=$(docker compose ps --format '{{.Service}} {{.Health}}' \
               | awk '$2=="healthy"' | wc -l)
-            if [ "$healthy" -ge 4 ]; then
-              echo "stack healthy"; exit 0
+            if [ "$healthy" -ge "$expected" ]; then
+              echo "stack healthy ($healthy/$expected)"
+              exit 0
             fi
             sleep 5
           done
@@ -144,7 +156,7 @@ jobs:
           # through 50 lines of unrelated OpenSearch startup noise.
           docker compose ps --format '{{.Service}} {{.State}} {{.Health}}' \
             | awk '$NF != "healthy" && $2 == "running"'
-          docker compose logs --tail=80 booking orchestrator planner
+          docker compose logs --tail=80 booking orchestrator planner conditions
           exit 1
 
       - name: Run the red-team suite
