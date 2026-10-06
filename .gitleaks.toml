@@ -2,7 +2,8 @@
 #
 # Deliberately minimal: the goal is to fail on real credentials, so the
 # allowlist is kept to the narrowest scope that stops the project's own security
-# tests from being reported as leaks.
+# tests from being reported as leaks. Every entry names a file, and a rule that
+# only applies when a known-safe value appears in that file.
 
 title = "LankaJourney AI gitleaks config"
 
@@ -13,16 +14,24 @@ useDefault = true
 description = """
 Known-safe strings that secret scanners misread.
 
-Each entry is scoped to one path and one exact string. Nothing here is a
-credential: the one value is a base64-encoded prompt-injection payload used as
-test input by the red-team harness, which is exactly the sort of high-entropy
-string a generic scanner flags.
+Nothing here is a credential:
+
+- the base64 value is a prompt-injection payload used as test input by the
+  red-team harness, which is exactly the sort of high-entropy string a generic
+  scanner flags;
+- the signing key is a pytest fixture standing in for HITL_TOKEN_SECRET. The
+  tests need a literal so they can assert that a *missing* or weak key is
+  refused, and a value generated at runtime could not be asserted against.
 """
 paths = [
+  # Mirrors payloads from the harness, so it inherits their contents.
   '''evaluation/redteam_evidence\.json''',
+  '''evaluation/test_hitl_token\.py''',
+  '''evaluation/conftest\.py''',
 ]
 regexes = [
-  # "ignore all previous instructions" — an attack payload, base64-encoded, used
-  # as test input. Not a key.
+  # "ignore all previous instructions" — attack payload, base64-encoded.
   '''aWdub3JlIGFsbCBwcmV2aW91cyBpbnN0cnVjdGlvbnMg''',
+  # The test-only fixture key in the two files above.
+  '''test-only-hitl-signing-key-0123456789''',
 ]

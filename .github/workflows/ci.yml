@@ -100,6 +100,9 @@ jobs:
           # would be a credential in the repository and in its history.
           {
             echo "OPENSEARCH_INITIAL_ADMIN_PASSWORD=$(openssl rand -base64 18)"
+            # Signs the HITL confirmation tokens. Required with no default, so the
+            # booking agent would refuse to clear the gate without it.
+            echo "HITL_TOKEN_SECRET=$(openssl rand -hex 24)"
             # The GROQ key is deliberately absent: the router and the parser both
             # have deterministic fallbacks, which is what the harness should be
             # exercising anyway.
