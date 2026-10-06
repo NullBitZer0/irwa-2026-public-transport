@@ -17,8 +17,9 @@ from langgraph.graph import END, StateGraph
 
 from src.orchestrator.agent_connectors import AgentDispatchBridge
 from src.orchestrator.logger import get_logger
-from src.orchestrator.router import classify_user_intent
+from src.orchestrator.router import _is_booking_ready, classify_user_intent
 from src.orchestrator.schemas import BookingRequestPayload, RouteRequestPayload
+from src.orchestrator.session_store import SLOTS
 from src.orchestrator.state import TransitSessionState
 from src.responsible_ai.grounding import citation_source_for
 
@@ -52,6 +53,24 @@ def supervisor_node(state: TransitSessionState) -> dict:
     # back to the gate with a fresh one rather than straight to the booking.
     approved = bool(state.get("hitl_token"))
 
+    # "Yes" to "are you ready to book?" carries the booking forward, choosing the
+    # service that was proposed. Resolved here rather than in the UI so the
+    # consent step works over the API too, and so the chosen route is recorded
+    # before the gate issues a token bound to it.
+    if not has_route and not approved and _is_booking_ready(state["user_query"]):
+        proposed = SLOTS.proposed(state["session_id"])
+        if proposed:
+            chosen = proposed[0]["route_id"]
+            logger.info(
+                f"[{state['session_id']}] Booking readiness confirmed "
+                f"-> {chosen}"
+            )
+            return {
+                "intent": intent,
+                "next_node": "hitl_checkpoint",
+                "selected_route_id": chosen,
+            }
+
     # Routing logic — order matters
     if has_route and not approved:
         next_node = "hitl_checkpoint"
@@ -59,6 +78,8 @@ def supervisor_node(state: TransitSessionState) -> dict:
         next_node = "booking_agent"
     elif intent == "PLAN_ROUTE":
         next_node = "planning_agent"
+    elif intent == "CONDITIONS":
+        next_node = "conditions_node"
     elif intent == "FAQ":
         next_node = "faq_node"
     else:
@@ -113,8 +134,12 @@ async def planning_agent_node(state: TransitSessionState) -> dict:
         }
 
     if services:
+        # Remember the proposals: a later bare "yes" needs something to point at.
+        SLOTS.propose(state["session_id"], services)
         return {
-            "messages": [_prepend_conditions(advisory, _journey_services_message(services, jdata))],
+            "messages": [
+                _prepend_conditions(advisory, _journey_services_message(services, jdata))
+            ],
             "route_options": _with_provenance(services),
             "conditions": advisory,
         }
@@ -211,7 +236,8 @@ def _journey_services_message(services: list[dict], jdata: dict) -> str:
         f"**{jdata.get('destination')}**{when}:"
         f"{note_block}\n\n"
         + "\n".join(lines)
-        + "\n\nTell me which one and I'll check seats and hold it for you."
+        + "\n\nAre you ready to book? Reply **yes** and I'll hold the first one "
+        "for you, or name a different service from the list above."
     )
 
 
@@ -471,6 +497,80 @@ def faq_node(state: TransitSessionState) -> dict:  # noqa: ARG001
     return {"messages": [msg]}
 
 
+# ── Node: Live conditions ─────────────────────────────────────────────────────
+
+async def conditions_node(state: TransitSessionState) -> dict:
+    """
+    Answers a weather or incident question about the journey in progress.
+
+    Mid-conversation this is the common case: the traveller has said where they
+    are going and asks whether the weather or a strike will affect them. So it
+    reads the route from the session's slots rather than demanding a new one.
+
+    Deliberately does NOT reset those slots. "How will the weather be?" is a
+    question about the trip, not a new trip — clearing the origin here would make
+    the traveller repeat themselves mid-flow.
+    """
+    entities: dict = state.get("extracted_entities") or {}
+    origin = entities.get("origin") or ""
+    destination = entities.get("destination") or ""
+
+    if not origin and not destination:
+        return {
+            "messages": [
+                "I can check the weather and any reported incidents — which "
+                "journey should I look at? Tell me where you're going."
+            ],
+            "route_options": [],
+        }
+
+    conditions = await _conditions_for(entities)
+    if conditions is None:
+        return {
+            "messages": [
+                "I can't reach the live conditions service right now, so I "
+                "can't confirm the weather or any incidents. Please check the "
+                "operator's site or a weather app before you travel."
+            ],
+            "route_options": [],
+        }
+
+    advisory = conditions.get("advisory") or {}
+    weather = advisory.get("weather") or {}
+    news = advisory.get("news") or {}
+
+    where = " → ".join(part for part in (origin, destination) if part)
+    parts: list[str] = []
+    if conditions.get("sentence"):
+        parts.append(conditions["sentence"])
+
+    # A little detail beyond the headline sentence, so the answer is worth the
+    # round trip.
+    temp = (weather.get("origin") or {}).get("temperature_c")
+    if temp is not None:
+        parts.append(f"Currently around {temp}°C at your departure point.")
+
+    if news.get("available"):
+        if news.get("reasons"):
+            parts.append("I checked recent transit news as well.")
+        else:
+            count = conditions.get("news_count", 0)
+            noun = "headline" if count == 1 else "headlines"
+            parts.append(
+                f"I scanned {count} recent transit news {noun} and found "
+                f"nothing else affecting this route."
+            )
+    else:
+        parts.append("I couldn't reach the news feed, so incidents are unchecked.")
+
+    parts.append(f"_(about {where})_" if where else "")
+    return {
+        "messages": [" ".join(p for p in parts if p)],
+        "route_options": [],
+        "conditions": conditions,
+    }
+
+
 # ── Node: Clarify ─────────────────────────────────────────────────────────────
 
 def clarify_node(state: TransitSessionState) -> dict:  # noqa: ARG001
@@ -588,6 +688,7 @@ def build_graph():
     builder.add_node("booking_agent", booking_agent_node)
     builder.add_node("hitl_checkpoint", hitl_checkpoint_node)
     builder.add_node("faq_node", faq_node)
+    builder.add_node("conditions_node", conditions_node)
     builder.add_node("clarify_node", clarify_node)
 
     # Entry point
@@ -602,12 +703,20 @@ def build_graph():
             "booking_agent": "booking_agent",
             "hitl_checkpoint": "hitl_checkpoint",
             "faq_node": "faq_node",
+            "conditions_node": "conditions_node",
             "clarify_node": "clarify_node",
         },
     )
 
     # All worker nodes terminate after their task
-    for node in ("planning_agent", "booking_agent", "hitl_checkpoint", "faq_node", "clarify_node"):
+    for node in (
+        "planning_agent",
+        "booking_agent",
+        "hitl_checkpoint",
+        "faq_node",
+        "conditions_node",
+        "clarify_node",
+    ):
         builder.add_edge(node, END)
 
     return builder.compile()

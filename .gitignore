@@ -58,3 +58,6 @@ logs/
 
 # Booking SQLite database (runtime state, not source)
 data/booking/
+
+# Conversation transcripts (runtime state, not source)
+data/conversations/

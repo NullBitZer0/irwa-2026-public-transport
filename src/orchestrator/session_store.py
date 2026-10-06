@@ -33,6 +33,16 @@ from typing import Any, Optional
 # derived per session by the caller, not accumulated from user text.
 SLOT_KEYS = ("origin", "destination", "mode", "departure_date", "departure_time")
 
+# Services the planner last proposed for this session, so a plain "yes" can mean
+# "book that one". Kept separate from SLOT_KEYS because these are not things the
+# traveller said — they are the agent's own proposals, and must be overwritten
+# rather than merged when new results arrive.
+PROPOSED_KEY = "proposed_routes"
+
+# How many proposed services to remember. Only the top one is ever acted on
+# automatically; the rest exist so a later turn can name the second choice.
+MAX_PROPOSED_ROUTES = 5
+
 # A conversation abandoned mid-clarification should not hold memory forever.
 IDLE_TTL_SECONDS = 30 * 60
 MAX_SESSIONS = 500
@@ -95,6 +105,35 @@ class SlotStore:
 
             entry.updated_at = now
             return dict(entry.slots)
+
+    def propose(self, session_id: str, routes: list[dict[str, Any]]) -> None:
+        """
+        Records the services just offered, so "yes" has something to refer to.
+
+        Replaced wholesale on every call: proposals from an earlier search must
+        not survive into a new one, or "ready" could book a service the traveller
+        is no longer looking at.
+        """
+        trimmed = [
+            {"route_id": r.get("route_id"), "service_name": r.get("service_name")}
+            for r in routes[:MAX_PROPOSED_ROUTES]
+            if r.get("route_id")
+        ]
+        with self._lock:
+            entry = self._sessions.get(session_id)
+            if entry is None:
+                entry = SessionSlots(slots={})
+                self._sessions[session_id] = entry
+            entry.slots[PROPOSED_KEY] = trimmed
+            entry.updated_at = time.monotonic()
+
+    def proposed(self, session_id: str) -> list[dict[str, Any]]:
+        """The services last offered to this session, best first."""
+        with self._lock:
+            entry = self._sessions.get(session_id)
+            if not entry:
+                return []
+            return list(entry.slots.get(PROPOSED_KEY) or [])
 
     def get(self, session_id: str) -> dict[str, Any]:
         with self._lock:

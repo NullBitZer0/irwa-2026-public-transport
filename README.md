@@ -123,7 +123,8 @@ lanka-journey-ai/
 │   ├── orchestrator/               # Agent 1: Supervisor & Coordinator
 │   │   ├── **init**.py
 │   │   ├── router.py               # Intent classifier & supervisor node
-│   │   ├── state.py                # LangGraph session state schema
+│   │   ├── conversations.py           # Chat history + read-only enforcement
+│   ├── state.py                # LangGraph session state schema
 │   │   └── schemas.py              # Inter-Agent MCP / JSON-RPC specifications
 │   ├── planner/                    # Agent 2: NLP & Information Retrieval
 │   │   ├── **init**.py
@@ -393,7 +394,51 @@ classification and planner logic as a live headline — nothing is special-cased
 and is always labelled as simulated. `GET :8103/mcp/sources` lists what the
 agent reads.
 
-### 5. Bookings, payment and ticket history
+### 5. Conversations, booking and ticket history
+
+**One conversation per trip.** A conversation opens with a new chat, collects
+what it needs, and ends when the payment completes. After that it becomes
+read-only history — you can open it and read it, but not continue it. That rule is
+enforced by the server (a finished conversation returns `409`), not just by a
+disabled composer.
+
+The flow it produces:
+
+```
+Traveller: I want to go to Colombo
+Agent:     Got it — Colombo Fort. Still need: where are you starting from,
+           train or bus, and what time?
+Traveller: from Kandy
+Agent:     …Still need: train or bus, and what time?
+Traveller: how will the weather be?
+Agent:     ⚠️ … Currently around 23°C at your departure point. I scanned recent
+           transit news and found nothing else affecting this route. (Kandy → Colombo)
+Traveller: 8am by train
+Agent:     Here are the train options… Are you ready to book? Reply **yes** and
+           I'll hold the first one, or name a different service.
+Traveller: yes
+Agent:     ⚠️ Human-in-the-Loop Confirmation Required — TRAIN-1007 at LKR 850.
+```
+
+Notes on that flow:
+
+- **Weather and incident questions are answerable mid-conversation.** They read
+  the journey from the session's slots and do not reset them, because "how will
+  the weather be?" is a question *about* the trip, not a new trip.
+- **"Are you ready to book?" is a real gate.** A bare affirmative picks the
+  service that was proposed and opens the signed HITL confirmation. Only a short
+  affirmative counts, and a refusal is never read as consent — booking a seat
+  someone declined is the worst failure this step could have.
+- **Payment ends the conversation.** The transaction is bound to its conversation
+  server-side when the seat is held, so `/payment` can archive the right one
+  without the client claiming which it was. Slot memory is dropped at the same
+  moment, so the next chat starts clean.
+
+History lives in SQLite (`CONVERSATIONS_DB_PATH`) and survives a restart. The
+sidebar lists finished conversations with their booking reference and message
+count; clicking one opens the transcript in read-only view.
+
+### 6. Bookings, payment and ticket history
 
 Booking is staged and human-in-the-loop: the agent holds a seat for 10 minutes,
 asks for approval, then stops at the payment step. **Only the last four card
@@ -411,7 +456,7 @@ Bookings and the purchase ledger are persisted in SQLite (`data/booking.db`),
 so they survive a container restart. Without `BOOKING_DB_PATH` the store is
 in-memory, which is what the test suite uses.
 
-### 6. Example Test Queries
+### 7. Example Test Queries
 
 * **Route Discovery (Singlish):**
 > *"Heta ude 6ta Kandy indan Galle yanna train ekak thiyeda?"*

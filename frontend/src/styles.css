@@ -777,6 +777,95 @@ code {
   font-size: 0.76rem;
 }
 
+/* ── Chat history (read-only) ───────────────────────────────────────────── */
+
+.history {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.history__item {
+  display: grid;
+  gap: 0.15rem;
+  width: 100%;
+  text-align: left;
+  padding: 0.45rem 0.55rem;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border);
+  border-radius: 8px;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.history__item:hover,
+.history__item--open {
+  border-left-color: var(--accent);
+}
+
+/* An archived conversation is history, not something you continue. */
+.history__item:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.history__title {
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.history__meta {
+  color: var(--muted);
+  font-size: 0.68rem;
+}
+
+.history__cta {
+  color: var(--accent);
+  font-size: 0.68rem;
+}
+
+/* ── Read-only conversation viewer ─────────────────────────────────────── */
+
+.viewer {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+
+.viewer__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.viewer__head h2 {
+  margin: 0 0 0.15rem;
+}
+
+.viewer__notice {
+  margin: 0.6rem 0;
+  padding: 0.45rem 0.6rem;
+  border-left: 3px solid var(--accent);
+  background: rgba(31, 157, 143, 0.08);
+  border-radius: 0 6px 6px 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.viewer__log {
+  overflow-y: auto;
+  flex: 1;
+  padding: 0.5rem 0.25rem 0.5rem 0;
+}
+
 /* ── HITL banner ───────────────────────────────────────────────────────── */
 
 .hitl {

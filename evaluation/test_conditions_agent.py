@@ -359,3 +359,45 @@ def test_weather_thresholds_are_classified() -> None:
     assert gather.HEAVY_RAIN_CODE == 65
     assert gather.HEAVY_RAIN_MM > 0
     assert gather.STRONG_WIND_KMH > 0
+
+
+# ── Mid-conversation questions ───────────────────────────────────────────────
+
+@pytest.mark.parametrize(
+    "query, expected",
+    [
+        ("how will the weather be?", True),
+        ("will it rain on the way to Kandy", True),
+        ("are there any incidents today on my route", True),
+        ("is it safe to travel today", True),
+        ("is there a strike on the railway", True),
+        ("wassa wenne nadeta?", True),
+        ("ghataya thiyeda?", True),
+        # Not conditions questions, however much they mention a place.
+        ("I want to go to Colombo", False),
+        ("Kandy to Colombo train at 8am", False),
+        ("what are the baggage rules", False),
+        ("book route TRAIN-1007", False),
+    ],
+)
+def test_weather_and_incident_questions_are_recognised(query: str, expected: bool) -> None:
+    """
+    These have to be routed away from route search.
+
+    "How will the weather be on the way to Kandy?" names a destination, so without
+    this it goes to a route search that never answers the question asked.
+    """
+    from src.orchestrator.router import _looks_like_conditions_query
+
+    assert _looks_like_conditions_query(query) is expected
+
+
+def test_a_refusal_is_never_read_as_consent() -> None:
+    """
+    Booking a seat the traveller declined is the worst failure of the readiness
+    step, so refusals are checked explicitly rather than implied.
+    """
+    from src.orchestrator.router import _is_booking_ready
+
+    for refusal in ("no", "no thanks", "not now", "wait", "cancel please"):
+        assert _is_booking_ready(refusal) is False, refusal

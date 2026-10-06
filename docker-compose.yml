@@ -174,9 +174,16 @@ services:
       PLANNER_AGENT_URL: http://planner:8001
       BOOKING_AGENT_URL: http://booking:8002
       CONDITIONS_AGENT_URL: http://conditions:8003
+      # Conversation transcripts, so chat history survives a restart.
+      CONVERSATIONS_DB_PATH: /app/state/conversations.db
       AGENT_TIMEOUT_SECONDS: "20"
     ports:
       - "8100:8000"
+    volumes:
+      # A service-level `volumes` list REPLACES the one inherited from the
+      # *agent anchor, it does not merge — so the audit-log mount is repeated.
+      - ./evaluation:/app/evaluation
+      - ./data/conversations:/app/state
     depends_on:
       - planner
       - booking

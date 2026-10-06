@@ -42,7 +42,11 @@ export async function chat({
     } catch {
       /* non-JSON error body */
     }
-    throw new Error(detail)
+    // The status is carried on the error so callers can react to it: a 409 means
+    // "this conversation is finished", which is recoverable, unlike a 500.
+    const error = new Error(detail)
+    error.status = res.status
+    throw error
   }
 
   return res.json()
@@ -133,5 +137,50 @@ export async function setDemoIncident({ incidentId = null, active = true } = {})
     return { ...(await res.json()), ok: true }
   } catch {
     return { active: [], ok: false }
+  }
+}
+
+/**
+ * Opens a new conversation.
+ *
+ * Called on load and again after a payment completes: the finished trip becomes
+ * history, and the next one starts with no memory of it.
+ */
+export async function startConversation() {
+  try {
+    const res = await fetch(`${BASE}/conversations`, { method: 'POST' })
+    if (!res.ok) return null
+    return await res.json()
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Conversation summaries for the sidebar, newest first.
+ * @param {string|null} [status] 'active' filters to the in-progress one
+ */
+export async function fetchConversations(status = null) {
+  try {
+    const query = status ? `?status=${encodeURIComponent(status)}` : ''
+    const res = await fetch(`${BASE}/conversations${query}`)
+    if (!res.ok) return []
+    return (await res.json()).conversations ?? []
+  } catch {
+    return []
+  }
+}
+
+/**
+ * One conversation with its transcript. Read-only once it has been archived —
+ * the server refuses new turns, and this only ever reads.
+ */
+export async function fetchConversation(conversationId) {
+  try {
+    const res = await fetch(`${BASE}/conversations/${encodeURIComponent(conversationId)}`)
+    if (!res.ok) return null
+    return await res.json()
+  } catch {
+    return null
   }
 }

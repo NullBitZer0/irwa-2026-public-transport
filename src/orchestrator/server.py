@@ -18,6 +18,11 @@ from pydantic import BaseModel
 
 load_dotenv()  # Load .env before importing modules that read env vars
 
+from src.orchestrator.conversations import (  # noqa: E402
+    CONVERSATIONS,
+    ConversationArchived,
+    conversation_title_from,
+)
 from src.orchestrator.logger import get_logger  # noqa: E402
 from src.orchestrator.main_graph import _bridge, build_graph  # noqa: E402
 from src.orchestrator.session_store import SLOTS  # noqa: E402
@@ -54,6 +59,9 @@ class ChatRequest(BaseModel):
 
     query: str
     session_id: Optional[str] = None
+    # Which conversation this turn belongs to. Omit to start one; supply it to
+    # continue. A finished conversation refuses turns (see require_active).
+    conversation_id: Optional[str] = None
     # R-09: the signed confirmation the traveller's approval produced, returned
     # verbatim from the previous turn. There is no boolean equivalent on purpose:
     # `hitl_approved: true` would be the client approving itself.
@@ -66,6 +74,7 @@ class ChatResponse(BaseModel):
     """Unified response envelope returned to the frontend."""
 
     response: str
+    conversation_id: Optional[str] = None
     session_id: str
     intent: Optional[str] = None
     route_options: list = []
@@ -109,6 +118,58 @@ class PaymentResponse(BaseModel):
 
 # ── Endpoints ─────────────────────────────────────────────────────────────────
 
+@app.post("/conversations")
+async def create_conversation() -> dict:
+    """
+    Opens a conversation.
+
+    Called when the traveller starts a new chat — including immediately after a
+    payment, so the next trip starts with no memory of the last one.
+    """
+    session_id = str(uuid.uuid4())
+    conversation_id = CONVERSATIONS.create(session_id)
+    return {
+        "status": "OK",
+        "conversation_id": conversation_id,
+        "session_id": session_id,
+    }
+
+
+@app.get("/conversations")
+async def list_conversations(status: Optional[str] = None) -> dict:
+    """
+    Conversation summaries for the sidebar, newest first.
+
+    `status=active` returns the in-progress one; no filter returns everything.
+    """
+    return {
+        "status": "OK",
+        "conversations": CONVERSATIONS.list(status=status),
+    }
+
+
+@app.get("/conversations/{conversation_id}")
+async def get_conversation(conversation_id: str) -> dict:
+    """
+    One conversation with its full transcript.
+
+    Read-only by construction: there is no endpoint that appends to a finished
+    conversation, because appending checks the status.
+    """
+    conversation = CONVERSATIONS.get(conversation_id)
+    if conversation is None:
+        raise HTTPException(status_code=404, detail="Conversation not found.")
+
+    return {
+        "status": "OK",
+        "conversation": {
+            **conversation,
+            "messages": CONVERSATIONS.messages(conversation_id),
+            "read_only": conversation["status"] != "active",
+        },
+    }
+
+
 @app.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest) -> ChatResponse:
     """
@@ -118,6 +179,24 @@ async def chat(request: ChatRequest) -> ChatResponse:
     coordinates sub-agents, and returns a structured response.
     """
     session_id = request.session_id or str(uuid.uuid4())
+
+    # The conversation owns the session's memory. Taken from the stored record
+    # rather than the request, because a client that continues a conversation
+    # without resending the session id would otherwise be given a fresh one: the
+    # gathered slots would land in a throwaway session and the clear-on-payment
+    # would empty the wrong one.
+    conversation_id = request.conversation_id
+    if conversation_id:
+        try:
+            CONVERSATIONS.require_active(conversation_id)
+        except ConversationArchived as exc:
+            # 409 rather than 404: the conversation exists, it is just finished.
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+        existing = CONVERSATIONS.get(conversation_id) or {}
+        session_id = existing.get("session_id") or session_id
+    else:
+        conversation_id = CONVERSATIONS.create(session_id)
 
     # STEP 1 — Security Gateway Ingress. Reject adversarial input and mask PII
     # before anything reaches the intent router, the NLP parser or an LLM.
@@ -174,6 +253,10 @@ async def chat(request: ChatRequest) -> ChatResponse:
         "error": None,
     }
 
+    # Name the conversation after its first meaningful question, so the history
+    # list shows "Kandy to Colombo" rather than "New conversation".
+    CONVERSATIONS.set_title(conversation_id, conversation_title_from(user_query))
+
     # Log the gateway-processed text, never the raw request: the raw string can
     # still contain an NIC or phone number, and this line goes to stdout.
     logger.info(f"[{session_id}] Query received: {user_query[:80]}…")
@@ -196,10 +279,36 @@ async def chat(request: ChatRequest) -> ChatResponse:
             else "I couldn't process your request. Please try again."
         )
 
+        intent = result.get("intent")
+
+        # Record the turn. If the traveller's payment completes, this
+        # conversation is finished: it becomes read-only history and its slot
+        # memory is dropped, so the next chat starts clean.
+        CONVERSATIONS.append(conversation_id, "user", user_query)
+        CONVERSATIONS.append(
+            conversation_id, "agent", response_text, intent=intent
+        )
+
+        booking_status = result.get("booking_status")
+        if booking_status == "AWAITING_PAYMENT" and result.get("transaction_id"):
+            # Payment settles on /payment, so record which conversation this seat
+            # belongs to now: that endpoint has no other way to know.
+            CONVERSATIONS.bind_transaction(
+                result["transaction_id"], conversation_id, session_id
+            )
+
+        if booking_status == "CONFIRMED":
+            CONVERSATIONS.archive(
+                conversation_id,
+                booking_reference=result.get("booking_reference"),
+            )
+            SLOTS.clear(session_id)
+
         return ChatResponse(
             response=response_text,
+            conversation_id=conversation_id,
             session_id=session_id,
-            intent=result.get("intent"),
+            intent=intent,
             route_options=result.get("route_options", []),
             booking_reference=result.get("booking_reference"),
             booking_status=result.get("booking_status"),
@@ -245,6 +354,18 @@ async def payment(request: PaymentRequest) -> PaymentResponse:
         raise HTTPException(status_code=502, detail="Payment could not be completed.")
 
     data = response.data or {}
+
+    # The trip is done. Archive the conversation this seat was held in, and drop
+    # its slot memory, so the next chat starts clean. The pairing was recorded
+    # when the seat was held, so this does not trust the client to say which
+    # conversation it belongs to.
+    owner = CONVERSATIONS.transaction_owner(request.transaction_id)
+    if owner:
+        CONVERSATIONS.archive(
+            owner["conversation_id"], booking_reference=data.get("booking_reference")
+        )
+        SLOTS.clear(owner["session_id"])
+
     return PaymentResponse(
         status="PAID",
         booking_reference=data.get("booking_reference"),

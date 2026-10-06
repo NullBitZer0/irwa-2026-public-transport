@@ -69,6 +69,8 @@ for (const [file, tag] of [
   ['src/components/Sidebar.jsx', 'Sidebar'],
   ['src/components/ChatMessage.jsx', 'ChatMessage'],
   ['src/components/PaymentPortal.jsx', 'PaymentPortal'],
+  ['src/components/ConversationHistory.jsx', 'ConversationHistory'],
+  ['src/components/ConversationViewer.jsx', 'ConversationViewer'],
 ]) {
   await check(`<${tag}> receives every prop it uses`, () => {
     const needed = destructuredProps(file)

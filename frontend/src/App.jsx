@@ -1,7 +1,18 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { chat, fetchPendingHolds, fetchPurchases, health, setDemoIncident } from './api.js'
+import {
+  chat,
+  fetchConversation,
+  fetchConversations,
+  fetchPendingHolds,
+  fetchPurchases,
+  health,
+  setDemoIncident,
+  startConversation,
+} from './api.js'
 import { renderMarkdown } from './markdown.js'
 import ChatMessage from './components/ChatMessage.jsx'
+import ConversationHistory from './components/ConversationHistory.jsx'
+import ConversationViewer from './components/ConversationViewer.jsx'
 import PaymentPortal, { PaymentReceipt } from './components/PaymentPortal.jsx'
 import Sidebar from './components/Sidebar.jsx'
 
@@ -21,6 +32,12 @@ export default function App() {
   // The signed confirmation for the booking currently on screen (R-09). Held
   // while we wait for the traveller, then returned verbatim on approval.
   const [hitlToken, setHitlToken] = useState(null)
+  // The conversation in progress, and the history list beside it. A
+  // conversation ends when its payment completes, and becomes read-only.
+  const [conversationId, setConversationId] = useState(null)
+  const [conversations, setConversations] = useState([])
+  // A past conversation opened from the history list, shown read-only.
+  const [viewing, setViewing] = useState(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(null)
   const [status, setStatus] = useState('checking')
@@ -47,7 +64,40 @@ export default function App() {
       setAgentStatus(h)
     })
     loadPurchases()
+    refreshConversations()
+    beginConversation()
   }, [])
+
+  /**
+   * Opens a new conversation and clears the view.
+   *
+   * Called on load and after a payment: the finished trip goes to history and
+   * the next one starts with no memory of it, which is the product rule.
+   */
+  async function beginConversation() {
+    const created = await startConversation()
+    if (created) {
+      setConversationId(created.conversation_id)
+      setSessionId(created.session_id)
+    }
+    setMessages([])
+    setPendingRoute(null)
+    setHitlToken(null)
+    setPaymentHold(null)
+    setViewing(null)
+  }
+
+  /** Reloads the sidebar history list. */
+  async function refreshConversations() {
+    setConversations(await fetchConversations())
+  }
+
+  /** Opens a past conversation as read-only. */
+  async function openConversation(id) {
+    const data = await fetchConversation(id)
+    if (!data) return
+    setViewing(data.conversation)
+  }
 
   /** Reloads the sidebar purchase history from the booking agent. */
   async function loadPurchases() {
@@ -105,7 +155,9 @@ export default function App() {
   const send = useCallback(
     async (text, options = {}) => {
       const trimmed = text.trim()
-      if (!trimmed || busy) return
+      // History is read-only: the server refuses these turns too, but not
+      // making the request is clearer than surfacing a 409.
+      if (!trimmed || busy || viewing) return
 
       setBusy(true)
       setError(null)
@@ -118,9 +170,12 @@ export default function App() {
           sessionId,
           selectedRouteId: options.selectedRouteId ?? null,
           hitlToken: options.hitlToken ?? null,
+          conversationId,
         })
 
         if (data.session_id) setSessionId(data.session_id)
+        if (data.conversation_id) setConversationId(data.conversation_id)
+        refreshConversations()
 
         // The gate is presented with a token attached. Hold on to it so the
         // approve turn can hand it back — that return *is* the approval.
@@ -153,16 +208,26 @@ bookingReference: data.booking_reference,
           },
         ])
       } catch (err) {
-        setError(err.message)
-        setMessages((prev) => [
-          ...prev,
-          { role: 'agent', text: `⚠️ Could not reach the orchestrator: ${err.message}` },
-        ])
+        // 409 means this conversation is finished history. Start a new one so the
+        // traveller can plan another trip instead of hitting a dead composer.
+        if (err.status === 409) {
+          await beginConversation()
+          setError(null)
+        } else {
+          setError(err.message)
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: 'agent',
+              text: `⚠️ Could not reach the orchestrator: ${err.message}`,
+            },
+          ])
+        }
       } finally {
         setBusy(false)
       }
     },
-    [busy, sessionId],
+    [busy, sessionId, conversationId, viewing],
   )
 
   /** Step 1 of booking: the user picks a route, which reaches the HITL checkpoint. */
@@ -186,6 +251,10 @@ bookingReference: data.booking_reference,
     setReceipt(result)
     setPaymentHold(null)
     loadPurchases()
+    refreshConversations()
+    // The trip is done: its conversation becomes read-only history, and the next
+    // booking starts from a clean slate.
+    beginConversation()
   }
 
   /** A one-tap answer to the planner's question, e.g. "bus". */
@@ -197,12 +266,11 @@ bookingReference: data.booking_reference,
     send(`${prior} ${value}`.trim())
   }
 
+  /** "New chat": abandons the current conversation and starts a clean one. */
   function handleReset() {
-    setMessages([])
-    setSessionId(null)
-    setPendingRoute(null)
-    setHitlToken(null)
     setError(null)
+    refreshConversations()
+    beginConversation()
   }
 
   function handleSubmit(event) {
@@ -230,9 +298,17 @@ bookingReference: data.booking_reference,
         onReset={handleReset}
         onRefreshPurchases={loadPurchases}
         onResumePayment={handleResumePayment}
+        conversations={conversations}
+        viewingId={viewing?.id ?? null}
+        onOpenConversation={openConversation}
+        onNewConversation={handleReset}
       />
 
       <main className="chat">
+        {viewing ? (
+          <ConversationViewer conversation={viewing} onClose={() => setViewing(null)} />
+        ) : (
+          <>
         <header className="chat__header">
           <h2>Chat</h2>
           {status !== 'online' && (
@@ -311,6 +387,8 @@ bookingReference: data.booking_reference,
             Send
           </button>
         </form>
+          </>
+        )}
       </main>
     </div>
   )

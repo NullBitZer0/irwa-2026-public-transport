@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { health } from '../api.js'
+import ConversationHistory from './ConversationHistory.jsx'
 
 /**
  * Renders an operator's contact block, shown when a ticket card is expanded.
@@ -92,7 +93,9 @@ const EXAMPLES = [
  *          demoIncidentActive:boolean, demoBusy:boolean,
  *          onExample:(q:string)=>void, onReset:()=>void,
  *          onRefreshPurchases:()=>void, onResumePayment:(hold:object)=>void,
- *          onToggleDemoIncident:()=>void}} props
+ *          onToggleDemoIncident:()=>void,
+ *          conversations:Array, viewingId:string|null,
+ *          onOpenConversation:(id:string)=>void, onNewConversation:()=>void}} props
  */
 export default function Sidebar({
   sessionId,
@@ -108,6 +111,10 @@ export default function Sidebar({
   onRefreshPurchases,
   onResumePayment,
   onToggleDemoIncident,
+  conversations,
+  viewingId,
+  onOpenConversation,
+  onNewConversation,
 }) {
   const [openContact, setOpenContact] = useState(null)
 
@@ -280,6 +287,13 @@ export default function Sidebar({
           ))}
         </ul>
       </section>
+
+      <ConversationHistory
+        conversations={conversations}
+        onOpen={onOpenConversation}
+        onNew={onNewConversation}
+        viewingId={viewingId}
+      />
 
       <section className="panel">
         <h2>Session</h2>
