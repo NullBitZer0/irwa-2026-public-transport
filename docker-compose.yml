@@ -112,6 +112,27 @@ services:
       retries: 5
       start_period: 15s
 
+  # One-shot: indexes the timetable corpus into OpenSearch with real embeddings.
+  # Runs to completion and exits — not part of the long-running stack.
+  #   docker compose --profile ingest run --rm ingest
+  # Needs sentence-transformers, which the planner image deliberately omits, so
+  # this is a separate profile rather than a planner command.
+  ingest:
+    <<: *agent
+    container_name: lankajourney-ingest
+    profiles: ["ingest"]
+    command:
+      - python
+      - -m
+      - src.planner.opensearch_ingest
+    environment:
+      - OPENSEARCH_URL=${OPENSEARCH_URL:-http://opensearch:9200}
+      - OPENSEARCH_USER=${OPENSEARCH_USER:-admin}
+      - OPENSEARCH_PASSWORD=${OPENSEARCH_INITIAL_ADMIN_PASSWORD:-}
+      - OPENSEARCH_INDEX=${OPENSEARCH_INDEX:-transit_routes}
+    depends_on:
+      - opensearch
+
   # Agent 5: current weather + live transit news, reduced to an advisory.
   # Egress is required here and only here; the three transactional agents make
   # no outbound calls of their own.

@@ -301,26 +301,65 @@ what counts as a valid answer. Both are tested against the same invariants
 
 ```bash
 echo "RETRIEVER_BACKEND=opensearch" >> .env
-RETRIEVER_BACKEND=opensearch python -m src.planner.opensearch_ingest   # ~811 routes
+RETRIEVER_BACKEND=opensearch python -m src.planner.opensearch_ingest   # 812 routes
 docker compose up -d --build planner
 ```
 
-The ingest creates the index with both a `text` and a `knn_vector` field.
-`--no-embeddings` indexes for BM25 only.
+The ingest creates the index with both a `text` (BM25) and a `knn_vector` (dense)
+field. Indexing is reproducible: it recreates the index rather than appending, so
+a re-ingest cannot leave stale documents behind.
 
 Two deliberate design choices:
 
 - **It falls back.** If the cluster or the index is unavailable, retrieval
   degrades to the fixtures and records why on `retriever.fallback_reason`. Route
   planning cannot go offline because a search container is down.
-- **Dense retrieval is optional.** `sentence-transformers` is excluded from the
-  container image (PyTorch, ~2GB), so in Docker the planner serves BM25 results
-  and logs that once. Losing semantic recall is a real degradation; losing
-  retrieval because an optional dependency is missing is worse.
+- **Dense retrieval is optional.** Losing semantic recall is a real degradation;
+  losing retrieval because an optional dependency is missing is worse.
 
-**Known data gap:** the timetable corpus has 11 trains, and none serves
-Kandy → Jaffna — so that query correctly returns nothing. Both backends agree on
-this, which is the consistency the shared design is for.
+### ⚠️ What "hybrid" means in practice — read this before claiming it
+
+| Where you run it | Indexed | Query-time retrieval |
+|---|---|---|
+| Host / laptop venv | text **+ 384-dim vectors** | **BM25 + k-NN (true hybrid)** |
+| Docker (planner container) | text **+ vectors**, if ingested from the host | **BM25 only** |
+| Docker, compose `ingest` service | text only | **BM25 only** |
+
+The reason is one dependency: `sentence-transformers` is deliberately excluded
+from the container image (it pulls in PyTorch, ~2GB), and query-time k-NN needs
+an encoder to turn the question into a vector. So **in Docker the planner serves
+BM25 results and logs that once** — the index still holds vectors, they just are
+not queried.
+
+Getting true hybrid query-time retrieval in Docker needs one of:
+
+1. run the ingest *and* the planner from the host venv (what the table's first
+   row means), or
+2. add a small `embedder` sidecar that the planner calls for query vectors —
+   about 200MB instead of 2GB, and the cleaner design, or
+3. bake `sentence-transformers` into the planner image (not recommended: 2GB for
+   one call).
+
+Being precise about this matters: presenting BM25-only retrieval as "hybrid
+dense retrieval" would be the kind of claim that falls apart under a question.
+
+The compose `ingest` service exists so indexing does not need your host venv:
+
+```bash
+docker compose --profile ingest run --rm ingest          # BM25-only
+docker compose --profile ingest run --rm ingest --no-embeddings   # same, explicit
+```
+
+CI runs exactly that BM25-only path, so the index, the mapping and the search are
+verified on every push. The encoder path is verified locally, and the embedding
+dimension is pinned by a unit test so a mismatch fails before it reaches a live
+index.
+
+**Coverage note:** the timetable corpus has 12 trains. The Kandy → Jaffna
+corridor was added from `data/curated/kandy_jaffna_train.csv` through the
+supported ingestion path — real endpoints and intermediate stations, with the
+generated times and fare flagged `synthetic` and named in `synthetic_fields`. It
+is northbound only, so the reverse query correctly returns nothing.
 
 ### 4. Live weather and news
 

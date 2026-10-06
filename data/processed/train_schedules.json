@@ -271,5 +271,40 @@
     ],
     "base_fare_lkr": 1450.0,
     "transit_type": "INTERCITY_EXPRESS"
+  },
+  {
+    "route_id": "TRAIN-1012",
+    "service_name": "Kandy - Jaffna (intercity)",
+    "provider": "SLR",
+    "origin": "Kandy",
+    "destination": "Jaffna",
+    "departure_time": "06:45",
+    "arrival_time": "14:15",
+    "stops": [
+      "Kandy",
+      "Peradeniya",
+      "Nawalapitiya",
+      "Gampaha",
+      "Polgahawela",
+      "Kurunegala",
+      "Dambulla",
+      "Anuradhapura",
+      "Vavuniya",
+      "Kilinochchi",
+      "Chunnakam",
+      "Jaffna"
+    ],
+    "classes": [
+      "1st Class Reserved",
+      "2nd Class Reserved"
+    ],
+    "base_fare_lkr": 1250.0,
+    "transit_type": "INTERCITY_EXPRESS",
+    "synthetic": true,
+    "synthetic_fields": [
+      "departure_time",
+      "arrival_time",
+      "base_fare_lkr"
+    ]
   }
 ]

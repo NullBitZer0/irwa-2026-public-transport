@@ -280,8 +280,36 @@ def _plan(query: str, travel_mode: str = "ANY") -> dict:
     return res.json()["data"]
 
 
+# A corridor with no direct service but a one-stop connection. Anuradhapura ->
+# Kandy is used because nothing runs it directly. (Kandy -> Jaffna served this
+# until a direct service was added to the corpus, which is why the pair is
+# asserted rather than assumed: a fixture change should not silently stop
+# testing the connection fallback.)
+NO_DIRECT_CORRIDOR = ("Anuradhapura", "Kandy")
+
+
+def test_the_chosen_corridor_still_has_no_direct_service() -> None:
+    """
+    Guards the premise of the two tests below.
+
+    Both are about what happens when no direct service exists. If a future
+    ingestion adds one, they would pass for the wrong reason — or fail while
+    testing nothing — so the premise is asserted rather than assumed.
+    """
+    from src.planner.hybrid_retriever import _serves_direction
+
+    origin, destination = NO_DIRECT_CORRIDOR
+    retriever = HybridTransitRetriever()
+    assert not any(
+        _serves_direction(s, origin, destination) for s in retriever.schedules
+    ), (
+        f"{origin} -> {destination} now has a direct service; pick another "
+        f"corridor for the connection-fallback tests"
+    )
+
+
 def test_endpoint_returns_a_connection_when_no_direct_service() -> None:
-    data = _plan("Kandy indan Jaffna yanna")
+    data = _plan(f"{NO_DIRECT_CORRIDOR[0]} indan {NO_DIRECT_CORRIDOR[1]} yanna")
     assert data["route_options"] == [], data["route_options"]
     assert data["connections"], "expected a connection"
 
@@ -290,7 +318,9 @@ def test_endpoint_keeps_the_mixed_option_for_a_single_mode_request() -> None:
     """
     Asking for a train must not hide the much quicker train-then-coach change.
     """
-    data = _plan("Kandy indan Jaffna yanna train ekak thiyeda?")
+    data = _plan(
+        f"{NO_DIRECT_CORRIDOR[0]} indan {NO_DIRECT_CORRIDOR[1]} yanna train ekak thiyeda?"
+    )
     assert data["route_options"] == [], data["route_options"]
     assert data["connections"], "expected a connection"
     assert any(c["mixed_mode"] for c in data["connections"]), (

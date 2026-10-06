@@ -52,8 +52,11 @@ OPENSEARCH_USER = os.getenv("OPENSEARCH_USER", "admin")
 OPENSEARCH_PASS = os.getenv("OPENSEARCH_PASSWORD", "")
 OPENSEARCH_INDEX = os.getenv("OPENSEARCH_INDEX", "transit_routes")
 
-# Which search backend to use: "fixtures" (default) or "opensearch".
-RETRIEVER_BACKEND = os.getenv("RETRIEVER_BACKEND", "fixtures").strip().lower()
+# Which search backend to use. The default is a constant rather than an inline
+# literal so tests can assert what the code defaults to without depending on the
+# environment they happen to be running in.
+DEFAULT_BACKEND = "fixtures"
+RETRIEVER_BACKEND = os.getenv("RETRIEVER_BACKEND", DEFAULT_BACKEND).strip().lower()
 
 
 def _load_all_schedules() -> list[dict[str, Any]]:

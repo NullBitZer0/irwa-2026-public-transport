@@ -56,8 +56,14 @@ requires_opensearch = pytest.mark.skipif(
 # ── Selection ────────────────────────────────────────────────────────────────
 
 def test_fixtures_is_the_default() -> None:
-    """Deterministic by default: the tests and the demo must not depend on a container."""
-    assert hr.RETRIEVER_BACKEND == "fixtures"
+    """
+    Deterministic by default: the tests and the demo must not depend on a container.
+
+    Asserts the code default rather than the resolved value, so this holds even
+    when the suite runs with RETRIEVER_BACKEND=opensearch to exercise the other
+    backend.
+    """
+    assert hr.DEFAULT_BACKEND == "fixtures"
 
 
 def test_fixtures_backend_is_selected_by_name() -> None:
@@ -272,3 +278,61 @@ def test_env_configuration_is_read_not_hardcoded() -> None:
     uses localhost, so a hardcoded host works in exactly one of them.
     """
     assert "OPENSEARCH_URL" in open(hr.__file__).read()
+
+
+# ── The Kandy–Jaffna corridor ────────────────────────────────────────────────
+
+def test_the_added_corridor_is_retrievable() -> None:
+    """
+    The demo's own example query must return a service.
+
+    The sidebar offers "Kandy indan Jaffna yanna train ekak thiyeda?"; with no
+    service on that corridor it returned nothing, which reads as broken rather
+    than honest.
+    """
+    from src.planner.journey_search import find_services_at
+
+    retriever = HybridTransitRetriever(backend="fixtures")
+    services = find_services_at(
+        retriever.schedules, origin="Kandy", destination="Jaffna",
+        at_time="07:00", mode="TRAIN", major_cities_only=True,
+    )
+
+    assert services, "Kandy -> Jaffna returns nothing; the demo example is dead"
+
+
+def test_the_added_corridor_flags_its_generated_fields() -> None:
+    """
+    Generated values must be labelled, on the row itself.
+
+    The endpoints and intermediate stations follow the published alignment; the
+    times and fare do not, and the traveller has to be able to see which is which.
+    """
+    retriever = HybridTransitRetriever(backend="fixtures")
+    service = next(
+        s for s in retriever.schedules
+        if s.get("origin") == "Kandy" and s.get("destination") == "Jaffna"
+    )
+
+    assert service["provider"] == "SLR"
+    assert service["synthetic"] is True
+    for field in ("departure_time", "arrival_time", "base_fare_lkr"):
+        assert field in service["synthetic_fields"]
+
+
+def test_the_added_corridor_runs_one_way_only() -> None:
+    """
+    The corpus holds a northbound service only.
+
+    Asserted because the honest answer to the reverse query is "no service in
+    that direction", and that is only correct while nothing runs southbound.
+    """
+    from src.planner.journey_search import find_services_at
+
+    retriever = HybridTransitRetriever(backend="fixtures")
+    southbound = find_services_at(
+        retriever.schedules, origin="Jaffna", destination="Kandy",
+        at_time="09:00", mode="TRAIN", major_cities_only=True,
+    )
+
+    assert southbound == []

@@ -92,6 +92,56 @@ jobs:
         working-directory: frontend
         run: npm run build
 
+  retrieval-opensearch:
+    name: Retrieval — OpenSearch backend
+    runs-on: ubuntu-latest
+    # The OpenSearch retrieval path was previously only verified on one machine.
+    # This proves it on every push: real index, real BM25 search, and the mode
+    # and direction invariants re-checked against results that came back through
+    # the search engine rather than out of the fixtures.
+    needs: backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.docker.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.docker.txt
+          pip install "pytest>=8.3.0" "pytest-asyncio>=0.24.0"
+
+      - name: Start OpenSearch
+        run: |
+          echo "OPENSEARCH_INITIAL_ADMIN_PASSWORD=$(openssl rand -base64 18)" >> .env
+          docker compose up -d opensearch
+          for i in $(seq 1 40); do
+            if curl -fsS http://localhost:9200 >/dev/null 2>&1; then
+              echo "opensearch up"; exit 0
+            fi
+            sleep 5
+          done
+          echo "opensearch did not start"; docker compose logs --tail=50; exit 1
+
+      - name: Index the corpus (BM25 only)
+        # No sentence-transformers here: it pulls in PyTorch and the encoder is
+        # deliberately absent from the image. This job proves the index, the
+        # mapping and the BM25 search path; dense recall is verified locally, and
+        # the mapping dimension is asserted by a unit test.
+        run: python -m src.planner.opensearch_ingest --no-embeddings
+        env:
+          OPENSEARCH_URL: http://localhost:9200
+
+      - name: Retrieval tests against the live index
+        run: pytest evaluation/test_retrieval_backends.py -q
+        env:
+          OPENSEARCH_URL: http://localhost:9200
+          RETRIEVER_BACKEND: opensearch
+
   redteam:
     name: Red-team suite (live stack)
     runs-on: ubuntu-latest
