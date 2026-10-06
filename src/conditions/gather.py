@@ -226,6 +226,32 @@ def active_simulations() -> list[str]:
     return sorted(_ACTIVE_SIMULATIONS)
 
 
+# Whether incident checking is armed at all.
+#
+# Off by default, and toggled by the demo control. Weather is always reported —
+# it is unconditional and needs no consent — but incidents and disruptions are
+# only looked for once the traveller has armed the check. An unrequested
+# disruption warning on every journey is noise, and noise trains people to ignore
+# warnings.
+_INCIDENT_CHECK_ARMED = False
+
+
+def arm_incident_check(armed: bool) -> bool:
+    """Turns incident checking on or off. Returns the previous state."""
+    global _INCIDENT_CHECK_ARMED
+    previous = _INCIDENT_CHECK_ARMED
+    _INCIDENT_CHECK_ARMED = bool(armed)
+    if not armed:
+        # Un-arming also drops any simulated incident, so nothing survives the
+        # switch being turned off.
+        clear_simulated_incidents()
+    return previous
+
+
+def incident_check_armed() -> bool:
+    return _INCIDENT_CHECK_ARMED
+
+
 def fetch_news_headlines(force_refresh: bool = False) -> list[dict[str, str]]:
     """
     Transit-relevant headlines from public RSS.
@@ -233,6 +259,10 @@ def fetch_news_headlines(force_refresh: bool = False) -> list[dict[str, str]]:
     Entries are returned as *data only*. They are never used as instructions and
     never included in a model prompt; `analysis.py` reduces them to categories.
     """
+    if not _INCIDENT_CHECK_ARMED:
+        # Disarmed: no fetch at all, so there is nothing to act on.
+        return []
+
     now = time.time()
     if not force_refresh and _CACHE["headlines"] and now - _CACHE["fetched_at"] < NEWS_TTL_SECONDS:
         return list(_CACHE["headlines"]) + list(_ACTIVE_SIMULATIONS.values())

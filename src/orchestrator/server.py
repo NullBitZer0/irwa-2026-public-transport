@@ -118,20 +118,34 @@ class PaymentResponse(BaseModel):
 
 # ── Endpoints ─────────────────────────────────────────────────────────────────
 
+GREETING = (
+    "Welcome to **LankaJourney AI** 🚆\n\n"
+    "Tell me where you want to go and I'll plan the journey — in **English or "
+    "Singlish**. I can also check the **weather** and any **reported incidents** "
+    "on your route, and book the seat for you.\n\n"
+    "Try: *\"I want to go to Colombo\", *\"Heta ude Kandy indan Colombo yanna "
+    "train ekak\", or *\"how will the weather be?\"*"
+)
+
+
 @app.post("/conversations")
 async def create_conversation() -> dict:
     """
-    Opens a conversation.
+    Opens a conversation, greeted by the agent.
 
     Called when the traveller starts a new chat — including immediately after a
     payment, so the next trip starts with no memory of the last one.
+
+    The greeting is stored as the first message rather than rendered by the UI, so
+    a conversation reopened from history starts the way it actually started.
     """
     session_id = str(uuid.uuid4())
-    conversation_id = CONVERSATIONS.create(session_id)
+    conversation_id = CONVERSATIONS.create(session_id, greeting=GREETING)
     return {
         "status": "OK",
         "conversation_id": conversation_id,
         "session_id": session_id,
+        "greeting": GREETING,
     }
 
 
@@ -419,6 +433,9 @@ async def demo_incident(request: DemoIncidentRequest) -> dict:
         "active": data.get("active") or [],
         "label": data.get("label"),
         "simulated": True,
+        # Whether incident checking is armed at all, which is what the toggle
+        # shows: an empty `active` list while armed means "looking, found nothing".
+        "incident_check_armed": bool(data.get("incident_check_armed")),
         "message": response.message,
     }
 

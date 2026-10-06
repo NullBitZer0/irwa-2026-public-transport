@@ -405,6 +405,8 @@ disabled composer.
 The flow it produces:
 
 ```
+Agent:     Welcome to LankaJourney AI 🚆 Tell me where you want to go and I'll
+           plan the journey — in English or Singlish. (Sent when the chat opens)
 Traveller: I want to go to Colombo
 Agent:     Got it — Colombo Fort. Still need: where are you starting from,
            train or bus, and what time?
@@ -425,6 +427,15 @@ Notes on that flow:
 - **Weather and incident questions are answerable mid-conversation.** They read
   the journey from the session's slots and do not reset them, because "how will
   the weather be?" is a question *about* the trip, not a new trip.
+- **Incident checking is off until you switch it on.** The *Simulate incident*
+  toggle in the sidebar arms it; nothing is looked for, and no disruption is
+  mentioned, until then. Un-checking removes the simulated incident and stops the
+  check again. While it is off the agent says so rather than "all clear":
+  *"I haven't checked for incidents on your route — turn on the incident check
+  in the sidebar if you'd like me to look."* Weather is reported either way,
+  since it needs no consent. Pressing the toggle does not send a message for you;
+  it arms the check, and the next time the agent offers routes it consults the
+  scraped headlines.
 - **"Are you ready to book?" is a real gate.** A bare affirmative picks the
   service that was proposed and opens the signed HITL confirmation. Only a short
   affirmative counts, and a refusal is never read as consent — booking a seat
@@ -433,6 +444,9 @@ Notes on that flow:
   server-side when the seat is held, so `/payment` can archive the right one
   without the client claiming which it was. Slot memory is dropped at the same
   moment, so the next chat starts clean.
+
+The greeting is a stored message rather than a rendered one, so a conversation
+reopened from history starts the way it actually started.
 
 History lives in SQLite (`CONVERSATIONS_DB_PATH`) and survives a restart. The
 sidebar lists finished conversations with their booking reference and message

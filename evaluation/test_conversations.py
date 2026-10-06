@@ -274,8 +274,30 @@ def test_a_turn_is_persisted_with_its_reply(api_client) -> None:
 
     transcript = api_client.get(f"/conversations/{conversation_id}").json()
     roles = [m["role"] for m in transcript["conversation"]["messages"]]
-    assert roles == ["user", "agent"]
-    assert transcript["conversation"]["messages"][1]["text"].startswith("echo:")
+    # The greeting is a real stored message, so the agent speaks first.
+    assert roles == ["agent", "user", "agent"]
+    assert transcript["conversation"]["messages"][2]["text"].startswith("echo:")
+
+
+def test_a_conversation_opens_with_a_greeting(api_client) -> None:
+    """
+    The agent says hello, and the hello is part of the transcript.
+
+    Rendered in the UI only, it would be missing from history — a conversation
+    reopened would start at the traveller's first question, as though the agent
+    had said nothing. Stored, history starts the way the conversation started.
+    """
+    created = api_client.post("/conversations").json()
+
+    assert created["greeting"], "the server must send the greeting to open on"
+
+    transcript = api_client.get(f"/conversations/{created['conversation_id']}").json()
+    messages = transcript["conversation"]["messages"]
+
+    assert len(messages) == 1
+    assert messages[0]["role"] == "agent"
+    assert messages[0]["text"] == created["greeting"]
+    assert messages[0]["intent"] == "GREETING"
 
 
 def test_starting_a_chat_without_an_id_opens_a_conversation(api_client) -> None:

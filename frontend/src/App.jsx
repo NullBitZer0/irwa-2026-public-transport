@@ -79,8 +79,14 @@ export default function App() {
     if (created) {
       setConversationId(created.conversation_id)
       setSessionId(created.session_id)
+      // The greeting comes from the server so it is the same message that is
+      // stored in the transcript, rather than a second copy living in the UI.
+      setMessages(
+        created.greeting ? [{ role: 'agent', text: created.greeting }] : [],
+      )
+    } else {
+      setMessages([])
     }
-    setMessages([])
     setPendingRoute(null)
     setHitlToken(null)
     setPaymentHold(null)
@@ -123,14 +129,12 @@ export default function App() {
       incidentId: next ? 'negombo_highway_accident' : null,
       active: next,
     })
-    setDemoIncidentActive(result.ok && (result.active?.length ?? 0) > 0)
+    setDemoIncidentActive(result.ok && (result.incident_check_armed ?? false) === true)
     setDemoBusy(false)
-    // Ask a route question straight away so the advisory appears, rather than
-    // making the demonstrator type a second query.
-    if (next) {
-      setMessages([])
-      await send('Colombo to Galle bus at 2pm')
-    }
+    // Deliberately no query is sent here. The switch arms the incident check for
+    // this conversation; the agent consults it the next time it gives routes, so
+    // the traveller keeps driving the conversation rather than the button
+    // hijacking it with a message they did not write.
   }
 
   /**

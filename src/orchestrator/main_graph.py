@@ -149,7 +149,13 @@ async def planning_agent_node(state: TransitSessionState) -> dict:
         f"**{jdata.get('origin')}** to **{jdata.get('destination')}**. "
         f"Try a different time, or the other mode."
     )
-    return {"messages": [msg], "route_options": []}
+    # The advisory still applies here: "no service" and "a protest has stopped the
+    # services" are very different answers, and dropping the second would hide it.
+    return {
+        "messages": [_prepend_conditions(advisory, msg)],
+        "route_options": [],
+        "conditions": advisory,
+    }
 
 
 def _journey_clarification_message(missing: list[str], jdata: dict) -> tuple[str, list[dict]]:

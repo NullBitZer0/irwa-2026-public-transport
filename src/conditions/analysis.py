@@ -343,6 +343,33 @@ def _weather_digest(weather: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def disarmed_sentence(advisory: dict[str, Any]) -> str:
+    """
+    What to say when the incident check has not been armed.
+
+    Distinct from "everything is fine" on purpose: nothing was looked for, so
+    claiming there is nothing to report would be a claim we never checked.
+    """
+    weather = advisory.get("weather") or {}
+    parts = []
+    if weather.get("severity") == "clear":
+        parts.append("Weather looks fine for now")
+    elif weather.get("reasons"):
+        parts.append(f"Weather: {weather['reasons'][0]}")
+    else:
+        parts.append("I couldn't check the weather just now")
+
+    temp = (weather.get("origin") or {}).get("temperature_c")
+    if temp is not None:
+        parts.append(f"around {temp}°C at your departure point")
+
+    return (
+        " ".join(parts)
+        + ". I haven't checked for incidents or disruptions on your route — "
+        "turn on the incident check in the sidebar if you'd like me to look."
+    )
+
+
 def advisory_sentence(advisory: dict[str, Any]) -> Optional[str]:
     """
     The traveller-facing sentence, assembled from fixed phrases.
@@ -419,6 +446,8 @@ def advisory_sentence(advisory: dict[str, Any]) -> Optional[str]:
         )
 
     if advisory.get("severity") == "clear":
+        if not advisory.get("incident_check_armed", True):
+            return disarmed_sentence(advisory)
         return (
             "✅ Weather and live news look fine for this journey — "
             "let's use the normal routes."

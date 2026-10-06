@@ -28,12 +28,14 @@ from src.conditions.analysis import (
     advisory_sentence,
     build_advisory,
     classify,
+    disarmed_sentence,
 )
 from src.conditions.gather import (
     active_simulations,
-    clear_simulated_incidents,
+    arm_incident_check,
     fetch_news_headlines,
     fetch_weather,
+    incident_check_armed,
     set_simulated_incident,
 )
 from src.security.gateway import IngressBlocked, enforce_ingress
@@ -79,14 +81,18 @@ async def conditions(req: ConditionsRequest) -> dict:
 
     headlines: list[dict[str, str]] = []
     news_available = False
-    try:
-        headlines = fetch_news_headlines()
-        # An empty list is a legitimate answer ("nothing transit-relevant"), but
-        # only if the fetch actually worked. feedparser returns an empty list on
-        # failure too, so we treat "no entries parsed at all" as unavailable.
-        news_available = True
-    except Exception:
-        news_available = False
+
+    # Incidents are only looked for when the traveller has armed the check.
+    # Weather is unconditional; a disruption warning on every journey is not.
+    if incident_check_armed():
+        try:
+            headlines = fetch_news_headlines()
+            # An empty list is a legitimate answer ("nothing transit-relevant"),
+            # but only if the fetch actually worked. feedparser returns an empty
+            # list on failure too, so "no entries parsed at all" is unavailable.
+            news_available = True
+        except Exception:
+            news_available = False
 
     # Only reports about places on this journey are considered: a landslide on
     # the Badulla line should not mark a Colombo–Galle bus as disrupted.
@@ -104,6 +110,18 @@ async def conditions(req: ConditionsRequest) -> dict:
     # own; the planner uses `avoid_modes` to *suggest* an alternative. Recorded
     # here so the reasoning is visible in the payload.
     advisory["requested_mode"] = req.travel_mode
+    advisory["incident_check_armed"] = incident_check_armed()
+
+    # A disarmed check is not "all clear": nothing was looked for, so the wording
+    # has to say that rather than imply there is nothing to report.
+    # Armed -> the real advisory. Disarmed -> wording that says nothing was
+    # checked. (An earlier version of this line had the branches the wrong way
+    # round and silently returned no sentence at all while armed.)
+    sentence = (
+        advisory_sentence(advisory)
+        if incident_check_armed()
+        else disarmed_sentence(advisory)
+    )
     advisory["requested_mode_affected"] = bool(
         req.travel_mode in advisory.get("avoid_modes", [])
     )
@@ -112,8 +130,9 @@ async def conditions(req: ConditionsRequest) -> dict:
         "status": "SUCCESS",
         "data": {
             "advisory": advisory,
-            "sentence": advisory_sentence(advisory),
+            "sentence": sentence,
             "news_count": len(headlines),
+            "incident_check_armed": incident_check_armed(),
         },
         "message": (
             f"Conditions: {advisory['severity']}"
@@ -182,12 +201,23 @@ async def simulate_incident(req: SimulateRequest) -> dict:
             from src.conditions.gather import _ACTIVE_SIMULATIONS
 
             _ACTIVE_SIMULATIONS.pop(req.incident_id, None)
+            armed = incident_check_armed()
         else:
-            clear_simulated_incidents()
+            # Un-arming clears any simulation too, so nothing survives the switch
+            # being turned off.
+            arm_incident_check(False)
+            armed = False
         return {
             "status": "SUCCESS",
-            "data": {"active": active_simulations()},
-            "message": "Simulated incident(s) cleared.",
+            "data": {
+                "active": active_simulations(),
+                "incident_check_armed": armed,
+            },
+            "message": (
+                "Incident check off."
+                if not armed
+                else "Simulated incident cleared; incident check still on."
+            ),
         }
 
     if req.incident_id not in SIMULATED_INCIDENTS:
@@ -196,6 +226,9 @@ async def simulate_incident(req: SimulateRequest) -> dict:
             detail=f"Unknown demo incident. Available: {sorted(SIMULATED_INCIDENTS)}",
         )
 
+    # Arming the check and switching on an incident are one action from the UI's
+    # point of view: the switch means "check for incidents on my route".
+    arm_incident_check(True)
     set_simulated_incident(req.incident_id, SIMULATED_INCIDENTS[req.incident_id])
     spec = SIMULATED_INCIDENTS[req.incident_id]
     return {
@@ -204,6 +237,7 @@ async def simulate_incident(req: SimulateRequest) -> dict:
             "active": active_simulations(),
             "label": spec["label"],
             "simulated": True,
+            "incident_check_armed": True,
         },
         "message": f"Simulated incident switched on: {spec['label']}",
     }

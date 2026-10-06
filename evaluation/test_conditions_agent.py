@@ -36,10 +36,27 @@ from src.conditions.analysis import (  # noqa: E402
     advisory_sentence,
     build_advisory,
     classify,
+    disarmed_sentence,
     relevant_to_journey,
 )
 
 CLEAR = {"status": "ok", "severity": "clear", "temperature_c": 30, "reasons": []}
+
+
+@pytest.fixture(autouse=True)
+def _reset_incident_gate():
+    """
+    Incident checking is armed by a toggle, and the flag is process-global.
+
+    Armed/cleared is also the *correct* starting state for every other test here:
+    they describe what happens once someone has asked for incidents to be
+    checked, which is the only situation in which any of this is visible.
+    """
+    gather.arm_incident_check(True)
+    gather.clear_simulated_incidents()
+    yield
+    gather.arm_incident_check(False)
+    gather.clear_simulated_incidents()
 
 
 def _advisory(headlines, requested="ANY", journey_places=None, weather=CLEAR):
@@ -311,6 +328,80 @@ def test_a_simulated_incident_flows_through_the_real_pipeline() -> None:
     assert "Katunayake" in sentence
     # Always labelled, so a demo can never read as a live report.
     assert "simulated for demonstration" in sentence
+
+
+# ── Arming the check ─────────────────────────────────────────────────────────
+
+
+def test_incidents_are_invisible_until_the_check_is_armed() -> None:
+    """
+    Nothing is looked for until the traveller asks for it.
+
+    The switch in the sidebar is the only thing that arms this. A traveller who
+    never touches it must never be told about a disruption, because the first
+    such warning they see is the one they learn to ignore.
+    """
+    spec = SIMULATED_INCIDENTS["negombo_highway_accident"]
+    gather.set_simulated_incident("negombo_highway_accident", spec)
+    gather.arm_incident_check(False)
+
+    assert gather.active_simulations() == []  # un-arming drops it
+    assert gather.fetch_news_headlines() == []  # and nothing is fetched at all
+    assert gather.incident_check_armed() is False
+
+
+def test_arming_the_check_makes_simulated_incidents_visible() -> None:
+    spec = SIMULATED_INCIDENTS["negombo_highway_accident"]
+    gather.arm_incident_check(True)
+    gather.set_simulated_incident("negombo_highway_accident", spec)
+
+    headlines = gather.fetch_news_headlines()
+    assert gather.incident_check_armed() is True
+    assert any(h.get("incident_id") == "negombo_highway_accident" for h in headlines)
+
+
+def test_unchecking_removes_a_live_simulation_again() -> None:
+    """Switching off must undo the switch, not merely stop new ones."""
+    spec = SIMULATED_INCIDENTS["negombo_highway_accident"]
+    gather.arm_incident_check(True)
+    gather.set_simulated_incident("negombo_highway_accident", spec)
+
+    gather.arm_incident_check(False)
+
+    assert gather.incident_check_armed() is False
+    assert gather.active_simulations() == []
+    assert gather.fetch_news_headlines() == []
+
+
+def test_disarmed_wording_does_not_claim_everything_is_fine() -> None:
+    """
+    "I didn't look" must not read as "there's nothing to report".
+
+    These are different claims. Only the first is honest when the check is off,
+    and the disarmed sentence has to say which one it is making.
+    """
+    advisory = _advisory([])
+    advisory["incident_check_armed"] = False
+
+    sentence = disarmed_sentence(advisory)
+
+    assert "haven't checked for incidents" in sentence
+    assert "look fine" not in sentence.lower()
+    assert "normal routes" not in sentence.lower()
+
+
+def test_an_armed_check_still_produces_a_sentence() -> None:
+    """
+    Regression: the armed/disarmed branches were once the wrong way round.
+
+    It returned no sentence at all while armed, so switching the incident on
+    silently removed the incident advisory from the reply. Invisible to a reader
+    of the diff, obvious to a traveller watching for the warning.
+    """
+    advisory = _advisory([])
+    advisory["incident_check_armed"] = True
+
+    assert advisory_sentence(advisory)
 
 
 def test_simulations_are_cleared_between_runs() -> None:

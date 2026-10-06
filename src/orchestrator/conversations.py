@@ -145,8 +145,14 @@ class ConversationStore:
 
     # ── Conversations ─────────────────────────────────────────────────────────
 
-    def create(self, session_id: str, title: str = "") -> str:
-        """Opens a new active conversation and returns its id."""
+    def create(self, session_id: str, title: str = "", greeting: str = "") -> str:
+        """
+        Opens a new active conversation and returns its id.
+
+        The greeting is stored as the first agent message rather than being
+        generated in the UI, so it appears in the transcript: a conversation read
+        back from history should start the way it actually started.
+        """
         conversation_id = f"CNV-{uuid.uuid4().hex[:10].upper()}"
         now = _now()
         with self._lock, self._connect() as conn:
@@ -155,6 +161,8 @@ class ConversationStore:
                 "VALUES (?, ?, 'active', ?, ?)",
                 (conversation_id, session_id, title[:80], now),
             )
+        if greeting:
+            self.append(conversation_id, "agent", greeting, intent="GREETING")
         return conversation_id
 
     def get(self, conversation_id: str) -> Optional[dict[str, Any]]:

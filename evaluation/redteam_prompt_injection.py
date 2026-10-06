@@ -35,10 +35,16 @@ from src.orchestrator.router import _SYSTEM_PROMPT as ROUTER_PROMPT  # noqa: E40
 from src.planner.nlp_parser import GROQ_SYSTEM_PROMPT  # noqa: E402
 from src.security.guardrails import sanitize_user_input  # noqa: E402
 
-ORCHESTRATOR = os.environ.get("RT_ORCHESTRATOR_URL", "http://localhost:8000")
-BOOKING = os.environ.get("RT_BOOKING_URL", "http://localhost:8002")
+# These must be the *published host* ports. Getting them wrong used to point the
+# run at some other service on the machine, which happily answered /health and
+# 404'd everything else — and the run still reported every live test SECURE.
+ORCHESTRATOR = os.environ.get("RT_ORCHESTRATOR_URL", "http://localhost:8100")
+BOOKING = os.environ.get("RT_BOOKING_URL", "http://localhost:8102")
 EVIDENCE_PATH = Path(__file__).resolve().parent / "redteam_evidence.json"
 TIMEOUT = 25.0
+
+# A known-good route query, used to prove the live stack is really answering.
+CONTROL_ROUTE_QUERY = "Colombo to Galle bus at 14:00"
 
 RESULTS: list[dict[str, Any]] = []
 
@@ -152,6 +158,51 @@ def test_guardrail_bypass() -> None:
 
 
 # ── B. Live prompt injection against the orchestrator ────────────────────────
+
+def preflight() -> None:
+    """
+    Prove we are pointed at the system under test, or refuse to score it.
+
+    A red team that cannot reach its target must not report results. The
+    dangerous case is not an obvious connection error: a wrong port can land on
+    a service that answers `/health` happily and 404s `/chat`, and every live
+    probe then reads as "no injection observed" — a clean sheet of paper for a
+    target that was never tested. So we check identity *and* behaviour: the
+    service must name itself, and a known-good route query must return routes.
+    """
+    for label, base, expected in (
+        ("orchestrator", ORCHESTRATOR, "orchestrator"),
+        ("booking", BOOKING, "booking"),
+    ):
+        try:
+            health = httpx.get(f"{base}/health", timeout=10).json()
+        except Exception as exc:
+            sys.exit(
+                f"[FATAL] {label} unreachable at {base} ({type(exc).__name__}: {exc}).\n"
+                f"        Start the stack, or set RT_{label.upper()}_URL. "
+                f"Refusing to report results against an untested target."
+            )
+        if health.get("agent") != expected:
+            sys.exit(
+                f"[FATAL] {base} is not the {label} service (health says "
+                f"{health.get('agent')!r}, expected {expected!r}).\n"
+                f"        Something else is on that port. Refusing to score it."
+            )
+
+    code, body = chat(CONTROL_ROUTE_QUERY)
+    if not body.get("route_options"):
+        sys.exit(
+            f"[FATAL] control query {CONTROL_ROUTE_QUERY!r} returned no routes "
+            f"(HTTP {code}). The planner is not answering, so the live "
+            f"retrieval and rendering checks would be meaningless.\n"
+            f"        {body.get('error') or body.get('detail') or body}"
+        )
+    print(
+        f"[OK] Target confirmed: {ORCHESTRATOR} (orchestrator), "
+        f"{BOOKING} (booking); control query returns "
+        f"{len(body['route_options'])} routes."
+    )
+
 
 def chat(query: str, **extra: Any) -> tuple[int, dict[str, Any]]:
     """POST /chat and return (status_code, parsed_body)."""
@@ -489,8 +540,9 @@ def test_output_and_ui_injection() -> None:
 def test_retrieval_manipulation() -> None:
     """C-13: injected tokens bias retrieval toward an attacker-chosen route."""
     # The control must resolve to real routes, otherwise there is no ranking to
-    # manipulate and the test cannot say anything.
-    control_query = "Colombo to Galle bus at 14:00"
+    # manipulate and the test cannot say anything. preflight() has already
+    # asserted this, so reaching "no routes" here is a real regression.
+    control_query = CONTROL_ROUTE_QUERY
     control_code, control = chat(control_query)
     control_ids = [r.get("route_id") for r in control.get("route_options", [])]
 
@@ -742,6 +794,9 @@ def main() -> int:
     print("=" * 78)
     print("AI RED TEAM — Prompt Injection & Jailbreak Analysis")
     print("=" * 78)
+
+    if not args.offline:
+        preflight()
 
     print("\n[A] Guardrail denylist robustness (offline)")
     test_guardrail_baseline()
