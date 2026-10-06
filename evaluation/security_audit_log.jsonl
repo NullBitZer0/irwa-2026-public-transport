@@ -780,3 +780,4 @@
 {"timestamp": "2026-10-06T07:52:25.750700+00:00", "event_type": "BOOKING_BLOCKED_NO_HITL", "detail": "transaction_id=TXN-63DDC3EA reason=Confirmation token signature does not verify."}
 {"timestamp": "2026-10-06T07:52:25.754581+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=CLARIFY input_length=63"}
 {"timestamp": "2026-10-06T07:52:25.894725+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=CLARIFY input_length=63"}
+{"timestamp": "2026-10-06T09:09:17.930344+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=29"}

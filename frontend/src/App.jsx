@@ -221,6 +221,7 @@ bookingReference: data.booking_reference,
         status={status}
         agentStatus={agentStatus}
         purchases={purchases}
+        pendingHolds={pendingHolds}
         purchasesLoading={purchasesLoading}
         demoIncidentActive={demoIncidentActive}
         demoBusy={demoBusy}
@@ -228,6 +229,7 @@ bookingReference: data.booking_reference,
         onExample={handleExample}
         onReset={handleReset}
         onRefreshPurchases={loadPurchases}
+        onResumePayment={handleResumePayment}
       />
 
       <main className="chat">

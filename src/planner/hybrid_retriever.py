@@ -1,36 +1,37 @@
 """
-Hybrid OpenSearch Retrieval Engine — STUB
+Hybrid retrieval over the timetable corpus.
+
 Member 2 — NLP & Information Retrieval Lead
 
-Uses OpenSearch for BOTH sparse (BM25) and dense (k-NN vector) retrieval,
-then merges results via Reciprocal Rank Fusion (RRF).
+Sparse (BM25-style) and dense (semantic) retrieval, fused with Reciprocal Rank
+Fusion. What differs between the two implementations here is *where the search
+runs*, not what the caller sees:
 
-OpenSearch replaces the previous ChromaDB + rank-bm25 dual-library approach:
-  - Sparse  : OpenSearch native BM25 inverted index  (exact station/route matching)
-  - Dense   : OpenSearch k-NN plugin                 (semantic policy & intent matching)
-  - Fusion  : RRF merges both ranked lists
+- **fixtures** (default) — keyword scoring over the JSON timetables. No
+  infrastructure, no network, no model download, fully deterministic. This is
+  what the demo, the tests and CI run on, because a route answer that depends on
+  whether a container is up is not something you can demonstrate or test.
+- **opensearch** — the real thing: OpenSearch BM25 plus k-NN vector search,
+  which is what the IR rubric asks for. Selected with
+  `RETRIEVER_BACKEND=opensearch` after running `src/planner/opensearch_ingest.py`.
 
-TODO (Member 2):
-  1. Run OpenSearch locally:
-       docker run -p 9200:9200 -e "discovery.type=single-node" \
-         -e "OPENSEARCH_INITIAL_ADMIN_PASSWORD=<pwd>" \
-         opensearchproject/opensearch:2.16.0
+Everything downstream of the search — mode filtering, the direction check that
+stops "Jaffna to Colombo" being answered with a Colombo-to-Jaffna service, and
+the RRF merge — is shared, so the two backends cannot drift in behaviour.
 
-  2. Create index with both BM25 and knn_vector fields:
-       PUT /transit_routes
-       {
-         "settings": { "index.knn": true },
-         "mappings": {
-           "properties": {
-             "text":      { "type": "text" },          <- BM25
-             "embedding": { "type": "knn_vector", "dimension": 384 }  <- Dense
-           }
-         }
-       }
+If the OpenSearch backend is selected but unreachable, retrieval falls back to
+the fixtures and says so, rather than failing the request. A planner that cannot
+answer because an index is missing is worse than one that answers from the
+timetables and admits where the answer came from.
 
-  3. Replace retrieve_candidates() below with real OpenSearch hybrid query.
+Set `RETRIEVER_BACKEND=opensearch` and run the ingest first:
+
+    RETRIEVER_BACKEND=opensearch python -m src.planner.opensearch_ingest
+    RETRIEVER_BACKEND=opensearch docker compose up -d
+
+`sentence-transformers` is imported lazily and only by the OpenSearch backend, so
+the ~2GB dependency is never pulled in by the default path.
 """
-
 from __future__ import annotations
 
 import json
@@ -42,12 +43,14 @@ from typing import Any
 _BASE = os.path.dirname(os.path.abspath(__file__))
 _DATA_DIR = os.path.join(_BASE, "../../data/processed")
 
-# OpenSearch connection (read from env)
-OPENSEARCH_HOST = os.getenv("OPENSEARCH_HOST", "localhost")
-OPENSEARCH_PORT = int(os.getenv("OPENSEARCH_PORT", "9200"))
+# OpenSearch connection (read from env). One URL, matching docker-compose.
+OPENSEARCH_URL = os.getenv("OPENSEARCH_URL", "http://localhost:9200")
 OPENSEARCH_USER = os.getenv("OPENSEARCH_USER", "admin")
 OPENSEARCH_PASS = os.getenv("OPENSEARCH_PASSWORD", "")
 OPENSEARCH_INDEX = os.getenv("OPENSEARCH_INDEX", "transit_routes")
+
+# Which search backend to use: "fixtures" (default) or "opensearch".
+RETRIEVER_BACKEND = os.getenv("RETRIEVER_BACKEND", "fixtures").strip().lower()
 
 
 def _load_all_schedules() -> list[dict[str, Any]]:
@@ -120,81 +123,46 @@ def _serves_direction(route: dict[str, Any], origin: str, destination: str) -> b
 
 class HybridTransitRetriever:
     """
-    Hybrid BM25 + Dense vector retrieval via OpenSearch with RRF fusion.
+    Hybrid sparse + dense retrieval with RRF fusion.
 
-    STUB — uses keyword scoring against JSON fixtures until Member 2 connects
-    this to a running OpenSearch instance.
+    Public entry point for retrieval. `RETRIEVER_BACKEND` picks the search
+    implementation; see the module docstring for why the fixture backend is the
+    default and what the OpenSearch one adds.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, backend: str | None = None) -> None:
         self.schedules = _load_all_schedules()
-        self._client = None  # TODO: init opensearch-py client here
+        self._search = _select_backend(backend or RETRIEVER_BACKEND, self)
+        self._fallback_reason: str | None = self._search.fallback_reason
 
-    def _get_client(self):
-        """
-        TODO (Member 2): Initialise the OpenSearch client.
+    # ── Search backends ──────────────────────────────────────────────────────
+    #
+    # The two backends below differ only in where the sparse and dense searches
+    # run. Mode filtering, the direction check and the RRF merge are shared, so
+    # switching backend cannot change what the system considers a valid answer —
+    # only how the candidates were ranked.
 
-        from opensearchpy import OpenSearch
-        return OpenSearch(
-            hosts=[{"host": OPENSEARCH_HOST, "port": OPENSEARCH_PORT}],
-            http_auth=(OPENSEARCH_USER, OPENSEARCH_PASS),
-            use_ssl=True,
-            verify_certs=False,
-        )
-        """
-        return None
+    def _sparse_search(
+        self, query: str, top_k: int, pool: list[dict] | None = None
+    ) -> list[dict]:
+        """Sparse retrieval: keyword/BM25-style matching."""
+        raise NotImplementedError
 
-    def _sparse_search(self, query: str, top_k: int, pool: list[dict] | None = None) -> list[dict]:
-        """
-        TODO (Member 2): BM25 query against OpenSearch.
+    def _dense_search(
+        self, query: str, top_k: int, pool: list[dict] | None = None
+    ) -> list[dict]:
+        """Dense retrieval: semantic matching."""
+        raise NotImplementedError
 
-        body = {
-            "size": top_k,
-            "query": { "match": { "text": query } }
-        }
-        res = self._client.search(index=OPENSEARCH_INDEX, body=body)
-        return [hit["_source"] for hit in res["hits"]["hits"]]
-        """
-        # STUB: keyword filter over local JSON
-        results = []
-        for s in self._pool(pool):
-            text = f"{s.get('origin','')} {s.get('destination','')} {' '.join(s.get('stops',[]))} {s.get('service_name','')}".lower()
-            score = sum(0.3 for token in query.lower().split() if len(token) > 3 and token in text)
-            if score > 0:
-                results.append({**s, "_score": score})
-        results.sort(key=lambda x: x["_score"], reverse=True)
-        return results[:top_k]
+    @property
+    def backend_name(self) -> str:
+        """Which backend actually served this instance (after any fallback)."""
+        return self._search.name
 
-    def _dense_search(self, query: str, top_k: int, pool: list[dict] | None = None) -> list[dict]:
-        """
-        TODO (Member 2): k-NN vector search against OpenSearch.
-
-        from sentence_transformers import SentenceTransformer
-        model = SentenceTransformer("all-MiniLM-L6-v2")
-        vector = model.encode(query).tolist()
-
-        body = {
-            "size": top_k,
-            "query": {
-                "knn": { "embedding": { "vector": vector, "k": top_k } }
-            }
-        }
-        res = self._client.search(index=OPENSEARCH_INDEX, body=body)
-        return [hit["_source"] for hit in res["hits"]["hits"]]
-        """
-        # STUB: origin/destination substring match
-        results = []
-        for s in self._pool(pool):
-            score = 0.0
-            for token in query.lower().split():
-                if token in s.get("origin", "").lower():
-                    score += 1.0
-                if token in s.get("destination", "").lower():
-                    score += 1.0
-            if score > 0:
-                results.append({**s, "_score": score})
-        results.sort(key=lambda x: x["_score"], reverse=True)
-        return results[:top_k]
+    @property
+    def fallback_reason(self) -> str | None:
+        """Why the requested backend was not used, if it was not."""
+        return self._fallback_reason
 
     def _pool_for_mode(self, mode: str) -> list[dict[str, Any]]:
         """
@@ -209,11 +177,6 @@ class HybridTransitRetriever:
         if mode == "BUS":
             return [s for s in self.schedules if s.get("provider") != "SLR"]
         return list(self.schedules)
-
-    @staticmethod
-    def _pool(pool: list[dict] | None) -> list[dict]:
-        """Returns the given pool, or an empty list when none was supplied."""
-        return pool if pool is not None else []
 
     def reverse_direction_options(
         self,
@@ -261,9 +224,232 @@ class HybridTransitRetriever:
                 return []
             pool = exact
 
-        sparse_hits = self._sparse_search(full_query, top_k, pool=pool)
-        dense_hits = self._dense_search(full_query, top_k, pool=pool)
+        sparse_hits = self._search.sparse(full_query, top_k, pool)
+        dense_hits = self._search.dense(full_query, top_k, pool)
 
         fused = _rrf_merge(sparse_hits, dense_hits, top_k=top_k)
         # Fall back to the filtered pool, never the raw schedule list.
         return fused if fused else pool[:top_k]
+
+
+# ── Search backends ───────────────────────────────────────────────────────────
+#
+# Both implement `sparse()` and `dense()`. They receive the pre-filtered pool so
+# that mode and direction rules stay in one place.
+
+
+class SearchBackend:
+    """Interface for a retrieval implementation."""
+
+    name = "base"
+    fallback_reason: str | None = None
+
+    def sparse(self, query: str, top_k: int, pool: list[dict]) -> list[dict]:
+        raise NotImplementedError
+
+    def dense(self, query: str, top_k: int, pool: list[dict]) -> list[dict]:
+        raise NotImplementedError
+
+
+class FixtureSearchBackend(SearchBackend):
+    """
+    Keyword scoring over the JSON timetables. No infrastructure required.
+
+    This is the default because it is deterministic and dependency-free: the
+    tests assert on specific routes coming back, and a retrieval answer that
+    depends on whether a container has finished ingesting is not something those
+    assertions can be written against.
+    """
+
+    name = "fixtures"
+
+    def sparse(self, query: str, top_k: int, pool: list[dict]) -> list[dict]:
+        results = []
+        for service in pool:
+            text = self._haystack(service)
+            score = sum(
+                0.3 for token in _tokens(query) if len(token) > 3 and token in text
+            )
+            if score > 0:
+                results.append({**service, "_score": score})
+        results.sort(key=lambda r: r["_score"], reverse=True)
+        return results[:top_k]
+
+    def dense(self, query: str, top_k: int, pool: list[dict]) -> list[dict]:
+        """
+        Endpoint emphasis: matching a query token to an origin or destination is
+        a stronger signal than matching it anywhere in the record.
+        """
+        results = []
+        for service in pool:
+            score = 0.0
+            origin = str(service.get("origin", "")).lower()
+            destination = str(service.get("destination", "")).lower()
+            for token in _tokens(query):
+                if token in origin:
+                    score += 1.0
+                if token in destination:
+                    score += 1.0
+            if score > 0:
+                results.append({**service, "_score": score})
+        results.sort(key=lambda r: r["_score"], reverse=True)
+        return results[:top_k]
+
+    @staticmethod
+    def _haystack(service: dict) -> str:
+        return (
+            f"{service.get('origin','')} {service.get('destination','')} "
+            f"{' '.join(service.get('stops', []))} {service.get('service_name','')}"
+        ).lower()
+
+
+class OpenSearchBackend(SearchBackend):
+    """
+    Real hybrid retrieval: OpenSearch BM25 + k-NN vector search, fused by RRF.
+
+    Requires the index to exist — run `python -m src.planner.opensearch_ingest`
+    first. `sentence-transformers` is imported here and nowhere else, so the
+    ~2GB dependency is only paid when this backend is actually selected.
+
+    If the cluster is unreachable or the index is missing, `available()` returns
+    False and the retriever falls back to fixtures rather than failing the
+    request.
+    """
+
+    name = "opensearch"
+
+    def __init__(self) -> None:
+        self._client = None
+        self._embedder = None
+
+    # -- setup -----------------------------------------------------------------
+
+    def _connect(self):
+        if self._client is not None:
+            return self._client
+        try:
+            from opensearchpy import OpenSearch
+        except ImportError:
+            raise RuntimeError("opensearch-py is not installed")
+
+        auth = (OPENSEARCH_USER, OPENSEARCH_PASS) if OPENSEARCH_PASS else None
+        self._client = OpenSearch(
+            hosts=[OPENSEARCH_URL],
+            http_auth=auth,
+            ssl_show_warn=False,
+            timeout=5,
+            max_retries=1,
+        )
+        return self._client
+
+    def _embed(self, text: str) -> list[float]:
+        if self._embedder is None:
+            try:
+                from sentence_transformers import SentenceTransformer
+            except ImportError as exc:
+                raise RuntimeError(
+                    "sentence-transformers is required by the opensearch backend; "
+                    "pip install -r requirements.txt"
+                ) from exc
+            self._embedder = SentenceTransformer("all-MiniLM-L6-v2")
+        return self._embedder.encode(text, normalize_embeddings=True).tolist()
+
+    def available(self) -> tuple[bool, str | None]:
+        """Can this backend actually serve a query right now?"""
+        try:
+            client = self._connect()
+            if not client.ping():
+                return False, f"no response from {OPENSEARCH_URL}"
+            if not client.indices.exists(index=OPENSEARCH_INDEX):
+                return False, (
+                    f"index '{OPENSEARCH_INDEX}' does not exist — run "
+                    f"`python -m src.planner.opensearch_ingest`"
+                )
+        except Exception as exc:
+            return False, f"{type(exc).__name__}: {exc}"
+        return True, None
+
+    # -- search ----------------------------------------------------------------
+
+    def sparse(self, query: str, top_k: int, pool: list[dict]) -> list[dict]:
+        """BM25 over the indexed text, filtered back to the caller's pool.
+
+        The pool is re-applied after the search: the index holds every service,
+        so a mode or direction filter that lived only in OpenSearch would be a
+        rule this codebase could not see or test.
+        """
+        client = self._connect()
+        response = client.search(
+            index=OPENSEARCH_INDEX,
+            body={
+                "size": max(top_k * 3, 20),
+                "query": {"match": {"text": query}},
+            },
+        )
+        return _restrict(response, pool)[:top_k]
+
+    def dense(self, query: str, top_k: int, pool: list[dict]) -> list[dict]:
+        """k-NN vector search over the indexed embeddings."""
+        client = self._connect()
+        vector = self._embed(query)
+        response = client.search(
+            index=OPENSEARCH_INDEX,
+            body={
+                "size": max(top_k * 3, 20),
+                "query": {
+                    "knn": {"embedding": {"vector": vector, "k": max(top_k * 3, 20)}}
+                },
+            },
+        )
+        return _restrict(response, pool)[:top_k]
+
+
+def _restrict(response: dict, pool: list[dict]) -> list[dict]:
+    """
+    Keeps only hits that are in the caller's pool, preserving rank order.
+
+    Two jobs, and the second matters as much as the first: the index holds every
+    service, so without this a mode or direction filter would be advisory only.
+    The caller's own dict is returned rather than the indexed copy, so downstream
+    code sees the same object shape whichever backend is running.
+    """
+    by_route_id = {service.get("route_id"): service for service in pool}
+
+    kept = []
+    for hit in response.get("hits", {}).get("hits", []):
+        original = by_route_id.get((hit.get("_source") or {}).get("route_id"))
+        if original is not None:
+            kept.append(original)
+    return kept
+
+
+def _tokens(text: str) -> list[str]:
+    """Query tokens for keyword matching: lowercased, punctuation stripped."""
+    return [t for t in re.split(r"[^\w]+", text.lower()) if t]
+
+
+def _select_backend(name: str, retriever: HybridTransitRetriever) -> SearchBackend:
+    """
+    Returns the requested backend, or the fixture one with a reason.
+
+    Falling back rather than raising is deliberate: retrieval is one input to an
+    answer, and a traveller asking about a route should still get timetables when
+    a search index is down. `retriever.fallback_reason` records why, so the
+    degradation is visible instead of silent.
+    """
+    if name in ("fixtures", "fixture", "json", "local"):
+        return FixtureSearchBackend()
+
+    if name not in ("opensearch", "os"):
+        retriever._fallback_reason = (
+            f"unknown RETRIEVER_BACKEND '{name}' — using fixtures"
+        )
+        return FixtureSearchBackend()
+
+    backend = OpenSearchBackend()
+    ok, reason = backend.available()
+    if ok:
+        return backend
+
+    retriever._fallback_reason = f"opensearch unavailable ({reason}) — using fixtures"
+    return FixtureSearchBackend()

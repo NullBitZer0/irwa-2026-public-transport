@@ -81,6 +81,13 @@ jobs:
         working-directory: frontend
         run: npm ci
 
+      # Before the build: `vite build` passing does not mean the app renders.
+      # A missing prop is a render-time TypeError, not a build error, so the UI
+      # can be a blank page with every other check green.
+      - name: Render check
+        working-directory: frontend
+        run: npm test
+
       - name: Build
         working-directory: frontend
         run: npm run build

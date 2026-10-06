@@ -3,11 +3,12 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "React UI for LankaJourney AI — multi-agent public transit planning & booking",
+  "description": "React UI for LankaJourney AI \u2014 multi-agent public transit planning & booking",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node render-check.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
@@ -15,6 +16,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",
+    "jsdom": "^25.0.1",
     "vite": "^5.4.11"
   }
 }
