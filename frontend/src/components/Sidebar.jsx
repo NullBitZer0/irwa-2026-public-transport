@@ -115,6 +115,11 @@ export default function Sidebar({
   viewingId,
   onOpenConversation,
   onNewConversation,
+  user,
+  view,
+  onChangeView,
+  onOpenProfile,
+  onSignOut,
 }) {
   const [openContact, setOpenContact] = useState(null)
 
@@ -130,6 +135,50 @@ export default function Sidebar({
         <h1>🚆 LankaJourney AI</h1>
         <p>Multi-agent public transit planning &amp; booking for Sri Lanka</p>
       </div>
+
+      <nav className="sidebar__nav" aria-label="Sections">
+        {[
+          { id: 'chat', label: '💬 Chat' },
+          { id: 'schedules', label: '🗓 Timetables' },
+          { id: 'map', label: '🗺 Route map' },
+        ].map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            className={view === item.id ? 'active' : ''}
+            aria-current={view === item.id ? 'page' : undefined}
+            onClick={() => onChangeView(item.id)}
+          >
+            {item.label}
+          </button>
+        ))}
+      </nav>
+
+      <button type="button" className="profile-chip" onClick={onOpenProfile}>
+        <span className="profile-chip__avatar" aria-hidden="true">
+          {(user?.full_name || user?.email || '?')
+            .split(/[\s@.]+/)
+            .filter(Boolean)
+            .slice(0, 2)
+            .map((part) => part[0].toUpperCase())
+            .join('')}
+        </span>
+        <span className="profile-chip__text">
+          <strong>{user?.full_name || 'Your profile'}</strong>
+          <small>
+            {user?.has_card
+              ? `${user.card_brand} •••• ${user.card_last4}`
+              : user?.email}
+          </small>
+        </span>
+        <span className="profile-chip__chevron" aria-hidden="true">›</span>
+      </button>
+
+      {user?.full_name && (
+        <button type="button" className="sidebar__signout" onClick={onSignOut}>
+          Sign out
+        </button>
+      )}
 
       <section className="panel">
         <h2>Connection</h2>

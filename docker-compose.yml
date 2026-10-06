@@ -176,6 +176,10 @@ services:
       CONDITIONS_AGENT_URL: http://conditions:8003
       # Conversation transcripts, so chat history survives a restart.
       CONVERSATIONS_DB_PATH: /app/state/conversations.db
+      # Accounts live in the same mounted state directory as conversations,
+      # under a different filename — a second volume at /app/state would shadow
+      # the first rather than merge with it.
+      ACCOUNTS_DB_PATH: /app/state/accounts.db
       AGENT_TIMEOUT_SECONDS: "20"
     ports:
       - "8100:8000"

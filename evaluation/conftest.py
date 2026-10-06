@@ -14,8 +14,13 @@ Live verification runs leave the variable unset and write to the real file.
 from __future__ import annotations
 
 import os
+import sys
 
 import pytest
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+
+from src.orchestrator.accounts import AccountStore  # noqa: E402
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -45,3 +50,35 @@ def _hitl_signing_key(monkeypatch):
     themselves via monkeypatch.
     """
     monkeypatch.setenv("HITL_TOKEN_SECRET", "test-only-hitl-signing-key-0123456789")
+
+
+def sign_in(client) -> object:
+    """
+    Registers a throwaway traveller on a TestClient and returns it signed in.
+
+    The user-facing API is authenticated, so any test that calls /chat or
+    /conversations needs a session. Doing it here keeps that one line instead of
+    a bespoke login in each test, and means a test that forgets is visibly
+    missing a call rather than mysteriously asserting against a 401.
+    """
+    import uuid
+
+    client.post(
+        "/auth/register",
+        json={
+            "email": f"test-{uuid.uuid4().hex[:10]}@lankajourney.lk",
+            "password": "test-only-password",
+        },
+    )
+    return client
+
+
+@pytest.fixture()
+def authed_client():
+    """A signed-in TestClient for the orchestrator API."""
+    from fastapi.testclient import TestClient
+
+    from src.orchestrator import server as orch
+
+    orch.ACCOUNTS = AccountStore()
+    return sign_in(TestClient(orch.app))

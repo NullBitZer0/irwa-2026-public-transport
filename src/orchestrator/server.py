@@ -9,15 +9,26 @@ Start:
     uvicorn src.orchestrator.server:app --port 8000 --reload
 """
 
+import os
+import time
 import uuid
 from typing import Optional
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import Cookie, Depends, FastAPI, HTTPException, Response
 from pydantic import BaseModel
 
 load_dotenv()  # Load .env before importing modules that read env vars
 
+from src.orchestrator.accounts import (  # noqa: E402
+    SESSION_COOKIE,
+    AccountStore,
+    hash_password,
+    normalise_contact,
+    public_profile,
+    summarise_card,
+    verify_password,
+)
 from src.orchestrator.conversations import (  # noqa: E402
     CONVERSATIONS,
     ConversationArchived,
@@ -45,6 +56,14 @@ app = FastAPI(
 # Build and cache the graph at startup (avoids rebuilding per request)
 _graph = build_graph()
 logger.info("Orchestration state graph compiled and ready.")
+
+# Accounts live beside the conversation store. In-memory when unset, so tests
+# and one-off runs leave no files behind.
+ACCOUNTS = AccountStore(os.environ.get("ACCOUNTS_DB_PATH") or None)
+
+# A real hash of a value nobody knows, verified against when the email is unknown
+# so that a login attempt costs the same work whether or not the account exists.
+_DECOY_HASH = hash_password("decoy-password-never-issued")
 
 
 # ── Request / Response schemas ────────────────────────────────────────────────
@@ -116,6 +135,175 @@ class PaymentResponse(BaseModel):
     purchase: dict = {}
 
 
+# ── Auth ──────────────────────────────────────────────────────────────────────
+
+
+class RegisterRequest(BaseModel):
+    email: str
+    password: str
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
+class ProfileUpdate(BaseModel):
+    full_name: Optional[str] = None
+    contact_number: Optional[str] = None
+    card_number: Optional[str] = None
+
+
+def current_user(
+    lankajourney_session: Optional[str] = Cookie(default=None, alias=SESSION_COOKIE),
+) -> dict:
+    """
+    The signed-in user, or 401.
+
+    Applied to every user-facing endpoint. The alternative — leaving /chat open —
+    would mean anyone who can reach the port can read a stranger's conversations
+    and book tickets as them, so this is the edge of the Zero Trust boundary, not
+    a feature of the login page.
+    """
+    user = ACCOUNTS.resolve_session(lankajourney_session)
+    if user is None:
+        raise HTTPException(status_code=401, detail="Please sign in to continue.")
+    return user
+
+
+def _set_session_cookie(response: Response, token: str) -> None:
+    response.set_cookie(
+        key=SESSION_COOKIE,
+        value=token,
+        # HttpOnly so a script (including anything injected through the chat
+        # renderer) cannot read the session; SameSite so it is not sent on
+        # cross-site requests.
+        httponly=True,
+        samesite="lax",
+        secure=os.environ.get("COOKIE_SECURE", "").lower() in {"1", "true", "yes"},
+        max_age=12 * 60 * 60,
+        path="/",
+    )
+
+
+def _ensure_demo_account() -> None:
+    """
+    Creates one demo traveller, so the login page is not a dead end.
+
+    The password is fixed and published on purpose: this is a demo dataset, and a
+    demo account you cannot sign into does not demonstrate anything. Real
+    deployments set DEMO_ACCOUNT=off and this never runs.
+    """
+    if os.environ.get("DEMO_ACCOUNT", "on").lower() in {"off", "0", "false", "no"}:
+        return
+    try:
+        ACCOUNTS.create_user("demo@lankajourney.lk", "demotravel123")
+        logger.info("Demo account ready (demo@lankajourney.lk / demotravel123)")
+    except ValueError:
+        pass  # already created
+
+
+_ensure_demo_account()
+
+
+@app.post("/auth/register")
+def register(payload: RegisterRequest, response: Response) -> dict:
+    """Creates an account and signs the traveller straight in."""
+    try:
+        user = ACCOUNTS.create_user(payload.email, payload.password)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    token = ACCOUNTS.create_session(user["id"], payload.email)
+    _set_session_cookie(response, token)
+    return {"status": "OK", "user": public_profile(user)}
+
+
+@app.post("/auth/login")
+def login(payload: LoginRequest, response: Response) -> dict:
+    """
+    Signs in with an email and password.
+
+    The same message and comparable work either way, so this cannot be used to
+    discover which addresses have accounts.
+    """
+    user = ACCOUNTS.get_user_by_email(payload.email)
+    stored = user["password_hash"] if user else _DECOY_HASH
+
+    # Verify unconditionally: a missing user must not return faster than a wrong
+    # password, or the response time enumerates accounts.
+    ok = verify_password(payload.password, stored)
+    if not user or not ok:
+        raise HTTPException(status_code=401, detail="Email or password is incorrect.")
+
+    token = ACCOUNTS.create_session(user["id"], payload.email)
+    _set_session_cookie(response, token)
+    return {"status": "OK", "user": public_profile(user)}
+
+
+@app.post("/auth/logout")
+def logout(
+    response: Response,
+    lankajourney_session: Optional[str] = Cookie(default=None, alias=SESSION_COOKIE),
+) -> dict:
+    """
+    Ends the session server-side.
+
+    Clearing the cookie alone would leave a valid token in the database until it
+    expired, which is exactly the state an exfiltrated token wants to be in.
+    """
+    if lankajourney_session:
+        ACCOUNTS.delete_session(lankajourney_session)
+    response.delete_cookie(SESSION_COOKIE, path="/")
+    return {"status": "OK"}
+
+
+@app.get("/auth/me")
+def me(user: dict = Depends(current_user)) -> dict:
+    return {"status": "OK", "user": public_profile(user)}
+
+
+@app.patch("/profile")
+def update_profile(payload: ProfileUpdate, user: dict = Depends(current_user)) -> dict:
+    """
+    Updates name, contact number and the card on file.
+
+    The card number is used here and thrown away: it is checked, branded and
+    reduced to four digits, and the full number is never stored. A client that
+    tries to write its own `card_brand` or `card_last4` is not asking for a field
+    that exists on this request model.
+    """
+    updates: dict = {}
+
+    if payload.full_name is not None:
+        name = payload.full_name.strip()
+        if len(name) > 80:
+            raise HTTPException(status_code=400, detail="That name is too long.")
+        updates["full_name"] = name
+
+    if payload.contact_number is not None:
+        try:
+            contact = normalise_contact(payload.contact_number)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        updates["contact_number"] = contact
+
+    if payload.card_number is not None:
+        try:
+            brand, last4 = summarise_card(payload.card_number)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        updates["card_brand"] = brand
+        updates["card_last4"] = last4
+        updates["card_added_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+
+    if not updates:
+        raise HTTPException(status_code=400, detail="Nothing to update.")
+
+    updated = ACCOUNTS.update_profile(user["id"], **updates)
+    return {"status": "OK", "user": public_profile(updated)}
+
+
 # ── Endpoints ─────────────────────────────────────────────────────────────────
 
 GREETING = (
@@ -129,7 +317,7 @@ GREETING = (
 
 
 @app.post("/conversations")
-async def create_conversation() -> dict:
+async def create_conversation(user: dict = Depends(current_user)) -> dict:
     """
     Opens a conversation, greeted by the agent.
 
@@ -150,7 +338,9 @@ async def create_conversation() -> dict:
 
 
 @app.get("/conversations")
-async def list_conversations(status: Optional[str] = None) -> dict:
+async def list_conversations(
+    status: Optional[str] = None, user: dict = Depends(current_user)
+) -> dict:
     """
     Conversation summaries for the sidebar, newest first.
 
@@ -163,7 +353,7 @@ async def list_conversations(status: Optional[str] = None) -> dict:
 
 
 @app.get("/conversations/{conversation_id}")
-async def get_conversation(conversation_id: str) -> dict:
+async def get_conversation(conversation_id: str, user: dict = Depends(current_user)) -> dict:
     """
     One conversation with its full transcript.
 
@@ -185,7 +375,7 @@ async def get_conversation(conversation_id: str) -> dict:
 
 
 @app.post("/chat", response_model=ChatResponse)
-async def chat(request: ChatRequest) -> ChatResponse:
+async def chat(request: ChatRequest, user: dict = Depends(current_user)) -> ChatResponse:
     """
     Main conversational endpoint.
 
@@ -339,7 +529,7 @@ async def chat(request: ChatRequest) -> ChatResponse:
 
 
 @app.post("/payment", response_model=PaymentResponse)
-async def payment(request: PaymentRequest) -> PaymentResponse:
+async def payment(request: PaymentRequest, user: dict = Depends(current_user)) -> PaymentResponse:
     """
     Settles a held seat and issues the ticket.
 
@@ -390,7 +580,7 @@ async def payment(request: PaymentRequest) -> PaymentResponse:
 
 
 @app.get("/purchases")
-async def purchases() -> dict:
+async def purchases(user: dict = Depends(current_user)) -> dict:
     """Completed ticket purchases, newest first, for the UI purchase history."""
     try:
         response = await _bridge.fetch_purchases()
@@ -417,8 +607,15 @@ class DemoIncidentRequest(BaseModel):
 
 
 @app.post("/demo_incident")
-async def demo_incident(request: DemoIncidentRequest) -> dict:
-    """Switches a simulated incident on or off. Never affects real data."""
+async def demo_incident(
+    request: DemoIncidentRequest, user: dict = Depends(current_user)
+) -> dict:
+    """
+    Switches a simulated incident on or off. Never affects real data.
+
+    Authenticated because it mutates shared state: anyone who could reach it
+    could put a fake accident in front of every other traveller on the demo.
+    """
     try:
         response = await _bridge.set_simulated_incident(
             incident_id=request.incident_id, active=request.active
@@ -441,7 +638,7 @@ async def demo_incident(request: DemoIncidentRequest) -> dict:
 
 
 @app.get("/pending_holds")
-async def pending_holds() -> dict:
+async def pending_holds(user: dict = Depends(current_user)) -> dict:
     """
     Bookings still awaiting payment, so the UI can offer to resume them.
 
@@ -457,6 +654,36 @@ async def pending_holds() -> dict:
         "status": "OK",
         "pending_holds": ((response.data or {}).get("pending_holds") or []),
     }
+
+
+@app.get("/schedules")
+async def schedules(
+    mode: str = "ALL",
+    origin: str = "",
+    destination: str = "",
+    limit: int = 200,
+    user: dict = Depends(current_user),
+) -> dict:
+    """The timetable, for the schedules view. Proxied from the Planning Agent."""
+    try:
+        response = await _bridge.fetch_schedules(
+            mode=mode, origin=origin, destination=destination, limit=limit
+        )
+    except Exception as exc:
+        logger.error(f"Schedules unavailable: {exc}")
+        raise HTTPException(status_code=503, detail="The timetable is unavailable right now.") from exc
+    return response.data or {}
+
+
+@app.get("/map-routes")
+async def map_routes(mode: str = "ALL", user: dict = Depends(current_user)) -> dict:
+    """Available routes with coordinates, for the map view."""
+    try:
+        response = await _bridge.fetch_map_routes(mode=mode)
+    except Exception as exc:
+        logger.error(f"Map routes unavailable: {exc}")
+        raise HTTPException(status_code=503, detail="Route map is unavailable right now.") from exc
+    return response.data or {}
 
 
 @app.get("/health")

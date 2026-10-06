@@ -21,6 +21,8 @@ import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
+from conftest import sign_in
+
 from src.orchestrator.conversations import (  # noqa: E402
     ConversationArchived,
     ConversationStore,
@@ -260,7 +262,9 @@ def api_client():
         }
 
     orch._graph = type("StubGraph", (), {"ainvoke": staticmethod(fake_run)})()
-    return TestClient(orch.app)
+
+    # The endpoint is authenticated, so the fixture signs in as well as stubs.
+    return sign_in(TestClient(orch.app))
 
 
 def test_a_turn_is_persisted_with_its_reply(api_client) -> None:

@@ -33,9 +33,13 @@ RAW_PHONE = "0771234567"
 
 @pytest.fixture(scope="module")
 def client() -> TestClient:
+    from conftest import sign_in
+
     from src.orchestrator.server import app
 
-    return TestClient(app)
+    # Signed in, because /chat is authenticated — otherwise these would be
+    # asserting that a 401 is not a 400.
+    return sign_in(TestClient(app))
 
 
 def _audit_events() -> list[dict]:

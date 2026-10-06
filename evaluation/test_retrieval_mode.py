@@ -40,12 +40,42 @@ def _is_train(route: dict) -> bool:
 
 
 @pytest.fixture(scope="module")
-def retriever() -> HybridTransitRetriever:
-    return HybridTransitRetriever()
+def _fixtures_backend():
+    """
+    Pins these tests to the fixture retrieval backend, explicitly.
+
+    The backend is chosen when a retriever is built, and the default is read at
+    module import. That made the result depend on import order: the orchestrator
+    calls load_dotenv() at import, so if anything imported it first, a retriever
+    built later here would pick up RETRIEVER_BACKEND=opensearch from .env, load
+    the dense encoder, and rank differently — a test that passes alone and fails
+    in the full suite.
+
+    Constructing with the backend named — and pointing the planner module's
+    retriever at it, so the endpoint tests see the same thing — removes the
+    dependency on both import order and the developer's .env.
+    """
+    from src.planner import server as planner_server
+
+    original = planner_server._retriever
+    retriever = HybridTransitRetriever(backend="fixtures")
+    planner_server._retriever = retriever
+    try:
+        yield retriever
+    finally:
+        # Restore it. Leaving our retriever in place would silently change how
+        # every later test module retrieves, which is exactly the kind of
+        # cross-test coupling this fixture exists to remove.
+        planner_server._retriever = original
 
 
 @pytest.fixture(scope="module")
-def client() -> TestClient:
+def retriever(_fixtures_backend) -> HybridTransitRetriever:
+    return _fixtures_backend
+
+
+@pytest.fixture(scope="module")
+def client(_fixtures_backend) -> TestClient:
     return TestClient(planner_app)
 
 

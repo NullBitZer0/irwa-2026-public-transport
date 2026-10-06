@@ -67,6 +67,35 @@ class AgentDispatchBridge:
             data = res.json()
             return AgentResponse(**data)
 
+    async def fetch_schedules(
+        self, mode: str = "ALL", origin: str = "", destination: str = "", limit: int = 200
+    ) -> AgentResponse:
+        """
+        Endpoint: GET /mcp/schedules
+
+        The timetable as rows, for the schedules view. Read-only and
+        unfiltered by who is asking — it is published transport data.
+        """
+        async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
+            res = await client.get(
+                f"{self.planner_url}/mcp/schedules",
+                params={"mode": mode, "origin": origin, "destination": destination, "limit": limit},
+            )
+            res.raise_for_status()
+            return AgentResponse(**res.json())
+
+    async def fetch_map_routes(self, mode: str = "ALL") -> AgentResponse:
+        """
+        Endpoint: GET /mcp/map_routes
+
+        City-level corridors with coordinates, plus a coverage statement so the
+        map can say what it is not drawing.
+        """
+        async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
+            res = await client.get(f"{self.planner_url}/mcp/map_routes", params={"mode": mode})
+            res.raise_for_status()
+            return AgentResponse(**res.json())
+
     # ── Booking Agent (Member 3) ──────────────────────────────────────────────
 
     async def call_booking_agent(self, payload: BookingRequestPayload) -> AgentResponse:

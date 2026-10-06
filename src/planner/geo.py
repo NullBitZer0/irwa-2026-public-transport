@@ -1,0 +1,336 @@
+"""
+Where things are, for the schedules and map views.
+
+Two things this deliberately does not do:
+
+- **It does not invent precision.** The corpus is full of individual bus stops
+  (Pettah, Kotahena, Dehiwala Main) that are a few kilometres apart in Greater
+  Colombo. Drawing them as separate pins at invented coordinates would look more
+  authoritative than it is, so stops are clustered into their city and the map
+  draws city-level corridors.
+- **It does not guess.** Every place name in the corpus is mapped explicitly in
+  `STOP_CITY`, and anything not in that table is reported as unmapped rather
+  than being silently dropped from the map — a route that vanishes because its
+  town was misspelled is a bug a user would report as "the map is missing my
+  bus".
+
+The island outline is a coarse schematic traced from the coast, not a survey
+boundary. It is only there to give the plotted corridors a shape to sit on.
+"""
+
+from __future__ import annotations
+
+from typing import Any, Iterable, Optional
+
+# City nodes. Coordinates are city centres, good to about a kilometre, which is
+# the right resolution for a corridor map and no better than that.
+CITY_COORDS: dict[str, tuple[float, float]] = {
+    # Greater Colombo (its stops are clustered into one node)
+    "Colombo": (6.9271, 79.8612),
+    "Katunayake": (7.1795, 79.8971),
+    "Panadura": (6.8465, 79.8912),
+    "Gampaha": (7.1983, 80.0980),
+    "Moratuwa": (6.8035, 79.9535),  # Dehiwala / Nugegoda / Maharagama cluster
+    "Kaduwela": (6.9368, 79.9535),
+    "Nittambuwa": (7.2636, 79.8980),
+    "Kalutara": (6.5854, 79.9000),
+    "Aluthgama": (6.1244, 80.0575),
+    "Galle": (6.0535, 80.2210),
+    "Elpitiya": (6.2322, 80.3342),
+    "Matara": (5.9485, 80.5350),
+    "Tangalle": (6.0246, 80.7906),
+    "Hambantota": (6.1244, 81.1181),
+    "Deniyaya": (5.9214, 80.6428),
+    "Nuwara Eliya": (6.9729, 80.7830),
+    "Ella": (6.8668, 81.0460),
+    "Bandarawela": (6.8297, 81.0460),
+    "Badulla": (6.9934, 81.0600),
+    "Negombo": (7.2083, 79.8339),
+    "Kandy": (7.2906, 80.6337),
+    "Nawalapitiya": (7.0221, 80.7014),
+    "Matale": (7.4675, 80.4974),
+    "Kurunegala": (7.4813, 80.3607),
+    "Ratnapura": (6.6828, 80.4028),
+    "Avissawella": (6.9544, 80.2044),
+    "Anuradhapura": (8.3136, 80.4071),
+    "Trincomalee": (8.5741, 81.2331),
+    "Batticaloa": (7.7170, 81.7000),
+    "Ampara": (7.6770, 81.6748),
+    "Monaragala": (6.8724, 81.0470),
+    "Kataragama": (6.4033, 81.3336),
+    "Mannar": (8.9810, 79.9040),
+    "Kalpitiya": (8.0333, 79.8333),
+    "Jaffna": (9.6615, 80.0255),
+    "Puttalam": (8.0313, 79.8281),
+}
+
+# The corpus names bus stops; this maps each of those to the city node it sits in.
+# Every entry is deliberate. Anything missing from this table is reported, not
+# guessed at (see `unmapped_places`).
+STOP_CITY: dict[str, str] = {
+    # Greater Colombo and its suburbs
+    "Colombo Bastian Mawatha": "Colombo",
+    "Colombo Fort": "Colombo",
+    "Fort": "Colombo",
+    "Pettah": "Colombo",
+    "Kotahena": "Colombo",
+    "Kollupitiya": "Colombo",
+    "Bambalapitiya": "Colombo",
+    "Bambalapitiya Junction": "Colombo",
+    "Maradana": "Colombo",
+    "Narahenpita": "Colombo",
+    "Borella": "Colombo",
+    "Town Hall": "Colombo",
+    "Park Road – Park Avenue": "Colombo",
+    "Gangarama – Slave Island": "Colombo",
+    "Mount Lavinia": "Colombo",
+    "Nugegoda Supermarket": "Moratuwa",
+    "Dehiwala Main": "Moratuwa",
+    "Maharagama": "Moratuwa",
+    "Maharagama-Dehiwela Road": "Moratuwa",
+    "Udahamulla": "Moratuwa",
+    "Athurugiriya": "Colombo",
+    "Battaramulla": "Colombo",
+    "Kohuwala": "Colombo",
+    "Padukka": "Colombo",
+    "Soysapura": "Colombo",
+    "Koswatta": "Colombo",
+    "Kirillawala": "Colombo",
+    "Ekala": "Colombo",
+    "Malwana": "Colombo",
+    "Mulleriyawa": "Colombo",
+    "Talawatte": "Colombo",
+    "Ratmalana Airport": "Colombo",
+    "Malwana Airport": "Colombo",
+    "Salmal Uyana": "Colombo",
+    "Sri J’pura Hospital (Nawarohala)": "Colombo",
+    "Sri J'pura Hospital (Nawarohala)": "Colombo",
+    "Teldeniya": "Colombo",
+    "Bastian Mawatha – Fort": "Colombo",
+    "Moratuwa": "Moratuwa",
+    "Mattakkuliya": "Colombo",
+    "Narahenpita ": "Colombo",
+    "Kohilawatta": "Colombo",
+    "Kottawa": "Colombo",
+    "Piliyandala": "Moratuwa",
+    "Malwana ": "Colombo",
+    "Rukmalgama": "Colombo",
+    "Kirindiwala": "Gampaha",
+    "Hatton": "Nawalapitiya",
+    "Mathugama": "Aluthgama",
+    "Kaduruwela": "Kandy",
+    "Negombo": "Katunayake",
+    "Uragasmanhandiya": "Batticaloa",
+    "Ruhunu": "Hambantota",
+    # Outer metro
+    "Katunayake Airport": "Katunayake",
+    "Katunayake Airport Bus Station": "Katunayake",
+    "Raddolugama": "Katunayake",
+    "Makumbura MMC": "Katunayake",
+    "Kadawatha": "Kaduwela",
+    "Kaduwela": "Kaduwela",
+    "Ja Ela": "Katunayake",
+    "Nittambuwa": "Nittambuwa",
+    "Kelaniya": "Colombo",
+    "Kiribathgoda": "Colombo",
+    "Homagama": "Colombo",
+    "Godagama": "Colombo",
+    "Mattegoda": "Colombo",
+    "Hanwella": "Colombo",
+    "Pugoda": "Colombo",
+    "Delgoda": "Colombo",
+    "Angoda": "Colombo",
+    "Angulana": "Colombo",
+    "Goluwamulla": "Colombo",
+    "Rajagiriya": "Colombo",
+    "Panadura SLBT": "Panadura",
+    "Panadura Bus Stop (private buses)": "Panadura",
+    "Gampaha": "Gampaha",
+    "Kaluthara": "Kalutara",
+    "Avissawella": "Avissawella",
+    # Southern coast
+    "Aluthgama": "Aluthgama",
+    "Elpitiya": "Elpitiya",
+    "Galle": "Galle",
+    "Matara": "Matara",
+    "Tangalle": "Tangalle",
+    "Deniyaya": "Deniyaya",
+    "Wattegama": "Matara",
+    "Wellampitiya": "Matara",
+    "Nuwara Eliya": "Nuwara Eliya",
+    "Ella": "Ella",
+    "Bandarawela": "Bandarawela",
+    "Dayagama": "Badulla",
+    "Badulla": "Badulla",
+    "Monaragala": "Monaragala",
+    "Kataragama": "Kataragama",
+    "Kalmunai": "Ampara",
+    "Ampara": "Ampara",
+    "Akkaraipattu": "Ampara",
+    "Arugam Bay Pick Up": "Ampara",
+    # Hill country and north
+    "Kandy": "Kandy",
+    "Digana": "Kandy",
+    "Nawalapitiya": "Nawalapitiya",
+    "Matale": "Matale",
+    "Kurunegala": "Kurunegala",
+    "Ratnapura": "Ratnapura",
+    "Anuradhapura": "Anuradhapura",
+    "Trincomalee": "Trincomalee",
+    "Batticaloa": "Batticaloa",
+    "Mannar": "Mannar",
+    "Kalpitiya": "Kalpitiya",
+    "Jaffna": "Jaffna",
+}
+
+# A coarse outline of the island, traced clockwise from the north-west cape.
+# Schematic: it exists so the plotted corridors sit on a recognisable shape.
+ISLAND_OUTLINE: list[tuple[float, float]] = [
+    (8.98, 79.72),   # Mannar, north-west
+    (8.55, 79.73),
+    (8.15, 79.80),
+    (8.03, 79.83),   # Puttalam
+    (7.97, 79.78),   # Chilaw
+    (7.70, 79.83),
+    (7.40, 79.83),
+    (7.21, 79.84),   # Negombo
+    (7.05, 79.85),
+    (6.93, 79.86),   # Colombo
+    (6.72, 79.88),
+    (6.55, 79.90),   # Kalutara
+    (6.34, 79.98),
+    (6.12, 80.06),   # Aluthgama
+    (6.03, 80.22),   # Galle
+    (5.98, 80.38),
+    (5.95, 80.54),   # Matara
+    (6.00, 80.72),
+    (6.12, 81.12),   # Hambantota
+    (6.37, 81.28),
+    (6.72, 81.57),
+    (6.95, 81.85),
+    (7.40, 81.83),   # Kalmunai
+    (7.72, 81.70),   # Batticaloa
+    (7.95, 81.60),
+    (8.20, 81.42),
+    (8.57, 81.23),   # Trincomalee
+    (8.62, 81.05),
+    (8.95, 80.70),
+    (9.35, 80.45),
+    (9.62, 80.35),
+    (9.82, 80.37),   # Point Pedro
+    (9.78, 79.98),
+    (9.66, 80.03),   # Jaffna
+    (9.50, 80.05),
+    (9.30, 79.95),
+    (9.05, 79.85),
+    (8.98, 79.72),   # back to the start
+]
+
+
+def resolve(place: Optional[str]) -> Optional[tuple[str, float, float]]:
+    """
+    Maps a corpus place name to (city, lat, lng), or None if we do not know it.
+
+    Returns None rather than a guess: an unmapped town is a gap in our data, and
+    the map should show the gap.
+    """
+    if not place:
+        return None
+    name = place.strip()
+    city = STOP_CITY.get(name)
+    if city is None:
+        # Case-insensitive fallback for casing and stray whitespace differences,
+        # still without fuzzy matching: two candidates means we do not know.
+        lowered = {k.lower(): v for k, v in STOP_CITY.items()}
+        city = lowered.get(name.lower())
+    if city is None or city not in CITY_COORDS:
+        return None
+    lat, lng = CITY_COORDS[city]
+    return city, lat, lng
+
+
+def unmapped_places(schedules: Iterable[dict[str, Any]]) -> list[str]:
+    """Every place in the corpus we cannot place, for reporting."""
+    missing: set[str] = set()
+    for record in schedules:
+        for field in ("origin", "destination"):
+            name = record.get(field)
+            if name and resolve(name) is None:
+                missing.add(name)
+    return sorted(missing)
+
+
+def corridors(schedules: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
+    """
+    Aggregates services into city-to-city corridors.
+
+    Two services on the same corridor are one line on the map, with a count,
+    because drawing 233 separate lines shows nothing.
+    """
+    grouped: dict[tuple[str, str], dict[str, Any]] = {}
+
+    for record in schedules:
+        origin = resolve(record.get("origin"))
+        destination = resolve(record.get("destination"))
+        if not origin or not destination:
+            continue
+        (o_city, o_lat, o_lng), (d_city, d_lat, d_lng) = origin, destination
+        if o_city == d_city:
+            # An intra-city service has no line to draw.
+            continue
+
+        key = (o_city, d_city)
+        entry = grouped.get(key)
+        mode = "TRAIN" if "TRAIN" in str(record.get("route_id", "")).upper() else "BUS"
+        if entry is None:
+            grouped[key] = entry = {
+                "origin_city": o_city,
+                "destination_city": d_city,
+                "from": [o_lat, o_lng],
+                "to": [d_lat, d_lng],
+                "service_count": 0,
+                "modes": set(),
+                "providers": set(),
+                "min_fare_lkr": None,
+                "max_fare_lkr": None,
+                "stops": set(),
+                "synthetic": False,
+            }
+        entry["service_count"] += 1
+        entry["modes"].add(mode)
+        entry["providers"].add(record.get("provider") or "Unknown")
+        for stop in record.get("stops") or []:
+            if resolve(stop):
+                entry["stops"].add(stop)
+        fare = record.get("base_fare_lkr")
+        if isinstance(fare, (int, float)):
+            entry["min_fare_lkr"] = fare if entry["min_fare_lkr"] is None else min(entry["min_fare_lkr"], fare)
+            entry["max_fare_lkr"] = fare if entry["max_fare_lkr"] is None else max(entry["max_fare_lkr"], fare)
+        if record.get("synthetic"):
+            entry["synthetic"] = True
+
+    result = []
+    for entry in grouped.values():
+        entry["modes"] = sorted(entry["modes"])
+        entry["providers"] = sorted(entry["providers"])
+        entry["stops"] = sorted(entry["stops"])
+        result.append(entry)
+    result.sort(key=lambda c: (-c["service_count"], c["origin_city"]))
+    return result
+
+
+def city_nodes(schedules: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
+    """A marker per city that actually appears as an origin or destination."""
+    counts: dict[str, int] = {}
+    for record in schedules:
+        for field in ("origin", "destination"):
+            resolved = resolve(record.get(field))
+            if resolved:
+                counts[resolved[0]] = counts.get(resolved[0], 0) + 1
+
+    nodes = []
+    for city, count in counts.items():
+        lat, lng = CITY_COORDS[city]
+        nodes.append({"city": city, "lat": lat, "lng": lng, "service_count": count})
+    nodes.sort(key=lambda n: (-n["service_count"], n["city"]))
+    return nodes

@@ -25,7 +25,17 @@ from src.planner.hybrid_retriever import HybridTransitRetriever
 
 @pytest.fixture(scope="module")
 def retriever() -> HybridTransitRetriever:
-    return HybridTransitRetriever()
+    """
+    Built with the backend named, because the default is read at import time.
+
+    The default comes from RETRIEVER_BACKEND, which comes from .env — and .env is
+    only loaded once something imports the orchestrator. So these results used to
+    depend on which test file happened to import it first: the same fairness
+    check passed or failed depending on alphabetical order. Naming the backend
+    makes the evaluation reproducible, which matters more here than anywhere
+    else, because this file is a graded artefact.
+    """
+    return HybridTransitRetriever(backend="fixtures")
 
 
 BILINGUAL_PAIRS = [

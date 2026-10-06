@@ -6,6 +6,8 @@ import {
   fetchPendingHolds,
   fetchPurchases,
   health,
+  logout as logoutRequest,
+  me,
   setDemoIncident,
   startConversation,
 } from './api.js'
@@ -14,6 +16,10 @@ import ChatMessage from './components/ChatMessage.jsx'
 import ConversationHistory from './components/ConversationHistory.jsx'
 import ConversationViewer from './components/ConversationViewer.jsx'
 import PaymentPortal, { PaymentReceipt } from './components/PaymentPortal.jsx'
+import Login from './components/Login.jsx'
+import ProfilePanel from './components/ProfilePanel.jsx'
+import RouteMap from './components/RouteMap.jsx'
+import Schedules from './components/Schedules.jsx'
 import Sidebar from './components/Sidebar.jsx'
 
 const GREETING = `Welcome to **LankaJourney AI** 🚆
@@ -51,6 +57,13 @@ export default function App() {
   const [demoIncidentActive, setDemoIncidentActive] = useState(false)
   const [demoBusy, setDemoBusy] = useState(false)
   const [purchasesLoading, setPurchasesLoading] = useState(false)
+  // Who is signed in, and which main view is open. The API is authenticated, so
+  // until there is a session there is nothing to show but the login screen —
+  // rendering the chat first and locking it afterwards would flash a stranger's
+  // (or rather, an empty) shell at someone on a shared machine.
+  const [user, setUser] = useState(undefined) // undefined = still checking
+  const [view, setView] = useState('chat')
+  const [profileOpen, setProfileOpen] = useState(false)
 
   const endRef = useRef(null)
 
@@ -59,14 +72,38 @@ export default function App() {
   }, [messages])
 
   useEffect(() => {
+    me().then(setUser).catch(() => setUser(null))
+  }, [])
+
+  // Health is public, so it is checked before sign-in to show an honest
+  // "offline" rather than a login form that can never work.
+  useEffect(() => {
     health().then((h) => {
       setStatus(h.status === 'ok' ? 'online' : 'offline')
       setAgentStatus(h)
     })
+  }, [])
+
+  useEffect(() => {
+    if (!user) return
     loadPurchases()
     refreshConversations()
     beginConversation()
-  }, [])
+  }, [user])
+
+  async function handleSignOut() {
+    await logoutRequest().catch(() => {})
+    setUser(null)
+    setProfileOpen(false)
+    // Anything on screen belongs to the session that just ended.
+    setMessages([])
+    setConversations([])
+    setConversationId(null)
+    setPurchases([])
+    setPendingHolds([])
+    setViewing(null)
+    setView('chat')
+  }
 
   /**
    * Opens a new conversation and clears the view.
@@ -286,10 +323,25 @@ bookingReference: data.booking_reference,
     send(query)
   }
 
+  if (user === undefined) {
+    return (
+      <div className="login-page">
+        <div className="login-card">
+          <p className="muted">Checking your session…</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return <Login onSignedIn={setUser} />
+  }
+
   return (
     <div className="layout">
       <Sidebar
         sessionId={sessionId}
+        user={user}
         status={status}
         agentStatus={agentStatus}
         purchases={purchases}
@@ -306,6 +358,10 @@ bookingReference: data.booking_reference,
         viewingId={viewing?.id ?? null}
         onOpenConversation={openConversation}
         onNewConversation={handleReset}
+        view={view}
+        onChangeView={setView}
+        onOpenProfile={() => setProfileOpen(true)}
+        onSignOut={handleSignOut}
       />
 
       <main className="chat">
@@ -314,12 +370,21 @@ bookingReference: data.booking_reference,
         ) : (
           <>
         <header className="chat__header">
-          <h2>Chat</h2>
+          <h2>
+            {view === 'chat' && 'Chat'}
+            {view === 'schedules' && 'Timetables'}
+            {view === 'map' && 'Route map'}
+          </h2>
           {status !== 'online' && (
             <span className="status status--offline">Reconnecting…</span>
           )}
         </header>
 
+        {view === 'schedules' && <Schedules />}
+        {view === 'map' && <RouteMap />}
+
+        {view === 'chat' && (
+        <>
         <div className="chat__log">
           {messages.length === 0 ? (
             <div className="msg msg--agent">
@@ -393,7 +458,17 @@ bookingReference: data.booking_reference,
         </form>
           </>
         )}
+        </>
+        )}
       </main>
+
+      {profileOpen && (
+        <ProfilePanel
+          user={user}
+          onClose={() => setProfileOpen(false)}
+          onSaved={setUser}
+        />
+      )}
     </div>
   )
 }

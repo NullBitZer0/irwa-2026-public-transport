@@ -123,6 +123,7 @@ lanka-journey-ai/
 │   ├── orchestrator/               # Agent 1: Supervisor & Coordinator
 │   │   ├── **init**.py
 │   │   ├── router.py               # Intent classifier & supervisor node
+│   │   ├── accounts.py                # Sign-in, sessions, profile (card: last4 only)
 │   │   ├── conversations.py           # Chat history + read-only enforcement
 │   ├── state.py                # LangGraph session state schema
 │   │   └── schemas.py              # Inter-Agent MCP / JSON-RPC specifications
@@ -131,6 +132,7 @@ lanka-journey-ai/
 │   │   ├── nlp_parser.py           # Singlish/English entity extraction
 │   │   ├── hybrid_retriever.py     # BM25 + ChromaDB + Reciprocal Rank Fusion
 │   │   ├── live_disruptions.py     # Read-only RSS news feed ingestor
+│   │   ├── geo.py                  # Place coordinates, corridors, map outline
 │   │   └── server.py               # Planning Agent FastMCP microservice
 │   ├── booking/                    # Agent 3: Action & Ticketing
 │   │   ├── **init**.py
@@ -394,7 +396,72 @@ classification and planner logic as a live headline — nothing is special-cased
 and is always labelled as simulated. `GET :8103/mcp/sources` lists what the
 agent reads.
 
-### 5. Conversations, booking and ticket history
+### 5. Sign-in and your profile
+
+The app opens on a login page. Create an account, or use the demo traveller:
+
+```
+demo@lankajourney.lk  /  demotravel123
+```
+
+Your profile is in the sidebar, under the initials button. It shows your name,
+contact number and card, and all three are editable.
+
+**On the card number — read this before you change it.** A card number is not a
+profile field. Storing a full PAN puts this project in PCI-DSS scope, makes the
+database worth stealing, and puts the number one careless log line away from
+being exfiltrated. The rest of this system refuses to send a PAN to any agent;
+writing one to disk would undo that.
+
+So the number is validated (Luhn), branded, reduced to its last four digits, and
+**discarded**. It is never written to disk, never logged, never returned by an
+endpoint, and never sent to an agent or a model. The profile shows
+`Visa •••• 1111` — which is what you need to recognise your own card, and what a
+receipt needs to record. A real payment would take the card straight from the
+browser to the payment provider without passing through this server.
+
+Passwords are hashed with scrypt (memory-hard, standard library) and compared in
+constant time. Sessions are random tokens stored only as SHA-256 digests, in an
+`HttpOnly` cookie — so a stolen database yields neither passwords nor usable
+sessions.
+
+**Authentication is the edge of the trust boundary, not a feature of the login
+form.** Every user-facing endpoint requires a session: `/chat`,
+`/conversations`, `/payment`, `/purchases`, `/pending_holds`, `/demo_incident`,
+`/schedules`, `/map-routes`, `/profile`. Without it, anyone who can reach the
+port can read your conversations and book tickets as you. The red-team harness
+registers a throwaway traveller before probing, and its preflight fails if an
+unauthenticated `/chat` is anything other than `401` — a security report that
+cannot tell whether the target was protected is not evidence.
+
+### 6. Timetables and the route map
+
+Two views in the sidebar, both served from the same corpus as the chat.
+
+**Timetables** lists bus and train services sorted by departure time, filterable
+by mode and searchable by town, route or operator. Synthetic services are labelled
+*demo data* with the generated fields named — a timetable that does not say which
+rows were invented is a lie told in a table.
+
+**Route map** draws the available routes on a schematic outline of Sri Lanka as
+inline SVG, so it works offline and leaks no viewport to a tile server. Click a
+line for its services, operators and fare range; line thickness is service count.
+
+The map is honest about what it is:
+
+- Corridors are **city-to-city**. Bus stops inside Greater Colombo (Pettah,
+  Kotahena, Dehiwala) are clustered into Colombo, because drawing them as
+  separate pins a few kilometres apart would imply precision the data does not
+  have.
+- Services that run entirely within one city have no line to draw. They are
+  counted in the coverage note and listed in the timetables tab — 608 of 812
+  services are drawn as corridors, and the map says so rather than quietly
+  omitting the rest.
+- Every place in the corpus is mapped explicitly (`src/planner/geo.py`). Anything
+  unmapped is reported, never silently dropped, because a route that vanishes is
+  reported by users as "the map is missing my bus".
+
+### 7. Conversations, booking and ticket history
 
 **One conversation per trip.** A conversation opens with a new chat, collects
 what it needs, and ends when the payment completes. After that it becomes
@@ -456,7 +523,7 @@ database, which fails the live red-team job while every other job passes.
 sidebar lists finished conversations with their booking reference and message
 count; clicking one opens the transcript in read-only view.
 
-### 6. Bookings, payment and ticket history
+### 8. Bookings, payment and ticket history
 
 Booking is staged and human-in-the-loop: the agent holds a seat for 10 minutes,
 asks for approval, then stops at the payment step. **Only the last four card
@@ -474,7 +541,7 @@ Bookings and the purchase ledger are persisted in SQLite (`data/booking.db`),
 so they survive a container restart. Without `BOOKING_DB_PATH` the store is
 in-memory, which is what the test suite uses.
 
-### 7. Example Test Queries
+### 9. Example Test Queries
 
 * **Route Discovery (Singlish):**
 > *"Heta ude 6ta Kandy indan Galle yanna train ekak thiyeda?"*

@@ -71,6 +71,10 @@ for (const [file, tag] of [
   ['src/components/PaymentPortal.jsx', 'PaymentPortal'],
   ['src/components/ConversationHistory.jsx', 'ConversationHistory'],
   ['src/components/ConversationViewer.jsx', 'ConversationViewer'],
+  ['src/components/ProfilePanel.jsx', 'ProfilePanel'],
+  ['src/components/Login.jsx', 'Login'],
+  ['src/components/Schedules.jsx', 'Schedules'],
+  ['src/components/RouteMap.jsx', 'RouteMap'],
 ]) {
   await check(`<${tag}> receives every prop it uses`, () => {
     const needed = destructuredProps(file)
@@ -118,12 +122,103 @@ await check('App mounts and renders content', async () => {
   dom.window.Element.prototype.scrollTo = () => {}
 
   // The app calls /api on mount. Stub it so the check is offline and quiet.
-  const stubFetch = () =>
-    Promise.resolve({
-      ok: true,
-      status: 200,
-      json: () => Promise.resolve({ status: 'ok', agent: 'orchestrator', version: '1.0.0' }),
-    })
+  //
+  // The stub has to answer per endpoint, not with one blanket body: the app is
+  // authenticated now, and a stub that returns health JSON for /auth/me leaves
+  // it on the login screen — which is the correct behaviour, and would fail a
+  // check meant to confirm the chat renders.
+  const DEMO_USER = {
+    id: 'USR-RENDERTEST',
+    email: 'demo@lankajourney.lk',
+    full_name: 'Demo Traveller',
+    contact_number: '+94771234567',
+    has_card: true,
+    card_brand: 'Visa',
+    card_last4: '4242',
+  }
+
+  const stubFetch = (url) => {
+    const path = String(url)
+    const reply = (body) =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve(body),
+        text: () => Promise.resolve(JSON.stringify(body)),
+      })
+
+    if (path.includes('/auth/me')) return reply({ status: 'OK', user: DEMO_USER })
+    if (path.includes('/health')) {
+      return reply({ status: 'ok', agent: 'orchestrator', version: '1.0.0' })
+    }
+    if (path.includes('/conversations')) return reply({ conversations: [], greeting: 'Hi' })
+    if (path.includes('/purchases')) return reply({ purchases: [] })
+    if (path.includes('/pending_holds')) return reply({ holds: [] })
+    if (path.includes('/schedules')) {
+      return reply({
+        matched: 2,
+        returned: 2,
+        truncated: false,
+        services: [
+          {
+            route_id: 'TRAIN-1001',
+            mode: 'TRAIN',
+            origin: 'Colombo Fort',
+            destination: 'Kandy',
+            departure_time: '06:00',
+            arrival_time: '09:00',
+            provider: 'SLR',
+            fare_lkr: 850,
+            synthetic: false,
+          },
+          {
+            route_id: 'SLTB-1-KAND-COLO-0510',
+            mode: 'BUS',
+            origin: 'Kandy',
+            destination: 'Colombo',
+            departure_time: '05:10',
+            arrival_time: '08:15',
+            provider: 'SLTB',
+            fare_lkr: 620,
+            synthetic: true,
+          },
+        ],
+      })
+    }
+    if (path.includes('/map-routes')) {
+      return reply({
+        outline: [
+          [8.98, 79.72],
+          [6.93, 79.86],
+          [9.66, 80.03],
+        ],
+        nodes: [{ city: 'Colombo', lat: 6.9271, lng: 79.8612, service_count: 680 }],
+        corridors: [
+          {
+            origin_city: 'Colombo',
+            destination_city: 'Kandy',
+            from: [6.9271, 79.8612],
+            to: [7.2906, 80.6337],
+            service_count: 27,
+            modes: ['BUS', 'TRAIN'],
+            providers: ['SLR', 'SLTB'],
+            min_fare_lkr: 620,
+            max_fare_lkr: 1250,
+            stops: ['Colombo Fort', 'Kandy'],
+            synthetic: false,
+          },
+        ],
+        coverage: {
+          services_in_scope: 812,
+          drawn_as_corridors: 608,
+          intra_city_not_drawn: 204,
+          unmapped_places: [],
+          note: 'Corridors are city-to-city.',
+        },
+      })
+    }
+    return reply({ status: 'ok' })
+  }
   expose('fetch', stubFetch)
   dom.window.fetch = stubFetch
 
@@ -155,6 +250,20 @@ await check('App mounts and renders content', async () => {
     }
     if (!html.includes('LankaJourney')) {
       throw new Error('App rendered, but not the app we recognise')
+    }
+    // Signed in: the profile chip proves the session reached the UI, rather than
+    // the app silently sitting on the login screen.
+    if (!html.includes('Demo Traveller')) {
+      throw new Error(
+        'Signed-in traveller missing — the session did not reach the UI. ' +
+          'Is the app stuck on the login screen?',
+      )
+    }
+    // The three destinations the sidebar offers.
+    for (const label of ['Chat', 'Timetables', 'Route map']) {
+      if (!html.includes(label)) {
+        throw new Error(`Sidebar is missing the ${label} view`)
+      }
     }
   } finally {
     await server.close()

@@ -8,6 +8,90 @@
 const BASE = '/api'
 
 /**
+ * The session lives in an HttpOnly cookie set by the server, so every call has
+ * to carry it. Without `credentials` the cookie is dropped and every request
+ * comes back 401 — which looks exactly like the backend being broken.
+ */
+async function request(path, { method = 'GET', body } = {}) {
+  const res = await fetch(`${BASE}${path}`, {
+    credentials: 'include',
+    method,
+    // Same-origin in production, but the dev server runs on a different port to
+    // the API, so this is not a no-op.
+    credentials: 'include',
+    headers: body ? { 'Content-Type': 'application/json' } : undefined,
+    body: body ? JSON.stringify(body) : undefined,
+  })
+
+  let payload = null
+  try {
+    payload = await res.json()
+  } catch {
+    /* empty or non-JSON body */
+  }
+
+  if (!res.ok) {
+    const error = new Error(payload?.detail || `HTTP ${res.status}`)
+    error.status = res.status
+    throw error
+  }
+  return payload
+}
+
+// ── Auth ──────────────────────────────────────────────────────────────────────
+
+/** The signed-in traveller, or null. Used to decide login vs app on load. */
+export async function me() {
+  try {
+    const data = await request('/auth/me')
+    return data.user
+  } catch (error) {
+    if (error.status === 401) return null
+    throw error
+  }
+}
+
+export function login(email, password) {
+  return request('/auth/login', { method: 'POST', body: { email, password } })
+}
+
+export function register(email, password) {
+  return request('/auth/register', { method: 'POST', body: { email, password } })
+}
+
+export function logout() {
+  return request('/auth/logout', { method: 'POST' })
+}
+
+/**
+ * Saves the profile. `cardNumber` is sent once and never kept in the browser.
+ *
+ * The server validates it and keeps four digits; see src/orchestrator/accounts.py
+ * for why the full number is not stored.
+ */
+export function saveProfile({ fullName, contactNumber, cardNumber }) {
+  return request('/profile', {
+    method: 'PATCH',
+    body: {
+      full_name: fullName,
+      contact_number: contactNumber,
+      card_number: cardNumber || undefined,
+    },
+  })
+}
+
+// ── Schedules and map ─────────────────────────────────────────────────────────
+
+export function getSchedules({ mode = 'ALL', origin = '', destination = '', limit = 200 } = {}) {
+  const params = new URLSearchParams({ mode, origin, destination, limit: String(limit) })
+  return request(`/schedules?${params}`)
+}
+
+export function getMapRoutes({ mode = 'ALL' } = {}) {
+  return request(`/map-routes?mode=${encodeURIComponent(mode)}`)
+}
+
+/**
  * Send a chat turn to the orchestrator.
  * @param {object} opts
  * @param {string} opts.query                 user message text
@@ -24,6 +108,7 @@ export async function chat({
   hitlToken = null,
 }) {
   const res = await fetch(`${BASE}/chat`, {
+    credentials: 'include',
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -55,7 +140,7 @@ export async function chat({
 /** Liveness probe for the orchestrator. */
 export async function health() {
   try {
-    const res = await fetch(`${BASE}/health`)
+    const res = await fetch(`${BASE}/health`, { credentials: 'include' })
     if (!res.ok) return { status: 'offline' }
     return await res.json()
   } catch {
@@ -69,6 +154,7 @@ export async function health() {
  */
 export async function pay({ transactionId, cardLast4, provider = 'SLR' }) {
   const res = await fetch(`${BASE}/payment`, {
+    credentials: 'include',
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -88,7 +174,7 @@ export async function pay({ transactionId, cardLast4, provider = 'SLR' }) {
 /** Completed ticket purchases, newest first. */
 export async function fetchPurchases() {
   try {
-    const res = await fetch(`${BASE}/purchases`)
+    const res = await fetch(`${BASE}/purchases`, { credentials: 'include' })
     if (!res.ok) return []
     const body = await res.json()
     return body.purchases ?? []
@@ -106,7 +192,7 @@ export async function fetchPurchases() {
  */
 export async function fetchPendingHolds() {
   try {
-    const res = await fetch(`${BASE}/pending_holds`)
+    const res = await fetch(`${BASE}/pending_holds`, { credentials: 'include' })
     if (!res.ok) return []
     const body = await res.json()
     return body.pending_holds ?? []
@@ -129,6 +215,7 @@ export async function fetchPendingHolds() {
 export async function setDemoIncident({ incidentId = null, active = true } = {}) {
   try {
     const res = await fetch(`${BASE}/demo_incident`, {
+    credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ incident_id: incidentId, active }),
@@ -148,7 +235,10 @@ export async function setDemoIncident({ incidentId = null, active = true } = {})
  */
 export async function startConversation() {
   try {
-    const res = await fetch(`${BASE}/conversations`, { method: 'POST' })
+    const res = await fetch(`${BASE}/conversations`, {
+      method: 'POST',
+      credentials: 'include',
+    })
     if (!res.ok) return null
     return await res.json()
   } catch {
@@ -163,7 +253,7 @@ export async function startConversation() {
 export async function fetchConversations(status = null) {
   try {
     const query = status ? `?status=${encodeURIComponent(status)}` : ''
-    const res = await fetch(`${BASE}/conversations${query}`)
+    const res = await fetch(`${BASE}/conversations${query}`, { credentials: 'include' })
     if (!res.ok) return []
     return (await res.json()).conversations ?? []
   } catch {
@@ -177,7 +267,9 @@ export async function fetchConversations(status = null) {
  */
 export async function fetchConversation(conversationId) {
   try {
-    const res = await fetch(`${BASE}/conversations/${encodeURIComponent(conversationId)}`)
+    const res = await fetch(`${BASE}/conversations/${encodeURIComponent(conversationId)}`, {
+      credentials: 'include',
+    })
     if (!res.ok) return null
     return await res.json()
   } catch {

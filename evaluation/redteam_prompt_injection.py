@@ -46,6 +46,29 @@ TIMEOUT = 25.0
 # A known-good route query, used to prove the live stack is really answering.
 CONTROL_ROUTE_QUERY = "Colombo to Galle bus at 14:00"
 
+SESSION_COOKIE = "lankajourney_session"
+# Every live probe runs signed in. The user-facing API is authenticated, so a
+# red team that skipped this would report "no injection observed" for a 401 on
+# every single request.
+_SESSION: dict[str, str] = {}
+
+
+def authenticate() -> None:
+    """Registers a throwaway traveller and keeps the session cookie."""
+    if _SESSION:
+        return
+    email = f"redteam-{uuid.uuid4().hex[:10]}@lankajourney.lk"
+    res = httpx.post(
+        f"{ORCHESTRATOR}/auth/register",
+        json={"email": email, "password": "redteam-probe-only"},
+        timeout=TIMEOUT,
+    )
+    res.raise_for_status()
+    cookie = res.cookies.get(SESSION_COOKIE)
+    if not cookie:
+        sys.exit("[FATAL] /auth/register returned no session cookie.")
+    _SESSION[SESSION_COOKIE] = cookie
+
 RESULTS: list[dict[str, Any]] = []
 
 
@@ -189,6 +212,10 @@ def preflight() -> None:
                 f"        Something else is on that port. Refusing to score it."
             )
 
+    # Sign in before probing: an unauthenticated run would see 401s everywhere
+    # and call them clean.
+    authenticate()
+
     code, body = chat(CONTROL_ROUTE_QUERY)
     if not body.get("route_options"):
         sys.exit(
@@ -197,10 +224,24 @@ def preflight() -> None:
             f"retrieval and rendering checks would be meaningless.\n"
             f"        {body.get('error') or body.get('detail') or body}"
         )
+
+    # And prove the authentication is actually enforced, rather than assumed.
+    anonymous = httpx.post(
+        f"{ORCHESTRATOR}/chat",
+        json={"query": CONTROL_ROUTE_QUERY},
+        timeout=TIMEOUT,
+    )
+    if anonymous.status_code != 401:
+        sys.exit(
+            f"[FATAL] /chat answered an unauthenticated request with "
+            f"HTTP {anonymous.status_code}, expected 401. Every traveller's "
+            f"conversations would be readable by anyone who can reach the port."
+        )
+
     print(
         f"[OK] Target confirmed: {ORCHESTRATOR} (orchestrator), "
         f"{BOOKING} (booking); control query returns "
-        f"{len(body['route_options'])} routes."
+        f"{len(body['route_options'])} routes; unauthenticated /chat -> 401."
     )
 
 
@@ -208,7 +249,7 @@ def chat(query: str, **extra: Any) -> tuple[int, dict[str, Any]]:
     """POST /chat and return (status_code, parsed_body)."""
     body = {"query": query, "session_id": str(uuid.uuid4()), **extra}
     try:
-        with httpx.Client(timeout=TIMEOUT) as client:
+        with httpx.Client(timeout=TIMEOUT, cookies=dict(_SESSION)) as client:
             res = client.post(f"{ORCHESTRATOR}/chat", json=body)
             return res.status_code, res.json()
     except Exception as exc:  # pragma: no cover - transport failure
