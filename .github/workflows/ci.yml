@@ -160,9 +160,17 @@ jobs:
         run: .github/scripts/write-ci-env.sh
 
       - name: Prepare bind-mount directories
-        # data/booking is git-ignored, so it does not exist in a fresh checkout
-        # and Docker would create it root-owned, which the agents cannot write.
-        run: mkdir -p data/booking
+        # These directories are git-ignored, so they do not exist in a fresh
+        # checkout and Docker would create them root-owned, which the agents
+        # cannot write. Listing them here is the only thing keeping them in sync
+        # with the bind mounts in docker-compose.yml: adding a mount without
+        # adding its directory here fails at runtime, not at build time, and the
+        # symptom is a service that reports healthy and then cannot persist
+        # anything.
+        #
+        #   docker compose config | grep -oP '(?<=:)\./data/[a-z/]+(?=:)'
+        #
+        run: mkdir -p data/booking data/conversations
 
       - name: Build images
         run: docker compose build

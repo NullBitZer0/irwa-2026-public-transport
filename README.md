@@ -448,7 +448,11 @@ Notes on that flow:
 The greeting is a stored message rather than a rendered one, so a conversation
 reopened from history starts the way it actually started.
 
-History lives in SQLite (`CONVERSATIONS_DB_PATH`) and survives a restart. The
+History lives in SQLite (`CONVERSATIONS_DB_PATH`) and survives a restart.
+`data/conversations/` is git-ignored, so CI creates it before starting the stack —
+Docker would otherwise make it root-owned and the orchestrator could not open its
+database, which fails the live red-team job while every other job passes.
+`evaluation/test_compose_ci_agreement.py` asserts compose and CI agree. The
 sidebar lists finished conversations with their booking reference and message
 count; clicking one opens the transcript in read-only view.
 
