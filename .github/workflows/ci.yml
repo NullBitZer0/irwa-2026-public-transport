@@ -105,16 +105,25 @@ jobs:
             # exercising anyway.
             echo "LOG_LEVEL=WARNING"
             echo "DEBUG_MODE=False"
+            # The agents run as this uid so they can write the bind-mounted audit
+            # log. It has to be the runner's own uid, not a hardcoded 1000: the
+            # workspace is owned by the runner, so a mismatch makes every
+            # bind-mounted write fail. Hardcoding it broke the booking store
+            # with "sqlite3.OperationalError: unable to open database file".
+            echo "DOCKER_UID=$(id -u)"
+            echo "DOCKER_GID=$(id -g)"
           } > .env
+
+          # data/booking is git-ignored, so it does not exist in a fresh checkout
+          # and Docker would create it root-owned, which the agents cannot write.
+          mkdir -p data/booking
 
       - name: Build images
         run: docker compose build
 
       - name: Start the stack
+        # DOCKER_UID/DOCKER_GID come from the generated .env, not from here.
         run: docker compose up -d
-        env:
-          DOCKER_UID: 1000
-          DOCKER_GID: 1000
 
       - name: Wait for health
         run: |
@@ -128,7 +137,11 @@ jobs:
           done
           echo "stack did not become healthy"
           docker compose ps
-          docker compose logs --tail=50
+          # Name the unhealthy services: "not healthy" alone sent us hunting
+          # through 50 lines of unrelated OpenSearch startup noise.
+          docker compose ps --format '{{.Service}} {{.State}} {{.Health}}' \
+            | awk '$NF != "healthy" && $2 == "running"'
+          docker compose logs --tail=80 booking orchestrator planner
           exit 1
 
       - name: Run the red-team suite
