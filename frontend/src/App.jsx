@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { chat, fetchPendingHolds, fetchPurchases, health } from './api.js'
+import { chat, fetchPendingHolds, fetchPurchases, health, setDemoIncident } from './api.js'
 import { renderMarkdown } from './markdown.js'
 import ChatMessage from './components/ChatMessage.jsx'
 import PaymentPortal, { PaymentReceipt } from './components/PaymentPortal.jsx'
@@ -18,6 +18,9 @@ export default function App() {
   const [input, setInput] = useState('')
   const [sessionId, setSessionId] = useState(null)
   const [pendingRoute, setPendingRoute] = useState(null)
+  // The signed confirmation for the booking currently on screen (R-09). Held
+  // while we wait for the traveller, then returned verbatim on approval.
+  const [hitlToken, setHitlToken] = useState(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(null)
   const [status, setStatus] = useState('checking')
@@ -27,6 +30,9 @@ export default function App() {
   const [receipt, setReceipt] = useState(null)
   const [purchases, setPurchases] = useState([])
   const [pendingHolds, setPendingHolds] = useState([])
+  // Demo control for the live-conditions advisory (see Sidebar).
+  const [demoIncidentActive, setDemoIncidentActive] = useState(false)
+  const [demoBusy, setDemoBusy] = useState(false)
   const [purchasesLoading, setPurchasesLoading] = useState(false)
 
   const endRef = useRef(null)
@@ -50,6 +56,31 @@ export default function App() {
     setPurchases(settled)
     setPendingHolds(waiting)
     setPurchasesLoading(false)
+  }
+
+  /**
+   * Toggles the simulated transit incident.
+   *
+   * The incident is invented and pushed into the Conditions Agent, which feeds
+   * it through the same classification and planner logic as a live headline — so
+   * the demo shows the real advisory path, and the agent's own reply stays
+   * labelled as simulated.
+   */
+  async function handleToggleDemoIncident() {
+    setDemoBusy(true)
+    const next = !demoIncidentActive
+    const result = await setDemoIncident({
+      incidentId: next ? 'negombo_highway_accident' : null,
+      active: next,
+    })
+    setDemoIncidentActive(result.ok && (result.active?.length ?? 0) > 0)
+    setDemoBusy(false)
+    // Ask a route question straight away so the advisory appears, rather than
+    // making the demonstrator type a second query.
+    if (next) {
+      setMessages([])
+      await send('Colombo to Galle bus at 2pm')
+    }
   }
 
   /**
@@ -86,10 +117,15 @@ export default function App() {
           query: trimmed,
           sessionId,
           selectedRouteId: options.selectedRouteId ?? null,
-          hitlApproved: options.hitlApproved ?? false,
+          hitlToken: options.hitlToken ?? null,
         })
 
         if (data.session_id) setSessionId(data.session_id)
+
+        // The gate is presented with a token attached. Hold on to it so the
+        // approve turn can hand it back — that return *is* the approval.
+        if (data.hitl_token) setHitlToken(data.hitl_token)
+        if (data.booking_status === 'CONFIRMED') setHitlToken(null)
 
         // A held seat with an amount due opens the payment portal instead of
         // silently completing the booking.
@@ -140,7 +176,7 @@ bookingReference: data.booking_reference,
     if (!pendingRoute) return
     send(`YES confirm ${pendingRoute.route_id}`, {
       selectedRouteId: pendingRoute.route_id,
-      hitlApproved: true,
+      hitlToken,
     })
     setPendingRoute(null)
   }
@@ -165,6 +201,7 @@ bookingReference: data.booking_reference,
     setMessages([])
     setSessionId(null)
     setPendingRoute(null)
+    setHitlToken(null)
     setError(null)
   }
 
@@ -185,6 +222,9 @@ bookingReference: data.booking_reference,
         agentStatus={agentStatus}
         purchases={purchases}
         purchasesLoading={purchasesLoading}
+        demoIncidentActive={demoIncidentActive}
+        demoBusy={demoBusy}
+        onToggleDemoIncident={handleToggleDemoIncident}
         onExample={handleExample}
         onReset={handleReset}
         onRefreshPurchases={loadPurchases}

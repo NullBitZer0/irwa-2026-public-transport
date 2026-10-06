@@ -85,6 +85,11 @@ services:
       # Without this the booking store is in-memory and every held seat,
       # confirmed ticket and purchase-history entry is lost on restart.
       - BOOKING_DB_PATH=/app/state/booking.db
+      # Signs the human-in-the-loop confirmation tokens (R-09). Required, with no
+      # default: a shared signing key would let anyone forge an approval, which
+      # is the exact failure the token exists to prevent. Generate one with
+      # `echo HITL_TOKEN_SECRET=$(openssl rand -hex 24) >> .env`.
+      - HITL_TOKEN_SECRET=${HITL_TOKEN_SECRET:?Set it in .env — see .env.example}
     volumes:
       # A service-level `volumes` list REPLACES the one inherited from the
       # *agent anchor, it does not merge — so the audit-log mount has to be
@@ -102,6 +107,31 @@ services:
       retries: 5
       start_period: 15s
 
+  # Agent 5: current weather + live transit news, reduced to an advisory.
+  # Egress is required here and only here; the three transactional agents make
+  # no outbound calls of their own.
+  conditions:
+    <<: *agent
+    container_name: lankajourney-conditions
+    command:
+      - uvicorn
+      - src.conditions.server:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8003"
+    ports:
+      - "8103:8003"
+    environment:
+      # Conditions are advisory only, and a feed outage must not slow planning.
+      - CONDITIONS_TIMEOUT_SECONDS=6
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8003/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
   orchestrator:
     <<: *agent
     container_name: lankajourney-orchestrator
@@ -117,12 +147,14 @@ services:
       # localhost URLs in .env, which only make sense on the host.
       PLANNER_AGENT_URL: http://planner:8001
       BOOKING_AGENT_URL: http://booking:8002
+      CONDITIONS_AGENT_URL: http://conditions:8003
       AGENT_TIMEOUT_SECONDS: "20"
     ports:
       - "8100:8000"
     depends_on:
       - planner
       - booking
+      - conditions
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
       interval: 15s

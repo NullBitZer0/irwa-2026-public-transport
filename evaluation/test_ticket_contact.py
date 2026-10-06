@@ -26,6 +26,7 @@ from fastapi.testclient import TestClient
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from src.booking import server as booking_server  # noqa: E402
+from src.booking.hitl_token import issue_hitl_token  # noqa: E402
 from src.booking.providers import contact_for  # noqa: E402
 from src.booking.state_machine import BookingStateMachine  # noqa: E402
 from src.booking.store import BookingStore  # noqa: E402
@@ -49,6 +50,13 @@ def _hold(client: TestClient, **overrides) -> str:
         "user_confirmed": True,
     }
     payload.update(overrides)
+    payload["hitl_token"] = issue_hitl_token(
+        session_id=payload.get("session_id", "anonymous"),
+        route_id=payload["route_id"],
+        fare_lkr=payload["fare_lkr"],
+        seat_count=payload["seat_count"],
+        provider=payload.get("provider", "SLR"),
+    )
     res = client.post("/mcp/begin_booking", json=payload)
     assert res.status_code == 200, res.text
     return res.json()["data"]["transaction"]["transaction_id"]

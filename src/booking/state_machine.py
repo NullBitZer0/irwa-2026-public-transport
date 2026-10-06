@@ -45,6 +45,9 @@ class BookingTransaction(BaseModel):
     transaction_id: str
     route_id: str
     provider: str
+    # The conversation this booking belongs to. The HITL confirmation token is
+    # bound to it (R-09), so a token from one session cannot clear another's.
+    session_id: str = "anonymous"
     passenger_token: str
     seat_count: int
     fare_lkr: float
@@ -92,11 +95,13 @@ class BookingStateMachine:
         passenger_token: str,
         seats: int,
         fare: float,
+        session_id: str = "anonymous",
     ) -> BookingTransaction:
         txn = BookingTransaction(
             transaction_id=txn_id,
             route_id=route_id,
             provider=provider,
+            session_id=session_id,
             passenger_token=passenger_token,
             seat_count=seats,
             fare_lkr=fare,

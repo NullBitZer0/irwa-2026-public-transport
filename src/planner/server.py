@@ -19,7 +19,7 @@ from __future__ import annotations
 from typing import Optional
 
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from src.planner.connection_planner import (
     find_connections,
@@ -27,7 +27,11 @@ from src.planner.connection_planner import (
     rank_connections,
 )
 from src.planner.hybrid_retriever import HybridTransitRetriever
-from src.planner.journey_search import find_services_at, missing_details
+from src.planner.journey_search import (
+    apply_conditions,
+    find_services_at,
+    missing_details,
+)
 from src.planner.nlp_parser import extract_transit_intent
 from src.security.gateway import IngressBlocked, enforce_ingress
 
@@ -48,6 +52,10 @@ class PlanRouteRequest(BaseModel):
     time_preference: str | None = None
     passengers: int = 1
     raw_query: str | None = None
+    # Verdict from the Live Conditions Agent: which modes to avoid, if any.
+    # Deliberately structured (a list of mode codes) rather than prose, so the
+    # planner cannot be talked into a different route by a news headline.
+    avoid_modes: list[str] = Field(default_factory=list)
 
 
 @app.post("/mcp/plan_route")
@@ -176,6 +184,7 @@ async def plan_journey(payload: PlanRouteRequest) -> dict:
     blocking = [m for m in missing if m in ("origin", "destination", "major_cities")]
 
     services: list[dict] = []
+    conditions_note: str | None = None
     if not blocking:
         services = find_services_at(
             _retriever.schedules,
@@ -185,6 +194,35 @@ async def plan_journey(payload: PlanRouteRequest) -> dict:
             mode=mode,
             major_cities_only=True,
         )
+
+        # Live conditions: a mode reported as disrupted is demoted below the
+        # alternatives, not removed. The planner does not decide whether a
+        # service is actually running — the traveller might know better.
+        services, _demoted, conditions_note = apply_conditions(
+            services, payload.avoid_modes, requested_mode=mode
+        )
+
+        # The traveller's own mode is the one reported as disrupted. Recommending
+        # "try something else" is only useful if we actually go and look, so
+        # search the other mode too and offer it as a genuine alternative.
+        if mode in {m.upper() for m in payload.avoid_modes} and not _demoted:
+            other_mode = "BUS" if mode == "TRAIN" else "TRAIN"
+            alternatives = find_services_at(
+                _retriever.schedules,
+                origin=origin,
+                destination=destination,
+                at_time=at_time,
+                mode=other_mode,
+                major_cities_only=True,
+            )
+            if alternatives:
+                for alt in alternatives:
+                    alt["alternative_for_disruption"] = True
+                services = services + alternatives
+                conditions_note = (
+                    f"Live reports flag {mode.lower()} services on this route, so "
+                    f"the {other_mode.lower()} options at the end are the ones to look at."
+                )
 
     return {
         "status": "SUCCESS",
@@ -197,6 +235,8 @@ async def plan_journey(payload: PlanRouteRequest) -> dict:
             "missing": missing,
             "needs_clarification": bool(missing),
             "services": services,
+            "conditions_note": conditions_note,
+            "avoid_modes": payload.avoid_modes,
         },
         "message": (
             f"{len(services)} service(s) found."

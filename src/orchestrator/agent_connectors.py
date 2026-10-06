@@ -23,6 +23,7 @@ logger = get_logger(__name__)
 
 _PLANNER_URL: str = os.getenv("PLANNER_AGENT_URL", "http://localhost:8001")
 _BOOKING_URL: str = os.getenv("BOOKING_AGENT_URL", "http://localhost:8002")
+_CONDITIONS_URL: str = os.getenv("CONDITIONS_AGENT_URL", "http://localhost:8003")
 _TIMEOUT: float = float(os.getenv("AGENT_TIMEOUT_SECONDS", "10.0"))
 
 
@@ -39,9 +40,11 @@ class AgentDispatchBridge:
         self,
         planner_url: str = _PLANNER_URL,
         booking_url: str = _BOOKING_URL,
+        conditions_url: str = _CONDITIONS_URL,
     ) -> None:
         self.planner_url = planner_url.rstrip("/")
         self.booking_url = booking_url.rstrip("/")
+        self.conditions_url = conditions_url.rstrip("/")
 
     # ── Planning Agent (Member 2) ─────────────────────────────────────────────
 
@@ -130,6 +133,7 @@ class AgentDispatchBridge:
         travel_mode: str = "ANY",
         time_preference: Optional[str] = None,
         raw_query: str = "",
+        avoid_modes: Optional[list[str]] = None,
     ) -> AgentResponse:
         """
         Clarification-first journey search.
@@ -146,6 +150,9 @@ class AgentDispatchBridge:
                     "origin": origin,
                     "destination": destination,
                     "travel_mode": travel_mode,
+                    # Forwarded as mode codes only — the planner never sees the
+                    # text a disruption was inferred from.
+                    "avoid_modes": avoid_modes or [],
                     "time_preference": time_preference,
                     "date_str": "TODAY",
                     "raw_query": raw_query,
@@ -181,6 +188,80 @@ class AgentDispatchBridge:
             )
             res.raise_for_status()
             return AgentResponse(**res.json())
+
+    async def fetch_conditions(
+        self,
+        origin: str = "",
+        destination: str = "",
+        travel_mode: str = "ANY",
+    ) -> AgentResponse:
+        """
+        Current weather and live news for a journey.
+
+        Endpoint: POST /mcp/conditions (Live Conditions Agent)
+
+        Returns a structured verdict, not prose: the caller decides what to do
+        with it. Unreachable is tolerated — a planning turn must not fail because
+        a news feed is down.
+        """
+        async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
+            res = await client.post(
+                f"{self.conditions_url}/mcp/conditions",
+                json={
+                    "origin": origin or "",
+                    "destination": destination or "",
+                    "travel_mode": travel_mode,
+                },
+            )
+            res.raise_for_status()
+            return AgentResponse(**res.json())
+
+    async def set_simulated_incident(
+        self,
+        incident_id: str | None = None,
+        active: bool = True,
+    ) -> AgentResponse:
+        """
+        Demo control: switches a simulated incident on or off.
+
+        Endpoint: POST /mcp/simulate_incident (Live Conditions Agent)
+        """
+        async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
+            res = await client.post(
+                f"{self.conditions_url}/mcp/simulate_incident",
+                json={"incident_id": incident_id, "active": active},
+            )
+            res.raise_for_status()
+            return AgentResponse(**res.json())
+
+    async def request_hitl_token(
+        self,
+        session_id: str,
+        route_id: str,
+        fare_lkr: float,
+        seat_count: int = 1,
+        provider: str = "SLR",
+    ) -> str:
+        """
+        Asks the Booking Agent to mint a confirmation token (R-09).
+
+        The Booking Agent is the issuer and the verifier: keeping signing on one
+        side means the orchestrator never holds the key, so a compromise here
+        cannot forge an approval.
+        """
+        async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
+            res = await client.post(
+                f"{self.booking_url}/mcp/hitl_challenge",
+                json={
+                    "session_id": session_id,
+                    "route_id": route_id,
+                    "fare_lkr": fare_lkr,
+                    "seat_count": seat_count,
+                    "provider": provider,
+                },
+            )
+            res.raise_for_status()
+            return (res.json().get("data") or {}).get("hitl_token", "")
 
     async def settle_booking(
         self,

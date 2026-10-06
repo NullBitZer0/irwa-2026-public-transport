@@ -89,8 +89,10 @@ const EXAMPLES = [
  *    seat hold only lives 10 minutes and would otherwise be lost silently.
  * @param {{sessionId:string|null, status:string, agentStatus:object|null,
  *          purchases:Array, pendingHolds:Array, purchasesLoading:boolean,
+ *          demoIncidentActive:boolean, demoBusy:boolean,
  *          onExample:(q:string)=>void, onReset:()=>void,
- *          onRefreshPurchases:()=>void, onResumePayment:(hold:object)=>void}} props
+ *          onRefreshPurchases:()=>void, onResumePayment:(hold:object)=>void,
+ *          onToggleDemoIncident:()=>void}} props
  */
 export default function Sidebar({
   sessionId,
@@ -99,10 +101,13 @@ export default function Sidebar({
   purchases,
   pendingHolds,
   purchasesLoading,
+  demoIncidentActive,
+  demoBusy,
   onExample,
   onReset,
   onRefreshPurchases,
   onResumePayment,
+  onToggleDemoIncident,
 }) {
   const [openContact, setOpenContact] = useState(null)
 
@@ -236,6 +241,31 @@ export default function Sidebar({
             No tickets yet. Complete a payment and the ticket will appear here.
           </p>
         )}
+      </section>
+
+      <section className="panel">
+        <h2>
+          🧪 Demo: incident alert
+          <button
+            className="panel__refresh"
+            onClick={onToggleDemoIncident}
+            disabled={demoBusy}
+            title={
+              demoIncidentActive
+                ? 'Clear the simulated incident'
+                : 'Simulate an accident at the Negombo highway entrance'
+            }
+          >
+            {demoBusy ? '…' : demoIncidentActive ? '⏹ Clear' : '▶ Simulate'}
+          </button>
+        </h2>
+        <p className="muted">
+          {demoIncidentActive
+            ? 'A simulated accident at the Negombo highway entrance is active. Ask for a '
+              + 'bus route and the agent will warn you and suggest the next entrance.'
+            : 'Push a simulated accident into the live-conditions agent to demonstrate '
+              + 'the advisory and alternative-route logic.'}
+        </p>
       </section>
 
       <section className="panel">

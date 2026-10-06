@@ -20,6 +20,7 @@ from fastapi.testclient import TestClient
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
+from src.booking.hitl_token import issue_hitl_token  # noqa: E402
 from src.booking.server import app as booking_app  # noqa: E402
 
 
@@ -34,15 +35,26 @@ def booking_client() -> TestClient:
 
 
 def _begin(client: TestClient, **overrides) -> dict:
+    """Begins a booking the way the orchestrator does: with a signed token."""
     body = {
         "route_id": "TRAIN-1001",
         "provider": "SLR",
         "passenger_token": "GUEST-TEST",
         "seat_count": 2,
         "fare_lkr": 850.0,
-        "user_confirmed": True,
+        "session_id": "test-session",
     }
     body.update(overrides)
+    body.setdefault(
+        "hitl_token",
+        issue_hitl_token(
+            session_id=body["session_id"],
+            route_id=body["route_id"],
+            fare_lkr=body["fare_lkr"],
+            seat_count=body["seat_count"],
+            provider=body["provider"],
+        ),
+    )
     res = client.post("/mcp/begin_booking", json=body)
     assert res.status_code == 200, res.text
     # Standard MCP envelope: the payload lives under "data".
@@ -63,7 +75,13 @@ def test_begin_booking_holds_without_charging(client: TestClient) -> None:
 
 
 def test_begin_booking_respects_the_hitl_gate(client: TestClient) -> None:
-    """Without explicit approval the hold must not progress to payment."""
+    """
+    With no approval the hold must not progress to payment (R-09).
+
+    The approval is a signed token, so this is the case where the client simply
+    does not return one — which is what a traveller who never clicked confirm,
+    and also what a script forging the old boolean, now both produce.
+    """
     res = client.post(
         "/mcp/begin_booking",
         json={
@@ -72,10 +90,11 @@ def test_begin_booking_respects_the_hitl_gate(client: TestClient) -> None:
             "passenger_token": "GUEST-TEST",
             "seat_count": 1,
             "fare_lkr": 850.0,
-            "user_confirmed": False,
+            "session_id": "test-session",
+            "hitl_token": "",
         },
     )
-    assert res.status_code in (403, 400), res.status_code
+    assert res.status_code == 403, res.status_code
 
 
 # ── Settlement ───────────────────────────────────────────────────────────────
@@ -177,7 +196,10 @@ def test_zero_fare_is_refused(booking_client: TestClient) -> None:
             "passenger_token": "GUEST-TEST",
             "seat_count": 1,
             "fare_lkr": 0,
-            "user_confirmed": True,
+            "session_id": "test-session",
+            # A valid approval for a zero fare: the fare refusal must be what
+            # stops this, not a missing token.
+            "hitl_token": issue_hitl_token("test-session", "TRAIN-1001", 0.0, 1, "SLR"),
         },
     )
     assert res.status_code == 400, res.text

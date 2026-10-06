@@ -62,8 +62,17 @@ class BookingRequestPayload(BaseModel):
     )
     seat_count: int = Field(default=1, ge=1, le=6)
     fare_lkr: Optional[float] = None
-    user_confirmed: bool = Field(
-        default=False, description="HITL gate: must be True before booking executes"
+    session_id: str = Field(
+        default="anonymous",
+        description="Conversation the HITL token is bound to (R-09)",
+    )
+    hitl_token: str = Field(
+        default="",
+        description=(
+            "Signed confirmation returned by the traveller's approval. Verified "
+            "server-side by the Booking Agent; there is no boolean flag, because a "
+            "client-supplied one is self-asserted approval (R-09)."
+        ),
     )
 
 

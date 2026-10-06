@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS bookings (
     transaction_id   TEXT PRIMARY KEY,
     route_id         TEXT NOT NULL,
     provider         TEXT NOT NULL,
+    session_id       TEXT NOT NULL DEFAULT 'anonymous',
     passenger_token  TEXT NOT NULL,
     seat_count       INTEGER NOT NULL,
     fare_lkr         REAL NOT NULL,
@@ -70,6 +71,7 @@ _BOOKING_COLUMNS = (
     "transaction_id",
     "route_id",
     "provider",
+    "session_id",
     "passenger_token",
     "seat_count",
     "fare_lkr",
@@ -164,6 +166,34 @@ class BookingStore:
     def _ensure_schema(self) -> None:
         with self._connect() as conn:
             conn.executescript(_SCHEMA)
+            self._migrate(conn)
+
+    @staticmethod
+    def _migrate(conn: sqlite3.Connection) -> None:
+        """
+        Adds columns introduced after a database was first created.
+
+        `CREATE TABLE IF NOT EXISTS` is a no-op on an existing table, so a new
+        column would otherwise only apply to fresh databases — and the service
+        would crash at boot on any database that already existed. Adding columns
+        here means an upgrade works without deleting state.
+
+        Deliberately additive only: dropping or retyping a column needs a real
+        migration tool and a backup, not a guess at startup.
+        """
+        added: dict[str, list[tuple[str, str]]] = {
+            "bookings": [
+                ("session_id", "TEXT NOT NULL DEFAULT 'anonymous'"),
+            ],
+        }
+
+        for table, columns in added.items():
+            existing = {
+                row["name"] for row in conn.execute(f"PRAGMA table_info({table})")
+            }
+            for name, definition in columns:
+                if name not in existing:
+                    conn.execute(f"ALTER TABLE {table} ADD COLUMN {name} {definition}")
 
     # ── Bookings ──────────────────────────────────────────────────────────────
 

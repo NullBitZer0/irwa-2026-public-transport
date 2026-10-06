@@ -32,3 +32,16 @@ def isolate_security_audit_log(tmp_path_factory):
             os.environ.pop("SECURITY_AUDIT_LOG", None)
         else:
             os.environ["SECURITY_AUDIT_LOG"] = previous
+
+
+@pytest.fixture(autouse=True)
+def _hitl_signing_key(monkeypatch):
+    """
+    A per-test confirmation signing key (R-09).
+
+    Autouse because the booking endpoints fail closed without HITL_TOKEN_SECRET:
+    without this, every booking test would 503 for a reason unrelated to what it
+    is testing. Tests that care about the missing-key behaviour set the variable
+    themselves via monkeypatch.
+    """
+    monkeypatch.setenv("HITL_TOKEN_SECRET", "test-only-hitl-signing-key-0123456789")

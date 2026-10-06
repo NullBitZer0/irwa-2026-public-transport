@@ -13,13 +13,15 @@ const BASE = '/api'
  * @param {string} opts.query                 user message text
  * @param {string|null} [opts.sessionId]      conversation id to continue
  * @param {string|null} [opts.selectedRouteId] route the user picked from the results
- * @param {boolean} [opts.hitlApproved]       user cleared the human-in-the-loop gate
+ * @param {string|null} [opts.hitlToken]       signed confirmation returned by the
+ *   traveller's approval (R-09). There is no boolean flag: the client cannot
+ *   assert its own approval, it can only hand back what the server issued.
  */
 export async function chat({
   query,
   sessionId = null,
   selectedRouteId = null,
-  hitlApproved = false,
+  hitlToken = null,
 }) {
   const res = await fetch(`${BASE}/chat`, {
     method: 'POST',
@@ -28,7 +30,7 @@ export async function chat({
       query,
       session_id: sessionId,
       selected_route_id: selectedRouteId,
-      hitl_approved: hitlApproved,
+      hitl_token: hitlToken,
     }),
   })
 
@@ -106,5 +108,30 @@ export async function fetchPendingHolds() {
     return body.pending_holds ?? []
   } catch {
     return []
+  }
+}
+
+/**
+ * Demo control: switch a simulated transit incident on or off.
+ *
+ * The incident is invented by us and fed through the same pipeline as a live
+ * news headline, so the advisory and the alternative-route logic can be shown
+ * without waiting for a real accident. It is always labelled as simulated.
+ *
+ * @param {object} opts
+ * @param {string|null} [opts.incidentId] omit with active:false to clear all
+ * @param {boolean} [opts.active]
+ */
+export async function setDemoIncident({ incidentId = null, active = true } = {}) {
+  try {
+    const res = await fetch(`${BASE}/demo_incident`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ incident_id: incidentId, active }),
+    })
+    if (!res.ok) return { active: [], ok: false }
+    return { ...(await res.json()), ok: true }
+  } catch {
+    return { active: [], ok: false }
   }
 }

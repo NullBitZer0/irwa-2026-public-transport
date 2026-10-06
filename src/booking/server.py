@@ -6,11 +6,11 @@ Full flow implemented:
   1. Security Gateway ingress  — sanitize_user_input() guardrail check
   2. Inventory check           — MockTransitGateway
   3. Seat hold                 — BookingStateMachine (SEAT_HELD, 10 min)
-  4. HITL gate                 — enforced by the orchestrator before it
-                                  calls /mcp/await_payment; the booking
-                                  agent trusts user_confirmed=True only
-                                  because the orchestrator is the sole
-                                  caller on an internal network boundary
+  4. HITL gate                 — R-09: enforced here, not by the caller.
+                                  /mcp/hitl_challenge issues a signed token
+                                  bound to session/route/fare; await_payment
+                                  verifies it. A client-supplied boolean would
+                                  be self-asserted approval.
   5. Move to AWAITING_PAYMENT  — mark_awaiting_payment()
   6. Mock payment charge       — MockPaymentGateway
   7. Confirm booking           — PII detokenized only here, at the very
@@ -32,6 +32,12 @@ from datetime import datetime, timezone
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
+from src.booking.hitl_token import (
+    TOKEN_TTL_SECONDS,
+    HitlTokenError,
+    issue_hitl_token,
+    verify_hitl_token,
+)
 from src.booking.mock_gateway import MockTransitGateway
 from src.booking.payment_gateway import MockPaymentGateway
 from src.booking.providers import contact_for
@@ -56,9 +62,20 @@ _tokenizer = PIITokenizer()
 # ── Request Schemas ─────────────────────────────────────────────────────────
 
 
+class HitlChallengeRequest(BaseModel):
+    """What the traveller is being asked to approve."""
+
+    session_id: str
+    route_id: str
+    fare_lkr: float
+    seat_count: int = 1
+    provider: str = "SLR"
+
+
 class HoldRequest(BaseModel):
     route_id: str
     provider: str = "SLR"
+    session_id: str = "anonymous"
     passenger_token: str
     seat_count: int = 1
     fare_lkr: float = 0.0
@@ -67,7 +84,9 @@ class HoldRequest(BaseModel):
 
 class AwaitPaymentRequest(BaseModel):
     transaction_id: str
-    user_confirmed: bool = False  # HITL gate — must be explicitly True
+    # R-09: approval is a signed capability the client returns, not a boolean it
+    # asserts. `hitl_token` is verified against the transaction it is clearing.
+    hitl_token: str = ""
 
 
 class ChargeRequest(BaseModel):
@@ -119,7 +138,9 @@ class BookTicketRequest(BaseModel):
     passenger_token: str
     seat_count: int = 1
     fare_lkr: float = 0.0
-    user_confirmed: bool = False  # HITL gate — orchestrator sets this after user approval
+    # R-09: the signed confirmation the traveller's approval produced.
+    hitl_token: str = ""
+    session_id: str = "anonymous"
     card_last4: str = "0000"      # mock card digits for the demo payment step
 
 
@@ -139,6 +160,35 @@ class SettleRequest(BaseModel):
 
 
 # ── Endpoints ────────────────────────────────────────────────────────────────
+
+
+@app.post("/mcp/hitl_challenge")
+async def hitl_challenge(req: HitlChallengeRequest) -> dict:
+    """
+    Issues a signed human-in-the-loop confirmation token (R-09).
+
+    Called when a route is chosen and the traveller is about to be asked to
+    approve. It proves nothing yet — it is the server's way of saying "here is
+    what you are approving". The traveller's approval is the token coming back.
+    """
+    try:
+        token = issue_hitl_token(
+            session_id=req.session_id,
+            route_id=req.route_id,
+            fare_lkr=req.fare_lkr,
+            seat_count=req.seat_count,
+            provider=req.provider,
+        )
+    except HitlTokenError as exc:
+        # Fail closed: without a signing key there is no gate to clear.
+        log_security_event("HITL_TOKEN_UNAVAILABLE", f"reason={exc}")
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+    return {
+        "status": "SUCCESS",
+        "data": {"hitl_token": token, "expires_in_seconds": TOKEN_TTL_SECONDS},
+        "message": "Confirmation token issued; return it once the traveller approves.",
+    }
 
 
 @app.post("/mcp/hold_seat")
@@ -168,6 +218,7 @@ async def hold_seat(req: HoldRequest) -> dict:
         passenger_token=req.passenger_token,
         seats=req.seat_count,
         fare=req.fare_lkr,
+        session_id=req.session_id,
     )
 
     return {
@@ -181,16 +232,33 @@ async def hold_seat(req: HoldRequest) -> dict:
 
 @app.post("/mcp/await_payment")
 async def await_payment(req: AwaitPaymentRequest) -> dict:
-    """Step 4-5: HITL gate, then SEAT_HELD -> AWAITING_PAYMENT."""
-    if not req.user_confirmed:
+    """
+    Step 4-5: clear the HITL gate, then SEAT_HELD -> AWAITING_PAYMENT.
+
+    R-09: the gate is cleared by a signed token, not a client boolean. The token
+    is verified against *this* transaction's route and fare, so it cannot be
+    minted by the client or replayed onto a different or pricier booking.
+    """
+    txn = _state_machine.get(req.transaction_id)
+    if not txn:
+        raise HTTPException(status_code=404, detail="Transaction not found.")
+
+    try:
+        verify_hitl_token(
+            req.hitl_token,
+            session_id=txn.session_id,
+            route_id=txn.route_id,
+            fare_lkr=txn.fare_lkr,
+        )
+    except HitlTokenError as exc:
         log_security_event(
             "BOOKING_BLOCKED_NO_HITL",
-            f"transaction_id={req.transaction_id}",
+            f"transaction_id={req.transaction_id} reason={exc}",
         )
         raise HTTPException(
             status_code=403,
-            detail="Human-in-the-loop confirmation required before payment.",
-        )
+            detail=f"Human-in-the-loop confirmation required before payment: {exc}",
+        ) from exc
     try:
         txn = _state_machine.mark_awaiting_payment(req.transaction_id)
     except ValueError as exc:
@@ -254,12 +322,13 @@ async def book_ticket(req: BookTicketRequest) -> dict:
             passenger_token=req.passenger_token,
             seat_count=req.seat_count,
             fare_lkr=req.fare_lkr,
+            session_id=req.session_id,
         )
     )
     txn_id = hold_result["data"]["transaction"]["transaction_id"]
 
     await await_payment(
-        AwaitPaymentRequest(transaction_id=txn_id, user_confirmed=req.user_confirmed)
+        AwaitPaymentRequest(transaction_id=txn_id, hitl_token=req.hitl_token)
     )
 
     await charge(ChargeRequest(transaction_id=txn_id, card_last4=req.card_last4))
@@ -288,12 +357,13 @@ async def begin_booking(req: BookTicketRequest) -> dict:
             passenger_token=req.passenger_token,
             seat_count=req.seat_count,
             fare_lkr=req.fare_lkr,
+            session_id=req.session_id,
         )
     )
     txn_id = hold_result["data"]["transaction"]["transaction_id"]
 
     await await_payment(
-        AwaitPaymentRequest(transaction_id=txn_id, user_confirmed=req.user_confirmed)
+        AwaitPaymentRequest(transaction_id=txn_id, hitl_token=req.hitl_token)
     )
 
     fare = _state_machine.get(txn_id).fare_lkr

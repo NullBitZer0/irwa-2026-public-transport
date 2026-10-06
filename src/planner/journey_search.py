@@ -286,3 +286,83 @@ def missing_details(
         missing.append("time")
 
     return missing
+
+
+def apply_conditions(
+    services: list[dict],
+    avoid_modes: list[str] | None,
+    requested_mode: str = "ANY",
+) -> tuple[list[dict], list[dict], str | None]:
+    """
+    Applies a live-conditions verdict to the candidate services.
+
+    Returns (services, alternatives, note).
+
+    Behaviour is deliberately conservative:
+
+    - A mode named in `avoid_modes` is *demoted*, not deleted. A strike headline
+      is a reason to suggest a bus, not a reason to declare the railway closed —
+      the planner does not have authority over whether a service is running, and
+      the traveller may know better.
+    - The demoted services are still returned, after the alternatives and flagged,
+      so the traveller is never quietly shown a list with something missing.
+    - Only when the traveller asked for no particular mode (ANY) is the demoted
+      group moved below the alternatives.
+
+    `avoid_modes` is a list of mode codes from the Conditions Agent, not text, so
+    no fetched headline can steer this decision.
+    """
+    if not avoid_modes:
+        return services, [], None
+
+    avoid = {m.upper() for m in avoid_modes if m}
+    if not avoid:
+        return services, [], None
+
+    requested = (requested_mode or "ANY").upper()
+
+    # The traveller asked for a mode that is not the affected one. Reordering
+    # would put services they did not want first and describe them as
+    # alternatives, which is noise — the advisory sentence already mentions the
+    # other mode. Leave the list alone.
+    if requested in ("TRAIN", "BUS") and requested not in avoid:
+        return services, [], None
+
+    preferred = [s for s in services if _mode_of(s) not in avoid]
+    demoted = [s for s in services if _mode_of(s) in avoid]
+
+    if not preferred:
+        # Everything we found is the affected mode. Say exactly that, rather than
+        # implying some other kind of service exists on this route.
+        found_mode = _mode_of(services[0]) if services else "service"
+        mode_word = "rail" if found_mode == "TRAIN" else "bus"
+        other_word = "bus" if found_mode == "TRAIN" else "train"
+        note = (
+            f"Live reports flag {mode_word} services, which is all I have for this "
+            f"route. Say the word and I'll look for {other_word} options instead."
+        )
+        return services, [], note
+
+    for svc in demoted:
+        svc["conditions_flag"] = "live reports suggest this service may be disrupted"
+
+    alternative_word = "bus" if "TRAIN" in avoid else "train"
+    note = (
+        f"Live reports flag the "
+        f"{'rail' if 'TRAIN' in avoid else 'bus'} services on this route, so the "
+        f"{alternative_word} options below are listed first."
+    )
+    return preferred + demoted, demoted, note
+
+
+def _mode_of(service: dict) -> str:
+    """TRAIN or BUS for a service dict, from its provider or transit_type."""
+    provider = str(service.get("provider") or "").upper()
+    if provider == "SLR":
+        return "TRAIN"
+    transit = str(service.get("transit_type") or "").upper()
+    if "TRAIN" in transit:
+        return "TRAIN"
+    if "BUS" in transit or provider in {"SLTB", "PRIVATE_HIGHWAY", "RM"}:
+        return "BUS"
+    return "BUS"

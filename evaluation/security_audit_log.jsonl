@@ -642,3 +642,105 @@
 {"timestamp": "2026-10-06T07:06:45.175885+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=29"}
 {"timestamp": "2026-10-06T07:06:45.313952+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=106"}
 {"timestamp": "2026-10-06T07:06:45.480433+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=CLARIFY input_length=63"}
+{"timestamp": "2026-10-06T07:20:50.846160+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=55"}
+{"timestamp": "2026-10-06T07:20:50.848781+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
+{"timestamp": "2026-10-06T07:20:50.857331+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=3"}
+{"timestamp": "2026-10-06T07:20:50.863078+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=28"}
+{"timestamp": "2026-10-06T07:20:50.867025+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=5"}
+{"timestamp": "2026-10-06T07:20:50.925635+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=50"}
+{"timestamp": "2026-10-06T07:20:50.932896+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=6"}
+{"timestamp": "2026-10-06T07:20:50.933630+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=44"}
+{"timestamp": "2026-10-06T07:20:50.941095+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=43"}
+{"timestamp": "2026-10-06T07:20:50.945808+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=56"}
+{"timestamp": "2026-10-06T07:20:50.948897+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='disregard\\\\s+(all\\\\s+)?(the\\\\s+)?(previous|prior|above)\\\\s+instructions?' input_length=54"}
+{"timestamp": "2026-10-06T07:20:50.952067+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='forget\\\\s+(everything|all\\\\s+previous|your\\\\s+instructions?)' input_length=64"}
+{"timestamp": "2026-10-06T07:20:50.955274+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore.*previous.*instructions?' input_length=55"}
+{"timestamp": "2026-10-06T07:20:50.957789+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=32"}
+{"timestamp": "2026-10-06T07:20:50.960758+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore.*previous.*instructions?' input_length=63"}
+{"timestamp": "2026-10-06T07:20:50.964245+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=32"}
+{"timestamp": "2026-10-06T07:20:50.967157+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=34"}
+{"timestamp": "2026-10-06T07:20:50.969851+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=32"}
+{"timestamp": "2026-10-06T07:20:50.972349+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=32"}
+{"timestamp": "2026-10-06T07:20:50.974870+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='set\\\\s+fare\\\\s+to\\\\s+0' input_length=13"}
+{"timestamp": "2026-10-06T07:20:50.977306+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='set\\\\s+(the\\\\s+)?fare\\\\s+to\\\\s*(0|zero|free)' input_length=27"}
+{"timestamp": "2026-10-06T07:20:50.979665+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='give\\\\s+(me\\\\s+)?free\\\\s+tickets' input_length=20"}
+{"timestamp": "2026-10-06T07:20:50.981956+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='grant\\\\s+admin\\\\s+access' input_length=18"}
+{"timestamp": "2026-10-06T07:20:50.984169+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='you\\\\s+are\\\\s+now\\\\s+(a\\\\s+)?(dan|developer\\\\s+mode|jailbroken)' input_length=32"}
+{"timestamp": "2026-10-06T07:20:50.986443+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='you\\\\s+are\\\\s+now\\\\s+an?\\\\s+unfiltered' input_length=35"}
+{"timestamp": "2026-10-06T07:20:50.988543+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='act\\\\s+as\\\\s+(if\\\\s+)?you\\\\s+have\\\\s+no\\\\s+restrictions' input_length=34"}
+{"timestamp": "2026-10-06T07:20:50.990968+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='pretend\\\\s+(you\\\\s+are|to\\\\s+be)\\\\s+(an?\\\\s+)?(unfiltered|unrestricted)' input_length=46"}
+{"timestamp": "2026-10-06T07:20:50.993238+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='system\\\\s+override' input_length=41"}
+{"timestamp": "2026-10-06T07:20:50.995496+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='bypass\\\\s+(the\\\\s+)?(security|guardrails?|filter|validation)' input_length=26"}
+{"timestamp": "2026-10-06T07:20:50.997808+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='system\\\\s+(override|prompt|message)' input_length=25"}
+{"timestamp": "2026-10-06T07:20:51.002302+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='repeat\\\\s+(the\\\\s+)?(above|everything)' input_length=25"}
+{"timestamp": "2026-10-06T07:20:51.005402+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='forget\\\\s+(everything|all\\\\s+previous|your\\\\s+instructions?)' input_length=24"}
+{"timestamp": "2026-10-06T07:20:51.008262+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='union\\\\s+select' input_length=34"}
+{"timestamp": "2026-10-06T07:20:51.010807+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='drop\\\\s+table' input_length=16"}
+{"timestamp": "2026-10-06T07:20:51.013220+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='script\\\\s*(alert|src)' input_length=25"}
+{"timestamp": "2026-10-06T07:20:51.015840+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='base64\\\\s*decode' input_length=18"}
+{"timestamp": "2026-10-06T07:20:51.059063+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore.*previous.*instructions?' input_length=55"}
+{"timestamp": "2026-10-06T07:20:51.072243+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=32"}
+{"timestamp": "2026-10-06T07:20:51.237316+00:00", "event_type": "BOOKING_BLOCKED_NO_HITL", "detail": "transaction_id=TXN-6C22A26B reason=No human-in-the-loop confirmation supplied."}
+{"timestamp": "2026-10-06T07:20:51.692763+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-06T07:20:51.695308+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
+{"timestamp": "2026-10-06T07:20:51.698138+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-06T07:20:51.700998+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=2"}
+{"timestamp": "2026-10-06T07:20:51.703407+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-06T07:20:51.710569+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=57"}
+{"timestamp": "2026-10-06T07:20:51.713558+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='set\\\\s+fare\\\\s+to\\\\s+0' input_length=34"}
+{"timestamp": "2026-10-06T07:20:51.716120+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='script\\\\s*(alert|src)' input_length=29"}
+{"timestamp": "2026-10-06T07:20:51.718195+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='drop\\\\s+table' input_length=43"}
+{"timestamp": "2026-10-06T07:20:51.720159+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='grant\\\\s+admin\\\\s+access' input_length=22"}
+{"timestamp": "2026-10-06T07:20:51.740940+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-06T07:20:51.743604+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-06T07:20:51.764567+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=55"}
+{"timestamp": "2026-10-06T07:20:51.781563+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=55"}
+{"timestamp": "2026-10-06T07:32:41.124799+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=32"}
+{"timestamp": "2026-10-06T07:32:49.246447+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=27"}
+{"timestamp": "2026-10-06T07:32:50.738783+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=37"}
+{"timestamp": "2026-10-06T07:32:52.621186+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=29"}
+{"timestamp": "2026-10-06T07:32:54.354150+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=48"}
+{"timestamp": "2026-10-06T07:34:09.288922+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=27"}
+{"timestamp": "2026-10-06T07:36:49.656401+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=27"}
+{"timestamp": "2026-10-06T07:38:05.537787+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=27"}
+{"timestamp": "2026-10-06T07:38:14.103484+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=27"}
+{"timestamp": "2026-10-06T07:39:40.182995+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=27"}
+{"timestamp": "2026-10-06T07:39:48.524198+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=27"}
+{"timestamp": "2026-10-06T07:39:58.622878+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=29"}
+{"timestamp": "2026-10-06T07:43:02.734529+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=32"}
+{"timestamp": "2026-10-06T07:43:02.734988+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='system\\\\s+override' input_length=15"}
+{"timestamp": "2026-10-06T07:43:02.735276+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='set\\\\s+fare\\\\s+to\\\\s+0' input_length=13"}
+{"timestamp": "2026-10-06T07:43:02.735606+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='script\\\\s*(alert|src)' input_length=25"}
+{"timestamp": "2026-10-06T07:43:02.736036+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='disregard.*instructions?' input_length=60"}
+{"timestamp": "2026-10-06T07:43:02.736389+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='system\\\\s+(override|prompt|message)' input_length=55"}
+{"timestamp": "2026-10-06T07:43:02.736660+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=44"}
+{"timestamp": "2026-10-06T07:43:02.736901+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=44"}
+{"timestamp": "2026-10-06T07:43:02.737110+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=33"}
+{"timestamp": "2026-10-06T07:43:02.737465+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='you\\\\s+are\\\\s+now\\\\s+(a\\\\s+)?(dan|developer\\\\s+mode|jailbroken)' input_length=65"}
+{"timestamp": "2026-10-06T07:43:02.737834+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='system\\\\s+(override|prompt|message)' input_length=63"}
+{"timestamp": "2026-10-06T07:43:02.738229+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='(make|change|force|reduce|lower|adjust).*fare.*(0|zero|o|free)' input_length=51"}
+{"timestamp": "2026-10-06T07:43:02.738616+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='<[^>]*\\\\son\\\\w+\\\\s*=' input_length=42"}
+{"timestamp": "2026-10-06T07:43:02.738916+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='union\\\\s+select' input_length=32"}
+{"timestamp": "2026-10-06T07:43:02.815812+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=56"}
+{"timestamp": "2026-10-06T07:43:02.836422+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=56"}
+{"timestamp": "2026-10-06T07:43:06.606136+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=46"}
+{"timestamp": "2026-10-06T07:43:06.624680+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=159"}
+{"timestamp": "2026-10-06T07:43:08.261063+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=109"}
+{"timestamp": "2026-10-06T07:43:09.903989+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=175"}
+{"timestamp": "2026-10-06T07:43:09.923838+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='system\\\\s+(override|prompt|message)' input_length=39"}
+{"timestamp": "2026-10-06T07:43:09.941080+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='repeat\\\\s+(the\\\\s+)?(above|everything)' input_length=65"}
+{"timestamp": "2026-10-06T07:43:10.805107+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=80"}
+{"timestamp": "2026-10-06T07:43:10.825806+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='do\\\\s+anything\\\\s+now' input_length=179"}
+{"timestamp": "2026-10-06T07:43:10.913969+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=CLARIFY input_length=135"}
+{"timestamp": "2026-10-06T07:43:11.006861+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=CLARIFY input_length=61"}
+{"timestamp": "2026-10-06T07:43:11.028005+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-06T07:43:11.829987+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=78"}
+{"timestamp": "2026-10-06T07:43:12.686342+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=59"}
+{"timestamp": "2026-10-06T07:43:12.707898+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='script\\\\s*(alert|src)' input_length=46"}
+{"timestamp": "2026-10-06T07:43:14.241356+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=29"}
+{"timestamp": "2026-10-06T07:43:21.233476+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=106"}
+{"timestamp": "2026-10-06T07:43:21.393819+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=CLARIFY input_length=63"}
+{"timestamp": "2026-10-06T07:43:21.532739+00:00", "event_type": "BOOKING_BLOCKED_NO_HITL", "detail": "transaction_id=TXN-A1065BC8 reason=Confirmation token signature does not verify."}
+{"timestamp": "2026-10-06T07:43:21.536067+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=CLARIFY input_length=63"}
+{"timestamp": "2026-10-06T07:43:21.671430+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=CLARIFY input_length=63"}
+{"timestamp": "2026-10-06T07:43:30.509937+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=62"}

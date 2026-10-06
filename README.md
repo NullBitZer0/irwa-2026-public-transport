@@ -147,6 +147,10 @@ lanka-journey-ai/
 │   ├── responsible_ai/
 │   │   ├── **init__.py
 │   │   └── grounding.py            # Citation verification & data provenance
+├── src/conditions/                 # Agent 5: Live Conditions & Advisory
+│   ├── gather.py                   # Open-Meteo weather + public RSS news
+│   ├── analysis.py                 # Classify → advisory (no LLM in this path)
+│   └── server.py                   # Conditions Agent microservice (:8103)
 ├── frontend/                       # React UI (the shipped interface)
 │   └── src/
 │       ├── App.jsx                 # Chat, HITL gate, payment portal
@@ -277,7 +281,39 @@ React frontend is the only interface.
 
 </details>
 
-### 3. Bookings, payment and ticket history
+### 3. Live weather and news
+
+A fifth agent gathers current weather (Open-Meteo, no API key) and live transit
+news (public RSS), and feeds the Planning Agent a verdict for your journey. The
+planner then either confirms the normal route or recommends an alternative.
+
+```
+Weather and live news look fine for this journey — let's use the normal routes.
+```
+
+```
+⚠️ I've seen reports of a strike for your route. Rail services are the ones
+affected — I'd recommend an alternative service instead.
+```
+
+Reports about places **not** on your journey are ignored, and a report about the
+other mode is mentioned briefly rather than shouted about. If weather or news
+cannot be reached, the agent says conditions are unknown — it never claims
+"everything is fine" it could not verify.
+
+**Nothing fetched reaches a language model.** News text is reduced here, by
+rules, to a category and a severity; the sentence you see is assembled from a
+fixed vocabulary. A headline cannot become an instruction, and cannot be quoted
+back to you.
+
+**Demo control.** Waiting for a real accident to demonstrate this is impractical,
+so the sidebar has a **🧪 Demo: incident alert** button. It pushes a *simulated*
+incident into the agent and re-asks a route question. It runs through the same
+classification and planner logic as a live headline — nothing is special-cased —
+and is always labelled as simulated. `GET :8103/mcp/sources` lists what the
+agent reads.
+
+### 4. Bookings, payment and ticket history
 
 Booking is staged and human-in-the-loop: the agent holds a seat for 10 minutes,
 asks for approval, then stops at the payment step. **Only the last four card
@@ -295,7 +331,7 @@ Bookings and the purchase ledger are persisted in SQLite (`data/booking.db`),
 so they survive a container restart. Without `BOOKING_DB_PATH` the store is
 in-memory, which is what the test suite uses.
 
-### 4. Example Test Queries
+### 5. Example Test Queries
 
 * **Route Discovery (Singlish):**
 > *"Heta ude 6ta Kandy indan Galle yanna train ekak thiyeda?"*

@@ -29,6 +29,16 @@ class TransitSessionState(TypedDict):
     next_node: str
     """Target node decided by the supervisor for conditional edge routing."""
 
+    hitl_token: Optional[str]
+    """
+    Signed human-in-the-loop confirmation (R-09).
+
+    Issued by the Booking Agent when the gate is presented, returned by the
+    traveller on approval, and verified by the Booking Agent before a seat is
+    held. There is deliberately no `hitl_approved` boolean: a flag the client
+    sets is the client asserting its own approval.
+    """
+
     # ── NLP entities (populated by Planning Agent) ────────────────────────────
     extracted_entities: Optional[dict]
     """Structured entities: origin, destination, mode, date, time, etc."""
@@ -60,8 +70,8 @@ class TransitSessionState(TypedDict):
     """What the planner still needs (e.g. a mode choice) plus quick replies."""
 
     # ── Human-in-the-Loop gate ────────────────────────────────────────────────
-    hitl_approved: bool
-    """True only after the user explicitly confirms the booking action in the UI."""
+    hitl_token: Optional[str]
+    """Signed confirmation returned by the traveller. Clears the gate (R-09)."""
 
     # ── Conversation history ──────────────────────────────────────────────────
     messages: Annotated[List[str], operator.add]

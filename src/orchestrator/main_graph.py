@@ -47,10 +47,15 @@ def supervisor_node(state: TransitSessionState) -> dict:
         session_slots=state.get("extracted_entities"),
     )
 
+    # R-09: the gate is cleared by returning the signed token, not by setting a
+    # flag. Absent a token there is nothing to clear, so the traveller is sent
+    # back to the gate with a fresh one rather than straight to the booking.
+    approved = bool(state.get("hitl_token"))
+
     # Routing logic — order matters
-    if has_route and not state.get("hitl_approved"):
+    if has_route and not approved:
         next_node = "hitl_checkpoint"
-    elif has_route and state.get("hitl_approved"):
+    elif has_route and approved:
         next_node = "booking_agent"
     elif intent == "PLAN_ROUTE":
         next_node = "planning_agent"
@@ -74,6 +79,11 @@ async def planning_agent_node(state: TransitSessionState) -> dict:
     """
     entities: dict = state.get("extracted_entities") or {}
 
+    # Live conditions first: the advisory sentence belongs in the reply even when
+    # the traveller still has to answer a clarification question, and gathering it
+    # is independent of the search.
+    advisory = await _conditions_for(entities)
+
     # Prefer the clarification-first journey search: it reports what the
     # traveller still needs to say (a mode, a time) instead of guessing.
     try:
@@ -83,6 +93,7 @@ async def planning_agent_node(state: TransitSessionState) -> dict:
             travel_mode=entities.get("mode", "ANY"),
             time_preference=entities.get("departure_time"),
             raw_query=state["user_query"],
+            avoid_modes=(advisory or {}).get("advisory", {}).get("avoid_modes") or [],
         )
         jdata = journey.data or {}
     except Exception as exc:
@@ -95,15 +106,17 @@ async def planning_agent_node(state: TransitSessionState) -> dict:
     if missing:
         msg, options = _journey_clarification_message(missing, jdata)
         return {
-            "messages": [msg],
+            "messages": [_prepend_conditions(advisory, msg)],
             "route_options": [],
             "clarification": {"missing": missing, "options": options},
+            "conditions": advisory,
         }
 
     if services:
         return {
-            "messages": [_journey_services_message(services, jdata)],
+            "messages": [_prepend_conditions(advisory, _journey_services_message(services, jdata))],
             "route_options": _with_provenance(services),
+            "conditions": advisory,
         }
 
     msg = (
@@ -182,9 +195,21 @@ def _journey_services_message(services: list[dict], jdata: dict) -> str:
 
     mode_word = "train" if jdata.get("mode") == "TRAIN" else "bus"
     when = f" around **{jdata['at_time']}**" if jdata.get("at_time") else ""
+
+    # The planner's own note about reordering, when conditions demoted a mode.
+    conditions_note = jdata.get("conditions_note")
+    note_block = f"\n\n_{conditions_note}_" if conditions_note else ""
+
+    # Anything demoted is marked inline, so the traveller can see *why* an option
+    # is listed lower rather than assuming it was filtered out.
+    for i, svc in enumerate(services):
+        if svc.get("conditions_flag"):
+            lines[i] += f"\n   ⚠️ {svc['conditions_flag']}"
+
     return (
         f"Here are the {mode_word} options from **{jdata.get('origin')}** to "
-        f"**{jdata.get('destination')}**{when}:\n\n"
+        f"**{jdata.get('destination')}**{when}:"
+        f"{note_block}\n\n"
         + "\n".join(lines)
         + "\n\nTell me which one and I'll check seats and hold it for you."
     )
@@ -287,22 +312,65 @@ async def _keyword_route_search(state: TransitSessionState, entities: dict) -> d
 
 # ── Node: HITL Checkpoint ─────────────────────────────────────────────────────
 
-def hitl_checkpoint_node(state: TransitSessionState) -> dict:
+async def hitl_checkpoint_node(state: TransitSessionState) -> dict:
     """
-    Pauses the booking flow and asks the user to explicitly confirm.
+    Pauses the booking flow and asks the traveller to explicitly confirm.
 
-    The UI must re-submit the query with `hitl_approved=True` to proceed.
+    R-09: this node also asks the Booking Agent to mint a signed confirmation
+    token bound to this session, route and fare, and returns it to the UI. The
+    traveller's approval is that token coming back — so what is being approved is
+    pinned down server-side, instead of the client asserting `hitl_approved: true`
+    and the server taking it on trust.
+
+    If the token cannot be minted the booking is refused rather than downgraded
+    to the old boolean: a gate that silently disappears under failure is not a
+    gate.
     """
     route_id = state.get("selected_route_id", "Unknown")
+    entities: dict = state.get("extracted_entities") or {}
+
+    fare = await _bridge.fetch_fare(route_id)
+    if fare is None:
+        logger.warning(
+            f"[{state['session_id']}] No published fare for {route_id} — cannot gate"
+        )
+        return {
+            "messages": [
+                f"⚠️ I can't take this booking: there is no published fare for "
+                f"**{route_id}`**, so I won't ask you to approve a price I don't "
+                f"have. Please pick another service."
+            ],
+            "route_options": [],
+        }
+
+    try:
+        token = await _bridge.request_hitl_token(
+            session_id=state["session_id"],
+            route_id=route_id,
+            fare_lkr=fare,
+            seat_count=int(entities.get("passengers", 1)),
+        )
+    except Exception as exc:
+        logger.error(f"[{state['session_id']}] Could not issue a HITL token: {exc}")
+        return {
+            "messages": [
+                "⚠️ I can't open the confirmation step right now, so I'm not going "
+                "to book anything. Please try again in a moment."
+            ],
+            "booking_status": "ERROR",
+            "error": str(exc),
+        }
+
     msg = (
         f"⚠️ **Human-in-the-Loop Confirmation Required**\n\n"
-        f"You are about to hold a seat on route **`{route_id}`**.\n\n"
+        f"You are about to hold a seat on route **`{route_id}`** at "
+        f"**LKR {fare:,.0f}**.\n\n"
         f"Please confirm by:\n"
         f"- Clicking **✅ Confirm & Hold Seat** in the sidebar, or\n"
         f"- Sending: *\"YES confirm {route_id}\"*"
     )
     logger.info(f"[{state['session_id']}] HITL checkpoint reached for route {route_id}")
-    return {"messages": [msg]}
+    return {"messages": [msg], "hitl_token": token}
 
 
 # ── Node: Booking Agent ───────────────────────────────────────────────────────
@@ -311,7 +379,7 @@ async def booking_agent_node(state: TransitSessionState) -> dict:
     """
     Delegates seat-hold execution to Member 3's Booking Agent via HTTP MCP call.
 
-    Only reached after HITL gate is cleared (hitl_approved=True).
+    Only reached once the traveller has returned a signed HITL token (R-09).
     """
     route_id = state.get("selected_route_id", "")
     entities: dict = state.get("extracted_entities") or {}
@@ -332,13 +400,18 @@ async def booking_agent_node(state: TransitSessionState) -> dict:
             "route_options": [],
         }
 
+    provider = _provider_for(state, route_id)
     payload = BookingRequestPayload(
         route_id=route_id,
-        provider="SLR",  # TODO: derive from selected route_options data
+        provider=provider,
         passenger_token=passenger_token,
         seat_count=int(entities.get("passengers", 1)),
         fare_lkr=fare,
-        user_confirmed=True,  # HITL already cleared by supervisor routing
+        session_id=state["session_id"],
+        # R-09: the traveller's approval, as a capability the client returned.
+        # An empty token means the gate was never cleared, and the Booking Agent
+        # refuses — which is the correct outcome, not a fallback to trusting a flag.
+        hitl_token=state.get("hitl_token") or "",
     )
 
     try:
@@ -413,6 +486,64 @@ def clarify_node(state: TransitSessionState) -> dict:  # noqa: ARG001
 
 
 # ── Edge router ───────────────────────────────────────────────────────────────
+
+async def _conditions_for(entities: dict) -> dict | None:
+    """
+    Asks the Conditions Agent about this journey.
+
+    Best-effort by design: if the agent is down the traveller still gets a route,
+    just without the live advisory. Reporting "conditions unknown" is handled by
+    the agent itself, so an outage never turns into a false "everything is fine".
+    """
+    try:
+        response = await _bridge.fetch_conditions(
+            origin=entities.get("origin") or "",
+            destination=entities.get("destination") or "",
+            travel_mode=entities.get("mode") or "ANY",
+        )
+        data = response.data or {}
+        return {
+            "advisory": data.get("advisory") or {},
+            "sentence": data.get("sentence"),
+            "news_count": data.get("news_count", 0),
+        }
+    except Exception as exc:
+        logger.warning(f"Conditions agent unavailable: {exc}")
+        return None
+
+
+def _prepend_conditions(conditions: dict | None, message: str) -> str:
+    """
+    Puts the live advisory above the route list.
+
+    Lead with it: if there is a strike on the line, that is what the traveller
+    needs to read first, before a timetable they may not be able to use.
+    """
+    if not conditions:
+        return message
+    sentence = conditions.get("sentence")
+    return f"{sentence}\n\n{message}" if sentence else message
+
+
+def _provider_for(state: TransitSessionState, route_id: str) -> str:
+    """
+    Which operator runs the selected service.
+
+    Read from the route the traveller actually picked, rather than assumed to be
+    SLR: an SLTB ticket booked as an SLR one gets the wrong reference prefix and
+    the wrong contact details on the ticket.
+    """
+    for route in state.get("route_options") or []:
+        if route.get("route_id") != route_id:
+            continue
+        code = str(route.get("provider") or "").upper()
+        if code in ("SLR", "SLTB", "PRIVATE_HIGHWAY", "RM"):
+            return "SLTB" if code == "RM" else code
+        # Fall back to the route id's operator prefix.
+        prefix = route_id.split("-", 1)[0].upper()
+        return "SLTB" if prefix in ("RM", "SLTB") else "SLR"
+    return "SLR"
+
 
 def _with_provenance(routes: list[dict]) -> list[dict]:
     """

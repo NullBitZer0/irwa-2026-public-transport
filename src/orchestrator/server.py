@@ -54,7 +54,10 @@ class ChatRequest(BaseModel):
 
     query: str
     session_id: Optional[str] = None
-    hitl_approved: bool = False
+    # R-09: the signed confirmation the traveller's approval produced, returned
+    # verbatim from the previous turn. There is no boolean equivalent on purpose:
+    # `hitl_approved: true` would be the client approving itself.
+    hitl_token: Optional[str] = None
     selected_route_id: Optional[str] = None
     passenger_token: Optional[str] = None
 
@@ -75,6 +78,9 @@ class ChatResponse(BaseModel):
     # Populated when the planner needs the traveller to choose a mode or give a
     # time, so the UI can offer one-tap quick replies.
     clarification: Optional[dict] = None
+    # R-09: the confirmation token for the booking now on screen. The UI holds it
+    # while it waits for the traveller and returns it verbatim on approval.
+    hitl_token: Optional[str] = None
 
 
 class PaymentRequest(BaseModel):
@@ -162,7 +168,7 @@ async def chat(request: ChatRequest) -> ChatResponse:
         "amount_lkr": None,
         "seat_count": None,
         "clarification": None,
-        "hitl_approved": request.hitl_approved,
+        "hitl_token": request.hitl_token,
         "messages": [],
         "next_node": "supervisor",
         "error": None,
@@ -197,6 +203,7 @@ async def chat(request: ChatRequest) -> ChatResponse:
             route_options=result.get("route_options", []),
             booking_reference=result.get("booking_reference"),
             booking_status=result.get("booking_status"),
+            hitl_token=result.get("hitl_token"),
             transaction_id=result.get("transaction_id"),
             amount_lkr=result.get("amount_lkr"),
             seat_count=result.get("seat_count"),
@@ -258,6 +265,40 @@ async def purchases() -> dict:
     return {
         "status": "OK",
         "purchases": ((response.data or {}).get("purchases") or []),
+    }
+
+
+class DemoIncidentRequest(BaseModel):
+    """
+    Demo control for the live-conditions advisory.
+
+    Switches on an incident we invented, so the advisory path can be shown in a
+    viva without waiting for a real accident. It is fed through the same
+    pipeline as a live headline and is always labelled as simulated.
+    """
+
+    incident_id: Optional[str] = None
+    active: bool = True
+
+
+@app.post("/demo_incident")
+async def demo_incident(request: DemoIncidentRequest) -> dict:
+    """Switches a simulated incident on or off. Never affects real data."""
+    try:
+        response = await _bridge.set_simulated_incident(
+            incident_id=request.incident_id, active=request.active
+        )
+    except Exception as exc:
+        logger.error(f"Could not toggle the demo incident: {exc}")
+        return {"status": "UNAVAILABLE", "active": [], "error": str(exc)}
+
+    data = response.data or {}
+    return {
+        "status": "OK",
+        "active": data.get("active") or [],
+        "label": data.get("label"),
+        "simulated": True,
+        "message": response.message,
     }
 
 

@@ -282,6 +282,7 @@ def test_settled_reference_matches_the_operator_that_was_held() -> None:
     from fastapi.testclient import TestClient
 
     from src.booking import server as booking_server
+    from src.booking.hitl_token import issue_hitl_token
 
     booking_server._state_machine = BookingStateMachine(store=BookingStore(":memory:"))
     client = TestClient(booking_server.app)
@@ -294,7 +295,7 @@ def test_settled_reference_matches_the_operator_that_was_held() -> None:
             "passenger_token": "TOKEN_nic_abc",
             "seat_count": 1,
             "fare_lkr": 950.0,
-            "user_confirmed": True,
+            "hitl_token": issue_hitl_token("anonymous", "SLTB-2-COLO-MATA-0930", 950.0, 1, "SLTB"),
         },
     ).json()["data"]["transaction"]
     assert hold["provider"] == "SLTB"
@@ -306,3 +307,62 @@ def test_settled_reference_matches_the_operator_that_was_held() -> None:
 
     assert settled["booking_reference"].startswith("SLTB-")
     assert settled["ticket"]["provider"] == "SLTB"
+
+
+# ── Schema migrations ────────────────────────────────────────────────────────
+
+def test_a_pre_existing_database_is_migrated_not_crashed(tmp_path) -> None:
+    """
+    A column added later must reach databases that already exist.
+
+    `CREATE TABLE IF NOT EXISTS` does nothing to an existing table, so without a
+    migration the service crashed at boot on any database created before the
+    column was introduced — which is exactly what happened in the running stack.
+    """
+    import sqlite3
+
+    db = str(tmp_path / "legacy.db")
+
+    # A database from before session_id existed.
+    conn = sqlite3.connect(db)
+    conn.executescript(
+        """
+        CREATE TABLE bookings (
+            transaction_id   TEXT PRIMARY KEY,
+            route_id         TEXT NOT NULL,
+            provider         TEXT NOT NULL,
+            passenger_token  TEXT NOT NULL,
+            seat_count       INTEGER NOT NULL,
+            fare_lkr         REAL NOT NULL,
+            state            TEXT NOT NULL,
+            hold_expires_at  TEXT,
+            booking_reference TEXT,
+            created_at       TEXT NOT NULL
+        );
+        INSERT INTO bookings VALUES
+            ('TXN-OLD','TRAIN-1007','SLR','TOKEN_nic_abc',1,900.0,'CONFIRMED',NULL,
+             'SLR-2026-OLD','2026-01-01T00:00:00+00:00');
+        """
+    )
+    conn.commit()
+    conn.close()
+
+    sm = BookingStateMachine(store=BookingStore(db))
+
+    txn = sm.get("TXN-OLD")
+    assert txn is not None, "the pre-existing booking was lost"
+    assert txn.state == BookingState.CONFIRMED
+    # The new column is present and defaulted.
+    assert txn.session_id == "anonymous"
+
+
+def test_migration_preserves_existing_purchases(tmp_path) -> None:
+    """The upgrade must not disturb the ledger either."""
+    db = str(tmp_path / "legacy.db")
+    BookingStore(db).insert_purchase({"route_id": "TRAIN-1007", "card_last4": "4242"})
+
+    # Re-opening runs the migration path again; it must be idempotent.
+    store = BookingStore(db)
+    BookingStore(db)
+
+    assert len(store.list_purchases()) == 1
