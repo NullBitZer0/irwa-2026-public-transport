@@ -151,6 +151,10 @@ services:
     environment:
       # Conditions are advisory only, and a feed outage must not slow planning.
       - CONDITIONS_TIMEOUT_SECONDS=6
+      # Passed through rather than baked into the image: a weather API key in a
+      # layer is a leaked key, and this file is committed. Empty is fine — the
+      # agent falls back to Open-Meteo when it is unset.
+      - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY:-}
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://localhost:8003/health"]
       interval: 15s

@@ -505,6 +505,38 @@ def faq_node(state: TransitSessionState) -> dict:  # noqa: ARG001
 
 # ── Node: Live conditions ─────────────────────────────────────────────────────
 
+def _missing_route_ask(origin: str, destination: str) -> str | None:
+    """
+    The question to ask so a weather answer can be given about a real journey.
+
+    Weather for "Colombo" is not weather for a route. Half a route is not a route
+    either: answering from a destination alone produced "Weather looks fine for
+    now" with no journey in sight, and then described the result as being about
+    *your route*.
+
+    Returns None when the route is complete. Never clears what is already known —
+    a traveller who has said "to Colombo" should not have to repeat it.
+    """
+    if origin and destination:
+        return None
+    if not origin and not destination:
+        return (
+            "I can check the weather and any reported incidents, but for a "
+            "specific journey — weather for a whole country is not useful. "
+            "Which route should I look at? Tell me where you're starting from "
+            "and where you're going."
+        )
+    if not origin:
+        return (
+            f"You're heading to **{destination}** — where are you starting from? "
+            "I'll check the weather along that route."
+        )
+    return (
+        f"You're starting from **{origin}** — where are you going? I'll check "
+        "the weather along that route."
+    )
+
+
 async def conditions_node(state: TransitSessionState) -> dict:
     """
     Answers a weather or incident question about the journey in progress.
@@ -516,19 +548,18 @@ async def conditions_node(state: TransitSessionState) -> dict:
     Deliberately does NOT reset those slots. "How will the weather be?" is a
     question about the trip, not a new trip — clearing the origin here would make
     the traveller repeat themselves mid-flow.
+
+    Requires a *complete* route. Weather is only ever reported for a journey the
+    traveller has actually described, because a reading for one place answers a
+    question nobody asked.
     """
     entities: dict = state.get("extracted_entities") or {}
     origin = entities.get("origin") or ""
     destination = entities.get("destination") or ""
 
-    if not origin and not destination:
-        return {
-            "messages": [
-                "I can check the weather and any reported incidents — which "
-                "journey should I look at? Tell me where you're going."
-            ],
-            "route_options": [],
-        }
+    ask = _missing_route_ask(origin, destination)
+    if ask is not None:
+        return {"messages": [ask], "route_options": []}
 
     conditions = await _conditions_for(entities)
     if conditions is None:
@@ -544,17 +575,72 @@ async def conditions_node(state: TransitSessionState) -> dict:
     advisory = conditions.get("advisory") or {}
     weather = advisory.get("weather") or {}
     news = advisory.get("news") or {}
+    forecast = conditions.get("forecast") or {}
 
-    where = " → ".join(part for part in (origin, destination) if part)
-    parts: list[str] = []
-    if conditions.get("sentence"):
-        parts.append(conditions["sentence"])
+    # The Conditions Agent owns every weather judgement here. This only relays
+    # what it found and adds the facts its headline sentence leaves out — which
+    # is why nothing below re-derives a severity or a threshold.
+    sentence = conditions.get("sentence") or ""
+    parts: list[str] = [sentence] if sentence else []
 
-    # A little detail beyond the headline sentence, so the answer is worth the
-    # round trip.
-    temp = (weather.get("origin") or {}).get("temperature_c")
-    if temp is not None:
-        parts.append(f"Currently around {temp}°C at your departure point.")
+    origin_weather = weather.get("origin") or {}
+    destination_weather = weather.get("destination") or {}
+
+    # Don't repeat what the agent already said. It quotes a temperature whenever
+    # it has one, and an answer that states 22.8°C twice reads like two readings.
+    if "°C" not in sentence:
+        now = []
+        if origin_weather.get("temperature_c") is not None:
+            now.append(f"{origin_weather['temperature_c']}°C at {origin}")
+        if destination and destination_weather.get("temperature_c") is not None:
+            now.append(f"{destination_weather['temperature_c']}°C at {destination}")
+        if now:
+            parts.append("Now: " + ", ".join(now) + ".")
+
+    # The other end of the route, when the agent's sentence did not name it. A
+    # reading for the departure point alone is not "the weather on your route".
+    if (
+        destination
+        and "°C" in sentence
+        and destination.lower() not in sentence.lower()
+        and destination_weather.get("temperature_c") is not None
+    ):
+        parts.append(
+            f"{destination} is {destination_weather['temperature_c']}°C right now."
+        )
+
+    if forecast.get("at_local"):
+        description = forecast.get("description") or ""
+        reasons = forecast.get("reasons") or []
+        temperature = (
+            f"{forecast['temperature_c']}°C" if forecast.get("temperature_c") is not None else ""
+        )
+
+        # When the provider's category label and our own measurement disagree —
+        # "light rain" alongside 20mm in three hours — the measurement wins and
+        # the label is dropped. Printing both tells the traveller nothing about
+        # whether to bring an umbrella.
+        measured_rain = any("rain" in reason for reason in reasons)
+        if measured_rain and "rain" in description.lower():
+            description = ""
+
+        summary = ", ".join(part for part in [temperature, description] if part)
+        if forecast.get("severity") in {"severe", "advisory"} and reasons:
+            summary = f"{summary} — {', '.join(reasons)}".strip(", ")
+        parts.append(
+            f"Forecast for {forecast.get('requested_hour')}, when you travel: {summary}."
+        )
+
+    # Which service answered, and whether the configured one was skipped. A silent
+    # fallback is the sort of thing nobody notices until it starts being wrong.
+    source = origin_weather.get("source")
+    if source:
+        fallback_reason = origin_weather.get("fallback_reason")
+        parts.append(
+            f"_(weather from {source}"
+            + (f", used because {fallback_reason}" if fallback_reason else "")
+            + ")_"
+        )
 
     if news.get("available"):
         if news.get("reasons"):
@@ -569,9 +655,9 @@ async def conditions_node(state: TransitSessionState) -> dict:
     else:
         parts.append("I couldn't reach the news feed, so incidents are unchecked.")
 
-    parts.append(f"_(about {where})_" if where else "")
+    parts.append(f"_(along {origin} → {destination})_")
     return {
-        "messages": [" ".join(p for p in parts if p)],
+        "messages": ["\n\n".join(part for part in parts if part)],
         "route_options": [],
         "conditions": conditions,
     }
@@ -606,11 +692,13 @@ async def _conditions_for(entities: dict) -> dict | None:
             origin=entities.get("origin") or "",
             destination=entities.get("destination") or "",
             travel_mode=entities.get("mode") or "ANY",
+            departure_time=entities.get("departure_time"),
         )
         data = response.data or {}
         return {
             "advisory": data.get("advisory") or {},
             "sentence": data.get("sentence"),
+            "forecast": data.get("forecast") or {},
             "news_count": data.get("news_count", 0),
         }
     except Exception as exc:

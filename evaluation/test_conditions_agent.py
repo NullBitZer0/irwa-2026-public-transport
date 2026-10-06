@@ -23,6 +23,7 @@ Run:
 
 from __future__ import annotations
 
+import json
 import os
 import sys
 
@@ -39,6 +40,7 @@ from src.conditions.analysis import (  # noqa: E402
     disarmed_sentence,
     relevant_to_journey,
 )
+from src.orchestrator.main_graph import _missing_route_ask  # noqa: E402
 
 CLEAR = {"status": "ok", "severity": "clear", "temperature_c": 30, "reasons": []}
 
@@ -328,6 +330,152 @@ def test_a_simulated_incident_flows_through_the_real_pipeline() -> None:
     assert "Katunayake" in sentence
     # Always labelled, so a demo can never read as a live report.
     assert "simulated for demonstration" in sentence
+
+
+# ── Weather is only ever about a route ────────────────────────────────────────
+
+
+def test_weather_is_refused_until_the_route_is_complete() -> None:
+    """
+    Weather for one place is not weather for a journey.
+
+    A half-filled route used to produce "Weather looks fine for now" and then
+    describe the result as being about "your route" — a confident answer to a
+    question the traveller never asked, for a trip that did not exist.
+    """
+    assert _missing_route_ask("", "") is not None
+    assert _missing_route_ask("", "Colombo") is not None
+    assert _missing_route_ask("Kandy", "") is not None
+    assert _missing_route_ask("Kandy", "Colombo") is None
+
+
+def test_the_ask_names_what_is_still_missing_and_keeps_what_is_known() -> None:
+    """
+    A traveller who has already said "to Colombo" must not be asked for it again.
+    """
+    from_destination = _missing_route_ask("", "Colombo")
+    assert "Colombo" in from_destination
+    assert "starting from" in from_destination.lower()
+
+    from_origin = _missing_route_ask("Kandy", "")
+    assert "Kandy" in from_origin
+    assert "where are you going" in from_origin.lower()
+
+
+def test_the_ask_explains_why_it_needs_a_route() -> None:
+    """
+    Refusing without a reason reads as a broken feature rather than a good one.
+    """
+    ask = _missing_route_ask("", "") or ""
+    assert "route" in ask.lower()
+
+
+# ── OpenWeather as the primary source ────────────────────────────────────────
+
+
+def test_openweather_conditions_map_onto_our_severity_vocabulary() -> None:
+    """
+    Codes are mapped by hand, so the mapping is the thing worth pinning.
+
+    A provider's own "severity" field is free text in one API and a number in
+    the other; the verdicts the planner acts on must not depend on that.
+    """
+    from src.conditions.gather import _classify_openweather
+
+    assert _classify_openweather(200, 0.0, 0.0)[0] == "severe"          # thunderstorm
+    assert _classify_openweather(501, 0.0, 0.0)[0] == "severe"          # heavy rain
+    assert _classify_openweather(600, 0.0, 0.0)[0] == "advisory"        # snow
+    assert _classify_openweather(804, 0.0, 0.0)[0] == "clear"           # overcast clouds
+    assert _classify_openweather(804, 0.0, 60.0)[0] == "advisory"       # wind alone
+    assert _classify_openweather(804, 20.0, 0.0)[0] == "advisory"       # rain by volume
+    # Severity only ever escalates: a strong wind during a thunderstorm stays
+    # severe rather than being averaged down to a warning.
+    assert _classify_openweather(500, 0.0, 60.0)[0] == "severe"
+
+
+def test_openmeteo_remains_the_fallback_when_no_key_is_configured(monkeypatch) -> None:
+    """
+    A missing key must degrade to a working source, not to no weather.
+
+    Without this, a forgotten OPENWEATHER_API_KEY would turn the whole advisory
+    off in CI and on any deployment that did not set it.
+    """
+    monkeypatch.delenv("OPENWEATHER_API_KEY", raising=False)
+    monkeypatch.setattr(gather, "_fetch_open_meteo", lambda place, coords: {
+        "status": "ok", "place": place, "source": "Open-Meteo",
+        "temperature_c": 27.0, "severity": "clear", "reasons": [],
+    })
+
+    result = gather.fetch_weather("Kandy")
+
+    assert result["status"] == "ok"
+    assert result["source"] == "Open-Meteo"
+    assert "no OpenWeather API key" in result["fallback_reason"]
+
+
+def test_a_working_key_is_preferred_over_the_fallback(monkeypatch) -> None:
+    monkeypatch.setenv("OPENWEATHER_API_KEY", "test-key-not-real")
+    monkeypatch.setattr(gather, "_fetch_open_meteo", lambda place, coords: {
+        "status": "ok", "place": place, "source": "Open-Meteo", "severity": "clear", "reasons": [],
+    })
+    monkeypatch.setattr(gather, "_fetch_openweather", lambda coords, place: {
+        "status": "ok", "place": place, "source": "OpenWeather",
+        "temperature_c": 24.5, "severity": "clear", "reasons": [],
+    })
+
+    result = gather.fetch_weather("Kandy")
+
+    assert result["source"] == "OpenWeather"
+    assert "fallback_reason" not in result
+
+
+def test_an_unusable_key_falls_back_and_says_why(monkeypatch) -> None:
+    monkeypatch.setenv("OPENWEATHER_API_KEY", "wrong-key")
+    monkeypatch.setattr(gather, "_fetch_openweather", lambda coords, place: None)
+    monkeypatch.setattr(gather, "_fetch_open_meteo", lambda place, coords: {
+        "status": "ok", "place": place, "source": "Open-Meteo", "severity": "clear", "reasons": [],
+    })
+
+    result = gather.fetch_weather("Kandy")
+
+    assert result["status"] == "ok"
+    assert result["fallback_reason"] == "OpenWeather did not answer"
+
+
+def test_the_api_key_is_never_echoed_back_in_a_result(monkeypatch) -> None:
+    """
+    A key in an API response is a key in a browser's network log.
+    """
+    secret = "0ec1af-not-a-real-key-1234567890ab"
+    monkeypatch.setenv("OPENWEATHER_API_KEY", secret)
+    monkeypatch.setattr(gather, "_fetch_openweather", lambda coords, place: {
+        "status": "ok", "place": place, "source": "OpenWeather", "severity": "clear",
+        "reasons": [], "temperature_c": 25.0,
+    })
+
+    assert secret not in json.dumps(gather.fetch_weather("Kandy"))
+
+
+@pytest.mark.parametrize(
+    "text,hour",
+    [("18:30", 18), ("6pm", 18), ("6 pm", 18), ("06:00", 6), ("12am", 0), ("12pm", 12), ("08", 8)],
+)
+def test_departure_times_are_parsed_into_hours(text: str, hour: int) -> None:
+    assert gather._hour_from(text) == hour
+
+
+def test_unparseable_departure_times_return_nothing(monkeypatch) -> None:
+    """
+    No hour means no forecast claim, rather than a forecast for the wrong time.
+    """
+    monkeypatch.setenv("OPENWEATHER_API_KEY", "test-key")
+    for value in ("tomorrow morning", "", None, "banana", "99:99"):
+        assert gather.fetch_forecast_window("Kandy", value) is None
+
+
+def test_no_forecast_is_invented_without_a_departure_time(monkeypatch) -> None:
+    monkeypatch.setenv("OPENWEATHER_API_KEY", "test-key")
+    assert gather.fetch_forecast_window("Kandy", None) is None
 
 
 # ── Arming the check ─────────────────────────────────────────────────────────

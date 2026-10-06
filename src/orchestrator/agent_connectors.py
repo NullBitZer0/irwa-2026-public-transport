@@ -223,6 +223,7 @@ class AgentDispatchBridge:
         origin: str = "",
         destination: str = "",
         travel_mode: str = "ANY",
+        departure_time: str | None = None,
     ) -> AgentResponse:
         """
         Current weather and live news for a journey.
@@ -240,6 +241,7 @@ class AgentDispatchBridge:
                     "origin": origin or "",
                     "destination": destination or "",
                     "travel_mode": travel_mode,
+                    "departure_time": departure_time,
                 },
             )
             res.raise_for_status()

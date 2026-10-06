@@ -340,6 +340,17 @@ def _weather_digest(weather: dict[str, Any]) -> dict[str, Any]:
         "status": "ok",
         "temperature_c": weather.get("temperature_c"),
         "severity": weather.get("severity", "clear"),
+        # Which service actually answered, and why the other one did not. Carried
+        # because a traveller deciding whether to carry an umbrella should be able
+        # to see whether this came from the configured provider or a fallback, and
+        # because a silent fallback is the kind of thing nobody notices until it
+        # starts producing the wrong answer.
+        "source": weather.get("source"),
+        "fallback_reason": weather.get("fallback_reason"),
+        "reasons": list(weather.get("reasons") or []),
+        "description": weather.get("description"),
+        "wind_kmh": weather.get("wind_kmh"),
+        "rain_mm": weather.get("rain_mm"),
     }
 
 

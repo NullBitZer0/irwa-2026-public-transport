@@ -33,6 +33,7 @@ from src.conditions.analysis import (
 from src.conditions.gather import (
     active_simulations,
     arm_incident_check,
+    fetch_forecast_window,
     fetch_news_headlines,
     fetch_weather,
     incident_check_armed,
@@ -53,6 +54,9 @@ class ConditionsRequest(BaseModel):
     # The mode the traveller asked for, so the advisory can say whether *this*
     # mode is the one affected.
     travel_mode: str = "ANY"
+    # When the traveller intends to leave, if they said. Used to report the
+    # weather at that time rather than only right now.
+    departure_time: str | None = None
 
 
 @app.post("/mcp/conditions")
@@ -78,6 +82,11 @@ async def conditions(req: ConditionsRequest) -> dict:
 
     origin_weather = fetch_weather(origin or None)
     destination_weather = fetch_weather(destination or None)
+
+    # The forecast at departure time, for the departure point. The agent owns
+    # every weather decision: the caller is told what it found, including the
+    # fact that there is no usable forecast, and decides how to phrase it.
+    forecast = fetch_forecast_window(origin or None, req.departure_time)
 
     headlines: list[dict[str, str]] = []
     news_available = False
@@ -130,6 +139,7 @@ async def conditions(req: ConditionsRequest) -> dict:
         "status": "SUCCESS",
         "data": {
             "advisory": advisory,
+            "forecast": forecast,
             "sentence": sentence,
             "news_count": len(headlines),
             "incident_check_armed": incident_check_armed(),

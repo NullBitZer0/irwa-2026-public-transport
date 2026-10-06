@@ -104,6 +104,30 @@ The system uses a **Supervisor-Worker** design pattern adhering to the **Model C
 
 ---
 
+## 🌦️ Weather sources
+
+The Conditions Agent is the only component that decides anything about the
+weather; the orchestrator relays its verdict and adds no judgement of its own.
+
+| Source | Role | Key needed |
+|---|---|---|
+| **OpenWeather** | Primary. Current conditions plus the 3-hourly forecast for your departure time. | `OPENWEATHER_API_KEY` |
+| **Open-Meteo** | Fallback, used automatically when no key is set, the key is rejected, or OpenWeather is unreachable. | None |
+
+Set the key in `.env` (git-ignored, never committed):
+
+```
+OPENWEATHER_API_KEY=your_key_here
+```
+
+Both providers' condition codes are mapped onto this project's own severity
+vocabulary rather than trusting their severity fields, so the planner acts the
+same way whichever one answered. **The response names the source**, and says when
+a fallback was used, so a degraded reading is visible rather than silent.
+
+One Call 3.0 is deliberately unused: it is a paid plan and answers `401` on the
+free tier, so this integration depends only on the free 2.5 endpoints.
+
 ## 📂 Repository Directory Structure
 
 
@@ -510,6 +534,11 @@ Notes on that flow:
 - **Weather and incident questions are answerable mid-conversation.** They read
   the journey from the session's slots and do not reset them, because "how will
   the weather be?" is a question *about* the trip, not a new trip.
+- **Weather is only ever reported for a complete route.** With half a route the
+  agent asks for the missing end and keeps what it already knows — it will not
+  answer "how is the weather?" from a destination alone, because weather for one
+  place is not weather for a journey and "looks fine on your route" implies a
+  route that does not exist.
 - **Incident checking is off until you switch it on.** The *Simulate incident*
   toggle in the sidebar arms it; nothing is looked for, and no disruption is
   mentioned, until then. Un-checking removes the simulated incident and stops the
