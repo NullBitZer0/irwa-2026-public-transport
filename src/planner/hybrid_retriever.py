@@ -35,9 +35,12 @@ the ~2GB dependency is never pulled in by the default path.
 from __future__ import annotations
 
 import json
+import logging
 import os
 import re
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 # ── Data paths ────────────────────────────────────────────────────────────────
 _BASE = os.path.dirname(os.path.abspath(__file__))
@@ -132,8 +135,9 @@ class HybridTransitRetriever:
 
     def __init__(self, backend: str | None = None) -> None:
         self.schedules = _load_all_schedules()
-        self._search = _select_backend(backend or RETRIEVER_BACKEND, self)
-        self._fallback_reason: str | None = self._search.fallback_reason
+        self._search, self._fallback_reason = _select_backend(
+            backend or RETRIEVER_BACKEND
+        )
 
     # ── Search backends ──────────────────────────────────────────────────────
     #
@@ -321,6 +325,7 @@ class OpenSearchBackend(SearchBackend):
     def __init__(self) -> None:
         self._client = None
         self._embedder = None
+        self._warned_dense = False
 
     # -- setup -----------------------------------------------------------------
 
@@ -389,9 +394,28 @@ class OpenSearchBackend(SearchBackend):
         return _restrict(response, pool)[:top_k]
 
     def dense(self, query: str, top_k: int, pool: list[dict]) -> list[dict]:
-        """k-NN vector search over the indexed embeddings."""
+        """
+        k-NN vector search over the indexed embeddings.
+
+        Degrades to sparse-only rather than failing. `sentence-transformers` is
+        deliberately excluded from the container image (it drags in PyTorch, ~2GB)
+        so the planner cannot assume it is there. Losing semantic recall is a
+        real degradation, but losing retrieval entirely because an optional
+        dependency is missing is worse, and RRF is perfectly happy fusing one
+        ranked list.
+        """
+        try:
+            vector = self._embed(query)
+        except RuntimeError as exc:
+            if not self._warned_dense:
+                logger.warning(
+                    "Dense retrieval unavailable (%s) — serving BM25 results only",
+                    exc,
+                )
+                self._warned_dense = True
+            return []
+
         client = self._connect()
-        vector = self._embed(query)
         response = client.search(
             index=OPENSEARCH_INDEX,
             body={
@@ -428,28 +452,28 @@ def _tokens(text: str) -> list[str]:
     return [t for t in re.split(r"[^\w]+", text.lower()) if t]
 
 
-def _select_backend(name: str, retriever: HybridTransitRetriever) -> SearchBackend:
+def _select_backend(name: str) -> tuple[SearchBackend, str | None]:
     """
-    Returns the requested backend, or the fixture one with a reason.
+    Returns the backend to use, and why not the requested one.
 
     Falling back rather than raising is deliberate: retrieval is one input to an
     answer, and a traveller asking about a route should still get timetables when
-    a search index is down. `retriever.fallback_reason` records why, so the
-    degradation is visible instead of silent.
+    a search index is down. The reason is returned rather than logged alone so
+    the degradation is visible on the retriever, not only in a log line nobody
+    reads.
     """
     if name in ("fixtures", "fixture", "json", "local"):
-        return FixtureSearchBackend()
+        return FixtureSearchBackend(), None
 
     if name not in ("opensearch", "os"):
-        retriever._fallback_reason = (
-            f"unknown RETRIEVER_BACKEND '{name}' — using fixtures"
+        return (
+            FixtureSearchBackend(),
+            f"unknown RETRIEVER_BACKEND '{name}' — using fixtures",
         )
-        return FixtureSearchBackend()
 
     backend = OpenSearchBackend()
     ok, reason = backend.available()
     if ok:
-        return backend
+        return backend, None
 
-    retriever._fallback_reason = f"opensearch unavailable ({reason}) — using fixtures"
-    return FixtureSearchBackend()
+    return FixtureSearchBackend(), f"opensearch unavailable ({reason}) — using fixtures"

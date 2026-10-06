@@ -281,7 +281,48 @@ React frontend is the only interface.
 
 </details>
 
-### 3. Live weather and news
+### 3. Retrieval: two interchangeable backends
+
+`src/planner/hybrid_retriever.py` has one retrieval interface and two
+implementations, selected with `RETRIEVER_BACKEND`:
+
+| Backend | What it does | When to use it |
+|---|---|---|
+| `fixtures` (default) | Keyword scoring over the JSON timetables | Always available, deterministic, no infrastructure |
+| `opensearch` | Real BM25 + k-NN vector search, fused with RRF | Demonstrating the IR component |
+
+Everything *after* the search — the mode filter, the direction check that stops
+"Colombo → Jaffna" being answered with a Jaffna → Colombo service, and the RRF
+merge — is shared, so switching backend changes how candidates are *ranked*, never
+what counts as a valid answer. Both are tested against the same invariants
+(`evaluation/test_retrieval_backends.py`).
+
+**Enabling OpenSearch:**
+
+```bash
+echo "RETRIEVER_BACKEND=opensearch" >> .env
+RETRIEVER_BACKEND=opensearch python -m src.planner.opensearch_ingest   # ~811 routes
+docker compose up -d --build planner
+```
+
+The ingest creates the index with both a `text` and a `knn_vector` field.
+`--no-embeddings` indexes for BM25 only.
+
+Two deliberate design choices:
+
+- **It falls back.** If the cluster or the index is unavailable, retrieval
+  degrades to the fixtures and records why on `retriever.fallback_reason`. Route
+  planning cannot go offline because a search container is down.
+- **Dense retrieval is optional.** `sentence-transformers` is excluded from the
+  container image (PyTorch, ~2GB), so in Docker the planner serves BM25 results
+  and logs that once. Losing semantic recall is a real degradation; losing
+  retrieval because an optional dependency is missing is worse.
+
+**Known data gap:** the timetable corpus has 11 trains, and none serves
+Kandy → Jaffna — so that query correctly returns nothing. Both backends agree on
+this, which is the consistency the shared design is for.
+
+### 4. Live weather and news
 
 A fifth agent gathers current weather (Open-Meteo, no API key) and live transit
 news (public RSS), and feeds the Planning Agent a verdict for your journey. The
@@ -313,7 +354,7 @@ classification and planner logic as a live headline — nothing is special-cased
 and is always labelled as simulated. `GET :8103/mcp/sources` lists what the
 agent reads.
 
-### 4. Bookings, payment and ticket history
+### 5. Bookings, payment and ticket history
 
 Booking is staged and human-in-the-loop: the agent holds a seat for 10 minutes,
 asks for approval, then stops at the payment step. **Only the last four card
@@ -331,7 +372,7 @@ Bookings and the purchase ledger are persisted in SQLite (`data/booking.db`),
 so they survive a container restart. Without `BOOKING_DB_PATH` the store is
 in-memory, which is what the test suite uses.
 
-### 5. Example Test Queries
+### 6. Example Test Queries
 
 * **Route Discovery (Singlish):**
 > *"Heta ude 6ta Kandy indan Galle yanna train ekak thiyeda?"*

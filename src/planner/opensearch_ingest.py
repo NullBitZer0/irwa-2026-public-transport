@@ -1,45 +1,172 @@
-import json
+"""
+Index the timetable corpus into OpenSearch for hybrid retrieval.
+
+Member 2 — NLP & Information Retrieval Lead
+
+Run once before using the OpenSearch retriever:
+
+    RETRIEVER_BACKEND=opensearch python -m src.planner.opensearch_ingest
+
+Creates the `transit_routes` index with both a text field (BM25) and a
+knn_vector field (dense), then bulk-loads every schedule. Safe to re-run: the
+index is recreated rather than appended to, so a re-ingest cannot leave stale
+documents behind for routes that were removed from the fixtures.
+
+`--no-embeddings` skips the dense pass. That is what you want in an environment
+without `sentence-transformers` (the container image deliberately omits it, and
+it pulls in PyTorch): the retriever then serves BM25 results only and says so.
+"""
+
+from __future__ import annotations
+
+import argparse
+import os
+import sys
+from pathlib import Path
+from typing import Any
 
 from opensearchpy import OpenSearch, helpers
-from sentence_transformers import SentenceTransformer
 
-client = OpenSearch(hosts=[{"host": "localhost", "port": 9200}])
-embedder = SentenceTransformer("all-MiniLM-L6-v2")
-INDEX_NAME = "transit_routes"
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
+from src.planner.hybrid_retriever import (  # noqa: E402
+    OPENSEARCH_INDEX,
+    OPENSEARCH_PASS,
+    OPENSEARCH_URL,
+    OPENSEARCH_USER,
+    _load_all_schedules,
+)
+
+# MiniLM-L6-v2 emits 384 dimensions; the mapping has to agree exactly or the
+# index rejects every document.
+EMBEDDING_DIM = 384
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
+BATCH_SIZE = 200
 
 
-def load_schedules():
-    with open("data/processed/train_schedules.json") as f:
-        trains = json.load(f)
-    with open("data/processed/bus_routes.json") as f:
-        buses = json.load(f)
-    return trains + buses
+def get_client() -> OpenSearch:
+    auth = (OPENSEARCH_USER, OPENSEARCH_PASS) if OPENSEARCH_PASS else None
+    return OpenSearch(
+        hosts=[OPENSEARCH_URL],
+        http_auth=auth,
+        ssl_show_warn=False,
+        timeout=30,
+    )
 
 
-def ingest():
-    schedules = load_schedules()
-    texts = [
-        f"{s['service_name']} operated by {s['provider']} running from "
-        f"{s['origin']} to {s['destination']}. Stops: {', '.join(s.get('stops', []))}."
-        for s in schedules
-    ]
-    embeddings = embedder.encode(texts, normalize_embeddings=True)
+def index_mapping() -> dict[str, Any]:
+    return {
+        "settings": {"index.knn": True},
+        "mappings": {
+            "properties": {
+                "text": {"type": "text"},
+                "embedding": {
+                    "type": "knn_vector",
+                    "dimension": EMBEDDING_DIM,
+                },
+                "route_id": {"type": "keyword"},
+                "provider": {"type": "keyword"},
+            }
+        },
+    }
 
-    actions = []
-    for s, text, emb in zip(schedules, texts, embeddings):
-        actions.append({
-            "_index": INDEX_NAME,
-            "_id": s["route_id"],
-            "_source": {
-                "route_id": s["route_id"],
-                "text": text,
-                "embedding": emb.tolist(),
-                **s,
-            },
-        })
-    helpers.bulk(client, actions)
-    print(f"Ingested {len(actions)} routes into OpenSearch")
+
+def document_text(schedule: dict[str, Any]) -> str:
+    """The BM25 field. Include the places a traveller might actually type."""
+    stops = ", ".join(schedule.get("stops", []) or [])
+    return (
+        f"{schedule.get('service_name', '')} operated by "
+        f"{schedule.get('provider', '')} running from "
+        f"{schedule.get('origin', '')} to {schedule.get('destination', '')}. "
+        f"Stops: {stops}."
+    )
+
+
+def build_embedder():
+    """Loads the sentence encoder, or returns None when it is unavailable."""
+    try:
+        from sentence_transformers import SentenceTransformer
+    except ImportError:
+        return None
+    return SentenceTransformer(EMBEDDING_MODEL)
+
+
+def ingest(embed: bool = True, recreate: bool = True) -> int:
+    client = get_client()
+    if not client.ping():
+        raise SystemExit(
+            f"Cannot reach OpenSearch at {OPENSEARCH_URL}. Start it with "
+            f"`docker compose up -d opensearch`, or check OPENSEARCH_URL."
+        )
+
+    if recreate and client.indices.exists(index=OPENSEARCH_INDEX):
+        client.indices.delete(index=OPENSEARCH_INDEX)
+    if not client.indices.exists(index=OPENSEARCH_INDEX):
+        client.indices.create(index=OPENSEARCH_INDEX, body=index_mapping())
+        print(f"created index '{OPENSEARCH_INDEX}'")
+
+    schedules = _load_all_schedules()
+    if not schedules:
+        raise SystemExit(
+            "No schedules found in data/processed/. Run the ingestion scripts "
+            "before indexing."
+        )
+
+    encoder = build_embedder() if embed else None
+    if embed and encoder is None:
+        print(
+            "sentence-transformers is not installed — indexing for BM25 only. "
+            "Install it (pip install sentence-transformers) and re-run for "
+            "semantic search."
+        )
+
+    indexed = 0
+    for start in range(0, len(schedules), BATCH_SIZE):
+        batch = schedules[start : start + BATCH_SIZE]
+        texts = [document_text(s) for s in batch]
+
+        actions = []
+        for schedule, text in zip(batch, texts):
+            source = {**schedule, "text": text}
+            if encoder is not None:
+                source["embedding"] = encoder.encode(
+                    text, normalize_embeddings=True
+                ).tolist()
+            actions.append(
+                {
+                    "_index": OPENSEARCH_INDEX,
+                    "_id": schedule["route_id"],
+                    "_source": source,
+                }
+            )
+
+        helpers.bulk(client, actions)
+        indexed += len(actions)
+        print(f"  indexed {indexed}/{len(schedules)}", end="\r", flush=True)
+
+    print(f"\nIndexed {indexed} routes into '{OPENSEARCH_INDEX}'")
+    if encoder is None:
+        print("Dense retrieval will be unavailable for this index.")
+    return indexed
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--no-embeddings",
+        action="store_true",
+        help="index for BM25 only, skipping the dense pass",
+    )
+    parser.add_argument(
+        "--keep-index",
+        action="store_true",
+        help="do not delete an existing index first (may leave stale documents)",
+    )
+    args = parser.parse_args()
+
+    ingest(embed=not args.no_embeddings, recreate=not args.keep_index)
+    return 0
 
 
 if __name__ == "__main__":
-    ingest()
+    raise SystemExit(main())
