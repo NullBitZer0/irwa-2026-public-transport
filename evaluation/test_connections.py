@@ -500,3 +500,25 @@ def test_connections_respect_the_requested_departure_time() -> None:
 
     for connection in data["connections"]:
         assert connection["departure_time"] >= "18:00", connection["departure_time"]
+
+
+def test_budget_never_leads_with_an_overnight_journey(services) -> None:
+    """
+    Regression: the "cheapest" answer was a 29h40 train.
+
+    Ranking purely on fare ignores how long the trip takes, so the cheapest
+    ticket won even when it meant a night at the hub and a day lost — while a 7h30
+    change sat below it in the same list. Technically correct and useless advice.
+
+    An overnight option is still returned when nothing else is on offer; it is
+    simply never the headline.
+    """
+    for origin, destination in (("Colombo", "Ella"), ("Kandy", "Matara")):
+        ranked = find_connections(
+            services, origin, destination, strategy="budget", max_results=5
+        )
+        assert ranked, f"no connections for {origin} -> {destination}"
+        assert not ranked[0]["overnight_change"], (
+            f"{origin} -> {destination}: cheapest option needs an overnight stop "
+            f"({ranked[0]['duration_minutes']} min)"
+        )

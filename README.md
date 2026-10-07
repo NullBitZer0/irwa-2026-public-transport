@@ -620,6 +620,10 @@ Details worth knowing:
   time is not mistaken for the same morning.
 - **Nothing is offered before the question is answered**, so the agent's opinion
   of what matters more to you is not applied silently.
+- **A same-day change is preferred over an overnight one, before price is even
+  considered.** Ranking purely on fare made "cheapest" a 29h40 train while a 7h30
+  change sat below it in the same list. An overnight option is still offered when
+  nothing else is, it is just never the headline.
 - A change means **two separate tickets**, so these are shown as plans rather
   than something you can hold in one go.
 

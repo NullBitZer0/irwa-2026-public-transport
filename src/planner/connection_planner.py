@@ -147,13 +147,20 @@ def rank_connections(
     cheapest = min((float(c["base_fare_lkr"]) for c in priced), default=0.0)
 
     if strategy == "budget":
-        # `unpriced` sorts *after* every priced option: 1 is a sentinel, not a
-        # price, and a connection that costs an unknown amount is not the
-        # cheapest option on offer.
+        # A same-day change is preferred over an overnight one *before* price is
+        # considered. Ranking purely on fare put a 29h40 train at the top of the
+        # "cheapest" list while a 7h30 change sat below it — technically the
+        # cheapest, and useless advice for a traveller. An overnight option still
+        # appears when nothing else is on offer; it is simply never the headline.
+        #
+        # `unpriced` sorts after every priced option: 1 is a sentinel, not a
+        # price, and a connection that costs an unknown amount is not the cheapest
+        # option on offer.
         def key(c: dict[str, Any]) -> tuple:
+            overnight = 1 if c["overnight_change"] else 0
             if _price_known(c):
-                return (0, float(c["base_fare_lkr"]), c["duration_minutes"], c["_arrive_offset"])
-            return (1, cheapest, c["duration_minutes"], c["_arrive_offset"])
+                return (overnight, 0, float(c["base_fare_lkr"]), c["duration_minutes"])
+            return (overnight, 1, cheapest, c["duration_minutes"])
 
         return sorted(connections, key=key)
 
