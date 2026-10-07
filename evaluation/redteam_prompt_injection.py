@@ -46,6 +46,9 @@ TIMEOUT = 25.0
 # A known-good route query, used to prove the live stack is really answering.
 CONTROL_ROUTE_QUERY = "Colombo to Galle bus at 14:00"
 
+# How long to keep asking the planner for routes before deciding it is broken.
+PREFLIGHT_RETRY_SECONDS = 6.0
+
 SESSION_COOKIE = "lankajourney_session"
 # Every live probe runs signed in. The user-facing API is authenticated, so a
 # red team that skipped this would report "no injection observed" for a 401 on
@@ -216,14 +219,30 @@ def preflight() -> None:
     # and call them clean.
     authenticate()
 
-    code, body = chat(CONTROL_ROUTE_QUERY)
-    if not body.get("route_options"):
-        sys.exit(
-            f"[FATAL] control query {CONTROL_ROUTE_QUERY!r} returned no routes "
-            f"(HTTP {code}). The planner is not answering, so the live "
-            f"retrieval and rendering checks would be meaningless.\n"
-            f"        {body.get('error') or body.get('detail') or body}"
-        )
+    # Patient about a cold stack, impatient about a broken one.
+    #
+    # A healthy `/health` does not mean the planner has loaded its corpus: the
+    # first route query is what does that. Probing once at t=0 aborted CI runs
+    # against a stack that was up but not warm — the failure looked identical to
+    # "the planner is broken", which is exactly the distinction this preflight
+    # exists to draw. Retried for a couple of minutes, then still fatal.
+    code, body = 0, {}
+    deadline = time.time() + PREFLIGHT_RETRY_SECONDS
+    attempt = 0
+    while True:
+        attempt += 1
+        code, body = chat(CONTROL_ROUTE_QUERY)
+        if body.get("route_options"):
+            break
+        if time.time() >= deadline:
+            sys.exit(
+                f"[FATAL] control query {CONTROL_ROUTE_QUERY!r} returned no routes "
+                f"after {PREFLIGHT_RETRY_SECONDS}s and {attempt} attempt(s) "
+                f"(HTTP {code}). The planner is not answering, so the live "
+                f"retrieval and rendering checks would be meaningless.\n"
+                f"        {body.get('error') or body.get('detail') or body}"
+            )
+        time.sleep(PREFLIGHT_RETRY_SECONDS)  # noqa: S114
 
     # And prove the authentication is actually enforced, rather than assumed.
     anonymous = httpx.post(
