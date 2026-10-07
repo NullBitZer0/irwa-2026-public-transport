@@ -9,7 +9,7 @@
 import { useEffect, useState } from 'react'
 import { saveProfile } from '../api.js'
 
-export default function ProfilePanel({ user, onClose, onSaved }) {
+export default function ProfilePanel({ user, onClose, onSaved, onSignOut }) {
   const [fullName, setFullName] = useState(user?.full_name || '')
   const [contact, setContact] = useState(user?.contact_number || '')
   const [cardNumber, setCardNumber] = useState('')
@@ -138,6 +138,18 @@ export default function ProfilePanel({ user, onClose, onSaved }) {
             {busy ? 'Saving…' : 'Save details'}
           </button>
         </form>
+
+        {/* Signing out lives with the account details, not buried in a sidebar
+            corner: the panel is where a traveller goes to manage the account. */}
+        <div className="profile-footer">
+          <button type="button" className="profile-signout" onClick={onSignOut}>
+            <span aria-hidden="true">⏻</span> Sign out
+          </button>
+          <p className="profile-footer__note">
+            Signing out clears the session on this device. Your saved details,
+            tickets and conversation history stay on the account.
+          </p>
+        </div>
       </div>
     </div>
   )

@@ -30,6 +30,8 @@ import re
 
 import httpx
 
+from src.planner.fares import great_circle_km
+from src.planner.geo import resolve
 from src.planner.schedule_ingest import (
     BUS_FILE,
     ServiceRecord,
@@ -89,7 +91,87 @@ _PREFIX_MINUTES: tuple[tuple[str, int], ...] = (
 
 # Fares are unknown per route from this source, so nothing is invented here; the
 # importer allows a missing fare rather than showing a wrong price.
-_DEPARTURES = ("06:30", "13:15", "19:45")
+
+# Departure patterns for the demonstration.
+#
+# These were three fixed times — 06:30, 13:15 and 19:45 — applied to every route
+# in both directions, which put 510 services in the timetable with the same three
+# departures and three arrivals. A timetable like that reads as broken data
+# rather than as a demo.
+#
+# Real inter-provincial services run more often in the morning and evening
+# peaks and less often in the middle of the day, so the pattern below is
+# built from headways rather than a flat grid: 40 minutes before 09:30, 90 in
+# the middle of the day, 30 minutes from 16:00. Service offsets come from the
+# route code so two routes on the same corridor do not depart in lockstep, which
+# is what makes the spread look like a network instead of a copy.
+# Headways by journey length, in minutes: (peak morning, off-peak, peak evening).
+#
+# A flat headway was the other half of the "everything departs at 06:30" problem,
+# but a uniform *frequency* is no more realistic than a uniform *time*. A
+# 40 km hop does not run every 30 minutes, and a full-day intercity run does.
+# These are scaled off the route's journey duration, which is already estimated
+# per service class.
+HEADWAYS_BY_DURATION: tuple[tuple[int, tuple[int, int, int]], ...] = (
+    (120, (120, 150, 120)),    # short local hop: a few services a day
+    (240, (60, 90, 60)),        # regional
+    (360, (45, 75, 40)),        # long-distance
+    (10**9, (30, 60, 30)),      # full-day intercity
+)
+
+_FIRST_DEPARTURE = "05:45"
+_PEAK_MORNING_UNTIL = 9 * 60 + 30
+_PEAK_EVENING_FROM = 16 * 60
+_LAST_DEPARTURE = "20:15"
+
+# A ceiling on services per direction per day. Without it, doubling the headways
+# pattern quadrupled the corpus, which is a lot of retrieval pool for a demo and
+# a timetable nobody scrolls.
+MAX_SERVICES_PER_DAY = 10
+
+
+def _route_offset(route_code: str) -> int:
+    """A stable per-route offset in minutes, so services are not synchronised."""
+    cleaned = re.sub(r"[^A-Za-z0-9]+", "", route_code).upper()
+    if not cleaned:
+        return 0
+    # Spread of 30 minutes, matching the tightest peak headway used below.
+    return sum(ord(char) for char in cleaned) % 30
+
+
+def _headways(route_code: str, duration_minutes: int) -> tuple[int, int, int]:
+    """Peak-morning, off-peak and peak-evening headways for this route."""
+    duration = duration_minutes
+    for limit, headways in HEADWAYS_BY_DURATION:
+        if duration <= limit:
+            return headways
+    return HEADWAYS_BY_DURATION[-1][1]  # pragma: no cover - unreachable
+
+
+def _departure_pattern(route_code: str, duration_minutes: int) -> list[str]:
+    """
+    A day's departures for one route, following a peak/off-peak pattern.
+
+    Deterministic for a given route code, so re-running the importer produces the
+    same timetable: a demo that reshuffles every time it is rebuilt cannot be
+    demonstrated against.
+    """
+    peak_morning, offpeak, peak_evening = _headways(route_code, duration_minutes)
+    offset = _route_offset(route_code)
+    current = _to_minutes(_FIRST_DEPARTURE) + offset
+    last = _to_minutes(_LAST_DEPARTURE)
+
+    times: list[str] = []
+    while current <= last:
+        if current <= _PEAK_MORNING_UNTIL:
+            step = peak_morning
+        elif current >= _PEAK_EVENING_FROM:
+            step = peak_evening
+        else:
+            step = offpeak
+        times.append(_format(current))
+        current += step
+    return times[:MAX_SERVICES_PER_DAY]
 
 _TRIPLE = re.compile(
     r"itemprop=busNumber>(?P<code>[^<]+)<.*?"
@@ -120,7 +202,38 @@ def _canonical(raw: str) -> str:
     return STATION_ALIASES.get(head, cleaned)
 
 
-def _minutes_for(route_code: str) -> int:
+# Effective speed including stops, traffic and climb. Sri Lankan inter-provincial
+# highways average well below the 60-70 km/h a free-road figure would suggest.
+AVERAGE_SPEED_KMH = 48.0
+# Time spent at stops, added once per service rather than per stop: a bus that
+# calls at eight places does not lose an hour to them.
+DWELL_MINUTES = 15
+MIN_DURATION_MINUTES = 45
+MAX_DURATION_MINUTES = 480
+
+
+def _minutes_for(origin: str = "", destination: str = "", route_code: str = "") -> int:
+    """
+    Estimated journey time, preferring distance over the service-class table.
+
+    The table maps a route-code prefix to a duration, so every route in a class
+    got the same journey time regardless of how far it actually goes — which is
+    why the arrivals all landed on the same few clock times. Distance is a better
+    estimator and is available for these routes; the table stays as the fallback
+    for endpoints we cannot place.
+    """
+    start = resolve(origin)
+    end = resolve(destination)
+    if start and end:
+        distance = great_circle_km((start[1], start[2]), (end[1], end[2])) * 1.25
+        if distance >= 1.0:
+            minutes = int(round(distance / AVERAGE_SPEED_KMH * 60 + DWELL_MINUTES))
+            return max(MIN_DURATION_MINUTES, min(MAX_DURATION_MINUTES, minutes))
+
+    return _minutes_for_class(route_code)
+
+
+def _minutes_for_class(route_code: str) -> int:
     """Estimated journey time for a route code, by service class."""
     upper = route_code.upper()
     for prefix, minutes in _PREFIX_MINUTES:
@@ -202,11 +315,22 @@ def build_records(routes: list[dict[str, str]]) -> list[ServiceRecord]:
 
     for route in routes:
         code = route["route_code"]
-        duration = _minutes_for(code)
         origin, destination = route["origin"], route["destination"]
 
         for from_stop, to_stop in ((origin, destination), (destination, origin)):
-            for departure in _DEPARTURES:
+            base_duration = _minutes_for(from_stop, to_stop, code)
+            departures = _departure_pattern(code, base_duration)
+
+            for index, departure in enumerate(departures):
+                # Peak journeys run slower, and the delay compounds through the
+                # day. Without this, every service on a route arrives at exactly
+                # the same minute regardless of when it left.
+                variation = 0
+                if _to_minutes(departure) <= _PEAK_MORNING_UNTIL:
+                    variation = 5 * (index % 3)
+                elif _to_minutes(departure) >= _PEAK_EVENING_FROM:
+                    variation = 10 * (index % 3)
+                duration = base_duration + variation
                 arrival_minutes = _to_minutes(departure) + duration
                 # The id must include BOTH endpoints: several routes share an
                 # origin and a departure time, and omitting one loses rows.
@@ -243,6 +367,16 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[1])
     parser.add_argument("--check", action="store_true", help="fetch and report only")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument(
+        "--replace-generated",
+        action="store_true",
+        help=(
+            "discard previously generated rows before rebuilding. Needed whenever "
+            "the departure pattern changes: route ids embed the departure time, so "
+            "new times mean new ids and the old rows are never superseded by the "
+            "merge — they just accumulate, and the timetable keeps both."
+        ),
+    )
     args = parser.parse_args(argv)
 
     routes = fetch_route_codes()
@@ -254,6 +388,16 @@ def main(argv: list[str] | None = None) -> int:
 
     records = build_records(routes)
     existing = load_fixture(BUS_FILE)
+
+    if args.replace_generated:
+        # Only rows this importer generated are dropped. Anything hand-curated
+        # from a published timetable carries no `synthetic` flag and is never
+        # touched, so regenerating cannot quietly delete real data.
+        curated = [row for row in existing if not row.get("synthetic")]
+        dropped = len(existing) - len(curated)
+        print(f"  replacing {dropped} previously generated row(s); keeping {len(curated)} curated")
+        existing = curated
+
     merged, notes = merge_records(existing, records, force=False)
     print(f"\nbuses: {len(existing)} -> {len(merged)} rows ({len(records)} generated)")
 

@@ -127,10 +127,14 @@ await check('App mounts and renders content', async () => {
   // authenticated now, and a stub that returns health JSON for /auth/me leaves
   // it on the login screen — which is the correct behaviour, and would fail a
   // check meant to confirm the chat renders.
+  // Deliberately no full name. The sidebar used to render its sign-out button
+  // only when a name was set, so a signed-in traveller without one — the demo
+  // account, anyone who skipped the profile — had no way to sign out. Asserting
+  // against a named user would never catch that.
   const DEMO_USER = {
     id: 'USR-RENDERTEST',
     email: 'demo@lankajourney.lk',
-    full_name: 'Demo Traveller',
+    full_name: '',
     contact_number: '+94771234567',
     has_card: true,
     card_brand: 'Visa',
@@ -251,12 +255,20 @@ await check('App mounts and renders content', async () => {
     if (!html.includes('LankaJourney')) {
       throw new Error('App rendered, but not the app we recognise')
     }
-    // Signed in: the profile chip proves the session reached the UI, rather than
-    // the app silently sitting on the login screen.
-    if (!html.includes('Demo Traveller')) {
+    // Signed in: the initials on the profile chip are derived from the account,
+    // so they prove the session reached the UI rather than the app sitting on
+    // the login screen. Not the email — the chip shows the saved card instead.
+    if (!html.includes('>DL<')) {
       throw new Error(
         'Signed-in traveller missing — the session did not reach the UI. ' +
           'Is the app stuck on the login screen?',
+      )
+    }
+    // A way out, with no name on the account.
+    if (!html.includes('Sign out')) {
+      throw new Error(
+        'No sign-out control — this user has no full name, which is exactly ' +
+          'when the sidebar used to hide it.',
       )
     }
     // The three destinations the sidebar offers.

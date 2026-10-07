@@ -26,6 +26,7 @@ from src.planner.connection_planner import (
     public_connections,
     rank_connections,
 )
+from src.planner.fares import resolve_fare
 from src.planner.geo import (
     ISLAND_RINGS,
     boundary_source,
@@ -333,6 +334,22 @@ def _mode_of(record: dict) -> str:
     return "TRAIN" if "TRAIN" in str(record.get("route_id", "")).upper() else "BUS"
 
 
+def _service_fare(record: dict) -> dict:
+    """
+    The fare to show in the timetable: published if there is one, else estimated.
+
+    Display only. Booking reads `base_fare_lkr` from the record itself and still
+    refuses an unpriced service, so an estimate is never charged to anyone — the
+    difference between quoting a modelled price and taking a payment for it.
+    """
+    resolved = resolve_fare(record)
+    return {
+        "fare_lkr": resolved["fare_lkr"],
+        "fare_estimated": resolved["fare_estimated"],
+        "fare_basis": resolved["fare_basis"],
+    }
+
+
 @app.get("/mcp/schedules")
 def list_schedules(
     mode: str = "ALL",
@@ -372,6 +389,7 @@ def list_schedules(
 
     services = [
         {
+            **_service_fare(r),
             "route_id": r.get("route_id"),
             "service_name": r.get("service_name"),
             "provider": r.get("provider"),
@@ -380,7 +398,6 @@ def list_schedules(
             "destination": r.get("destination"),
             "departure_time": r.get("departure_time"),
             "arrival_time": r.get("arrival_time"),
-            "fare_lkr": r.get("base_fare_lkr"),
             "classes": r.get("classes") or [],
             "transit_type": r.get("transit_type"),
             "stop_count": len(r.get("stops") or []),
@@ -401,6 +418,11 @@ def list_schedules(
             "returned": len(services),
             "truncated": len(rows) > len(services),
             "mode": wanted,
+            # Stated once rather than per row: most estimates here are distance
+            # modelled, and saying so only on the fare cell would leave the
+            # column looking authoritative.
+            "estimated_fares": sum(1 for s in services if s["fare_estimated"]),
+            "published_fares": sum(1 for s in services if not s["fare_estimated"]),
         },
         "message": f"{len(services)} service(s) listed ({len(rows)} matched).",
     }

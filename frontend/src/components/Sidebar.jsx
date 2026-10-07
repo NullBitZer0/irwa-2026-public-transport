@@ -174,11 +174,13 @@ export default function Sidebar({
         <span className="profile-chip__chevron" aria-hidden="true">›</span>
       </button>
 
-      {user?.full_name && (
-        <button type="button" className="sidebar__signout" onClick={onSignOut}>
-          Sign out
-        </button>
-      )}
+      {/* Always available, not only for a named account: this used to render
+          only when a full name was set, so a traveller who had not filled one in
+          — including the demo account — had no way to sign out from the
+          sidebar at all. */}
+      <button type="button" className="sidebar__signout" onClick={onSignOut}>
+        Sign out
+      </button>
 
       <section className="panel">
         <h2>Connection</h2>

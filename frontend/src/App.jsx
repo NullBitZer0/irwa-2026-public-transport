@@ -467,6 +467,7 @@ bookingReference: data.booking_reference,
           user={user}
           onClose={() => setProfileOpen(false)}
           onSaved={setUser}
+          onSignOut={handleSignOut}
         />
       )}
     </div>

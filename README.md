@@ -431,7 +431,7 @@ verified on every push. The encoder path is verified locally, and the embedding
 dimension is pinned by a unit test so a mismatch fails before it reaches a live
 index.
 
-**Coverage note:** the timetable corpus has 12 trains. The Kandy → Jaffna
+**Coverage note:** the timetable corpus has 2,162 bus services and 12 trains. The Kandy → Jaffna
 corridor was added from `data/curated/kandy_jaffna_train.csv` through the
 supported ingestion path — real endpoints and intermediate stations, with the
 generated times and fare flagged `synthetic` in the API and named in
@@ -513,7 +513,41 @@ cannot tell whether the target was protected is not evidence.
 Two views in the sidebar, both served from the same corpus as the chat.
 
 **Timetables** lists bus and train services sorted by departure time, filterable
-by mode and searchable by town, route or operator.
+by mode (**All / Buses / Trains** — each returns only its own mode) and
+searchable by town, route or operator.
+
+**Times are modelled, not stamped from a grid.** Departures follow a
+peak/off-peak pattern scaled by journey length — a 40 km hop does not run every
+30 minutes, and a full-day intercity run does — with a stable per-route offset so
+two routes on the same corridor do not depart in lockstep. Journey duration comes
+from the distance between the endpoints. The result: **453 distinct departure
+times** across 2,162 bus services, with the most common one accounting for 1% of
+the network. It used to be 42 distinct times, with 28% of all services leaving at
+06:30. Services running past midnight are flagged `+1 day`.
+
+**Fares: published where they exist, estimated where they do not.** 62% of the
+bus corpus had no price at all, which made the timetable look broken. Unpriced
+services are now given a distance-based estimate, marked **est.** in the fare
+cell and counted in a note above the table:
+
+| Fare class | Model | Accuracy vs published |
+|---|---|---|
+| Ordinary | `6.9 × km^0.955` | median error 31%, 80% within 41% |
+| Semi-luxury | `69.9 × km^0.593` | median error 4%, 80% within 9% |
+
+Both are least-squares fits to the services in this corpus that carry a published
+fare, so an estimate sits in the same range as a real price. A linear fit was
+tried first and had a better median but a far worse tail — it priced a 41 km hop
+at LKR 410 where the published fare is LKR 170, because the long-distance
+intercept dominates at short distances.
+
+Two rules the estimates obey:
+
+- **A published fare is never replaced.**
+- **An estimate is never charged.** Booking still refuses an unpriced service,
+  because quoting a modelled price and taking a payment for it are different
+  things. Same-city hops (Fort → Pettah) get no estimate at all: there is no
+  distance to model, so any number would be invented.
 
 **Route map** draws the available routes on a real outline of Sri Lanka as inline
 SVG, so it works offline and leaks no viewport to a tile server. Click a line for
@@ -542,7 +576,7 @@ The map is honest about what it is:
   separate pins a few kilometres apart would imply precision the data does not
   have.
 - Services that run entirely within one city have no line to draw. They are
-  counted in the coverage note and listed in the timetables tab — 608 of 812
+  counted in the coverage note and listed in the timetables tab — 1,494 of 2,174
   services are drawn as corridors, and the map says so rather than quietly
   omitting the rest.
 - Every place in the corpus is mapped explicitly (`src/planner/geo.py`). Anything

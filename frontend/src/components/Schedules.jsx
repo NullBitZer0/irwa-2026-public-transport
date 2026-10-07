@@ -27,7 +27,7 @@ export default function Schedules() {
   useEffect(() => {
     let cancelled = false
     setLoading(true)
-    getSchedules({ mode, limit: 400 })
+    getSchedules({ mode, limit: 500 })
       .then((payload) => {
         if (!cancelled) {
           setData(payload)
@@ -103,6 +103,15 @@ export default function Schedules() {
       {counts.bus + counts.train > 0 && (
         <p className="schedules-tally">
           {counts.bus} bus · {counts.train} train in this list
+          {data?.estimated_fares > 0 && (
+            <span className="schedules-tally__note">
+              {' · '}
+              {data.estimated_fares} of these fares are{' '}
+              <strong>estimated from distance</strong> — the operator has not
+              published a price for that route. They are shown for comparison and
+              cannot be booked.
+            </span>
+          )}
         </p>
       )}
 
@@ -141,7 +150,25 @@ export default function Schedules() {
                     {service.provider}
                   </td>
                   <td className="num">
-                    {service.fare_lkr != null ? `LKR ${service.fare_lkr}` : '—'}
+                    {service.fare_lkr != null ? (
+                      <>
+                        LKR {Number(service.fare_lkr).toLocaleString('en-LK')}
+                        {/* Priced by distance rather than published by the
+                            operator, so it is marked at the cell it affects —
+                            a column of confident-looking numbers is how a
+                            modelled fare becomes a quoted one. */}
+                        {service.fare_estimated && (
+                          <span
+                            className="fare-est"
+                            title={service.fare_basis || 'Estimated from distance'}
+                          >
+                            est.
+                          </span>
+                        )}
+                      </>
+                    ) : (
+                      '—'
+                    )}
                   </td>
                 </tr>
               ))}
