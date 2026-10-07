@@ -100,24 +100,66 @@ def _build_leg(service: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def rank_connections(connections: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def _price_known(connection: dict[str, Any]) -> bool:
     """
-    Orders connections: mixed mode first, then same-day changes, then earliest
-    arrival, then shortest total journey.
+    Is the fare for both legs actually published?
 
-    Shared with the endpoint so that connections gathered from more than one
-    search (a single-mode search plus mixed-mode alternatives) end up in one
-    consistent order. Safe to call more than once on the same list: the internal
-    sort key is left in place here and stripped by `public_connections`.
+    A connection whose legs have no fare totals to zero, and zero sorts as the
+    cheapest thing in the list — so an unpriced option would win the budget
+    ranking outright. It has to be excluded from fare comparison instead.
     """
+    legs = connection.get("legs") or []
+    if not legs:
+        return False
+    return all(float(leg.get("base_fare_lkr") or 0) > 0 for leg in legs)
+
+
+# Relative cost per kilometre, used only to break ties between options that are
+# otherwise equal. Trains are cheaper per km in Sri Lanka, which is the usual
+# reason a traveller is choosing budget over time.
+SPEED_HINT = {"BUS": 1.0, "TRAIN": 1.0}
+
+
+def rank_connections(
+    connections: list[dict[str, Any]],
+    strategy: str = "time",
+) -> list[dict[str, Any]]:
+    """
+    Orders connections for the strategy the traveller chose.
+
+    - `time`: earliest arrival first, then shortest journey. This is the honest
+      answer to "I want to get there soon", and the mode follows from the data —
+      a train that is genuinely faster on a leg wins, without anything
+      hardcoding "buses are always faster".
+    - `budget`: cheapest first, then shortest. Only options whose fares are
+      actually published take part: an unpriced connection is not a cheap one,
+      it is an unknown one, and treating it as free would put it top every time.
+
+    Mixed-mode preference is deliberately *not* a ranking criterion here. It was
+    a presentation preference from the original demo; ranking by what the
+    traveller asked for (fast or cheap) is the more useful ordering, and the
+    mixed option still surfaces because both modes are searched.
+
+    Safe to call more than once on the same list: internal keys are left in
+    place and stripped by `public_connections`.
+    """
+    priced = [c for c in connections if _price_known(c)]
+    cheapest = min((float(c["base_fare_lkr"]) for c in priced), default=0.0)
+
+    if strategy == "budget":
+        # `unpriced` sorts *after* every priced option: 1 is a sentinel, not a
+        # price, and a connection that costs an unknown amount is not the
+        # cheapest option on offer.
+        def key(c: dict[str, Any]) -> tuple:
+            if _price_known(c):
+                return (0, float(c["base_fare_lkr"]), c["duration_minutes"], c["_arrive_offset"])
+            return (1, cheapest, c["duration_minutes"], c["_arrive_offset"])
+
+        return sorted(connections, key=key)
+
     return sorted(
         connections,
-        key=lambda c: (
-            not c["mixed_mode"],
-            c["overnight_change"],
-            c["_arrive_offset"],
-            c["duration_minutes"],
-        ),
+        key=lambda c: (c["_arrive_offset"], c["duration_minutes"], c["overnight_change"]),
     )
 
 
@@ -137,6 +179,8 @@ def find_connections(
     min_transfer_minutes: int = DEFAULT_MIN_TRANSFER_MINUTES,
     max_transfer_minutes: int = DEFAULT_MAX_TRANSFER_MINUTES,
     max_results: int = 3,
+    after: str | None = None,
+    strategy: str = "time",
 ) -> list[dict[str, Any]]:
     """
     Finds one-stop connections between two stations.
@@ -146,6 +190,9 @@ def find_connections(
         origin: requested starting station.
         destination: requested final station.
         mode: 'TRAIN', 'BUS' or 'ANY'. A specific mode restricts BOTH legs.
+        after: 'HH:MM'. When set, connections departing before this are ignored,
+            so a traveller who says "at 10am" is not shown a 06:00 option.
+        strategy: 'time' or 'budget' — see `rank_connections`.
         min_transfer_minutes: minimum changeover time at the hub.
         max_transfer_minutes: reject changeovers longer than this.
         max_results: how many connections to return.
@@ -179,6 +226,10 @@ def find_connections(
         and _matches_mode(s, mode)
     ]
 
+    # The departure floor, applied before any pairing work: a connection that
+    # starts before the traveller can get to the station is not an option.
+    floor = _to_minutes(after) if after else None
+
     connections: list[dict[str, Any]] = []
     seen: set[tuple[str, str]] = set()
 
@@ -190,6 +241,8 @@ def find_connections(
             continue
         if first_arr < first_dep:  # overnight service
             first_arr += 24 * 60
+        if floor is not None and first_dep < floor:
+            continue
 
         for second in inbound:
             if _station_key(str(second.get("origin", ""))) != hub_key:
@@ -272,6 +325,8 @@ def find_connections(
                 }
             )
 
-# Mixed-mode first (as requested), then same-day connections, then earliest
-    # arrival, then shortest total journey.
-    return rank_connections(connections)[:max_results]
+# Ranked for what the traveller asked for: soonest arrival, or cheapest.
+    for connection in connections:
+        connection["strategy"] = strategy
+        connection["fare_known"] = _price_known(connection)
+    return rank_connections(connections, strategy=strategy)[:max_results]

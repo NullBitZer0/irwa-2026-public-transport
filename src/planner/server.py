@@ -35,7 +35,7 @@ from src.planner.geo import (
     resolve,
     unmapped_places,
 )
-from src.planner.hybrid_retriever import HybridTransitRetriever
+from src.planner.hybrid_retriever import HybridTransitRetriever, _serves_direction
 from src.planner.journey_search import (
     apply_conditions,
     find_services_at,
@@ -55,6 +55,10 @@ _retriever = HybridTransitRetriever()
 
 class PlanRouteRequest(BaseModel):
     origin: str = ""
+    # What the traveller chose when asked: "time" (soonest) or "budget"
+    # (cheapest). Empty means they have not been asked yet, and a search with no
+    # direct service then returns the question rather than guessing for them.
+    preference: str = ""
     destination: str = ""
     travel_mode: str = "ANY"
     date_str: str = "TODAY"
@@ -104,16 +108,29 @@ async def plan_route(payload: PlanRouteRequest) -> dict:
         top_k=3,
     )
 
-    # No direct service in the requested direction? Offer a one-stop connection,
-    # preferring a mix of train and bus. When the traveller insisted on a single
-    # mode, keep any same-mode connection but still surface the mixed option,
-    # since a 25-minute train-then-coach change usually beats a 23-hour wait for
-    # the next train of the same type.
+    # Retrieval is relevance-based, so it can return a service that is about the
+    # right subject but runs the wrong way — Colombo → Jaffna for a request for
+    # Kandy → Jaffna. Only a service that actually stops at both ends, in that
+    # order, is a direct answer.
+    #
+    # Without this the endpoint reports a direct service where none exists, and
+    # the connection search below never runs because `candidates` is not empty.
+    # Only filterable when both ends are known. With one end, the traveller is
+    # still specifying the journey ("services to Galle"), and dropping the
+    # results would answer "nothing goes to Galle" when the opposite is true.
+    if candidates and origin and destination:
+        serving = [c for c in candidates if _serves_direction(c, origin, destination)]
+        candidates = serving
+
     connections: list = []
     mixed_fallback = False
     if not candidates and origin and destination:
         connections = find_connections(
-            _retriever.schedules, origin, destination, mode=travel_mode
+            _retriever.schedules,
+            origin,
+            destination,
+            mode=travel_mode,
+            strategy=(payload.preference or "time").strip().lower() or "time",
         )
         if travel_mode != "ANY":
             already = {c["route_id"] for c in connections}
@@ -125,7 +142,10 @@ async def plan_route(payload: PlanRouteRequest) -> dict:
                 if c["mixed_mode"] and c["route_id"] not in already
             ]
             mixed_fallback = bool(extra) or not connections
-            connections = rank_connections(connections + extra)
+            connections = rank_connections(
+                connections + extra,
+                strategy=(payload.preference or "time").strip().lower() or "time",
+            )
 
     # If nothing at all runs that way, say so and point at the opposite direction.
     direction_note: Optional[str] = None
@@ -156,6 +176,21 @@ async def plan_route(payload: PlanRouteRequest) -> dict:
             f"{len(connections)} connection(s). [STUB — Member 2 implementing full NLP+IR]"
         ),
     }
+
+
+def _journey_message(
+    services: list, connections: list, missing: list, needs_preference: bool
+) -> str:
+    """A one-line summary. Never empty, because the envelope requires a string."""
+    if missing:
+        return f"Need more detail: {', '.join(missing)}"
+    if services:
+        return f"{len(services)} service(s) found."
+    if connections:
+        return f"{len(connections)} connecting option(s)."
+    if needs_preference:
+        return "No direct service; changes are available — ask whether to optimise for time or cost."
+    return "No service found."
 
 
 @app.post("/mcp/plan_journey")
@@ -193,6 +228,8 @@ async def plan_journey(payload: PlanRouteRequest) -> dict:
     blocking = [m for m in missing if m in ("origin", "destination", "major_cities")]
 
     services: list[dict] = []
+    connections: list[dict] = []
+    needs_preference = False
     conditions_note: str | None = None
     if not blocking:
         services = find_services_at(
@@ -233,6 +270,33 @@ async def plan_journey(payload: PlanRouteRequest) -> dict:
                     f"the {other_mode.lower()} options at the end are the ones to look at."
                 )
 
+        # Nothing direct runs. Rather than report "no service" — which is
+        # almost never true on these corridors — look for a change, and if there
+        # are any, ask whether the traveller wants it soon or cheap. Guessing
+        # would be the planner's opinion of which matters more.
+        if not services and not blocking:
+            preference = (payload.preference or "").strip().lower()
+            if preference in {"time", "budget"}:
+                connections = find_connections(
+                    _retriever.schedules,
+                    origin,
+                    destination,
+                    mode="ANY",
+                    after=at_time if isinstance(at_time, str) else None,
+                    strategy=preference,
+                )
+            else:
+                candidates = find_connections(
+                    _retriever.schedules,
+                    origin,
+                    destination,
+                    mode="ANY",
+                    after=at_time if isinstance(at_time, str) else None,
+                    strategy="time",
+                )
+                # Only ask when there is genuinely something to choose between.
+                needs_preference = bool(candidates)
+
     return {
         "status": "SUCCESS",
         "data": {
@@ -244,14 +308,23 @@ async def plan_journey(payload: PlanRouteRequest) -> dict:
             "missing": missing,
             "needs_clarification": bool(missing),
             "services": services,
+            "connections": public_connections(connections),
+            "needs_preference": needs_preference,
+            "preference_options": (
+                [
+                    {"label": "⚡ Fastest", "value": "time", "hint": "get there soonest"},
+                    {"label": "💰 Cheapest", "value": "budget", "hint": "spend as little as possible"},
+                ]
+                if needs_preference
+                else []
+            ),
             "conditions_note": conditions_note,
             "avoid_modes": payload.avoid_modes,
         },
-        "message": (
-            f"{len(services)} service(s) found."
-            if not missing
-            else f"Need more detail: {', '.join(missing)}"
-        ),
+        # Always a string: the MCP envelope's `message` is required, and a None
+        # here fails validation in the caller — which looks like the planner being
+        # unreachable and silently drops the traveller onto the fallback path.
+        "message": _journey_message(services, connections, missing, needs_preference),
     }
 
 

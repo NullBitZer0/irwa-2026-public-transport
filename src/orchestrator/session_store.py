@@ -34,6 +34,11 @@ from typing import Any, Optional
 SLOT_KEYS = (
     "origin", "destination", "mode", "departure_date", "departure_time",
     "passengers",
+    # Set once the traveller has answered the faster-or-cheaper question.
+    "preference",
+    # And that the question has been asked at all, so a reply of "faster" is
+    # only read as an answer to something and not as part of a timetable query.
+    "preference_asked",
     # Kept alongside the count, or the agent forgets the traveller already said
     # "2 seats" and asks them again a turn later.
     "seat_count_stated",

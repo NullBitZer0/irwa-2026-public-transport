@@ -668,3 +668,130 @@ def test_a_later_turn_does_not_reset_the_seat_count() -> None:
     # And a correction still wins.
     merge("change it to 2 seats")
     assert merge("actually 5pm")["passengers"] == 2
+
+
+# ── Faster or cheaper, and no mode buttons ───────────────────────────────────
+
+
+def test_no_direct_service_asks_faster_or_cheaper() -> None:
+    """
+    The orchestrator relays the planner's question rather than choosing itself.
+    """
+    from src.orchestrator.main_graph import _connections_message
+
+    # Rendering is the part that can be checked without a live stack.
+    message = _connections_message(
+        [
+            {
+                "origin": "Anuradhapura",
+                "destination": "Matara",
+                "transfer_station": "Colombo Fort",
+                "departure_time": "10:15",
+                "arrival_time": "19:05",
+                "duration_minutes": 530,
+                "base_fare_lkr": 2216,
+                "fare_known": True,
+                "legs": [
+                    {"mode": "BUS", "next_day": False},
+                    {"mode": "BUS", "next_day": False},
+                ],
+            }
+        ],
+        {"preference": "time"},
+    )
+
+    assert "fastest" in message.lower()
+    assert "Anuradhapura" in message and "Matara" in message
+    assert "LKR 2,216" in message
+    # The hub must not be repeated: "Colombo → Colombo → Matara" reads as a
+    # detour the traveller does not make.
+    assert message.count("Colombo Fort") == 1
+    assert "+1 day" not in message
+
+
+def test_a_next_day_arrival_is_marked() -> None:
+    """
+    "10:00" after an 18:15 departure is tomorrow morning, and saying so is the
+    difference between a plan and a mistake.
+    """
+    from src.orchestrator.main_graph import _connections_message
+
+    message = _connections_message(
+        [
+            {
+                "origin": "Anuradhapura",
+                "destination": "Matara",
+                "transfer_station": "Colombo Fort",
+                "departure_time": "18:15",
+                "arrival_time": "10:00",
+                "duration_minutes": 945,
+                "base_fare_lkr": 1676,
+                "fare_known": True,
+                "legs": [{"mode": "BUS", "next_day": True}, {"mode": "TRAIN", "next_day": True}],
+            }
+        ],
+        {"preference": "budget"},
+    )
+
+    assert "cheapest" in message.lower()
+    assert "+1 day" in message
+
+
+def test_an_unpublished_fare_is_not_shown_as_free() -> None:
+    """
+    A leg with no fare totals to zero. Printing "LKR 0" would be a price claim
+    the data does not support, and the cheapest-looking option in the list.
+    """
+    from src.orchestrator.main_graph import _connections_message
+
+    message = _connections_message(
+        [
+            {
+                "origin": "A",
+                "destination": "B",
+                "transfer_station": "C",
+                "departure_time": "08:00",
+                "arrival_time": "12:00",
+                "duration_minutes": 240,
+                "base_fare_lkr": 0,
+                "fare_known": False,
+                "legs": [{"mode": "BUS", "next_day": False}, {"mode": "BUS", "next_day": False}],
+            }
+        ],
+        {"preference": "time"},
+    )
+
+    assert "LKR 0" not in message
+    assert "not published" in message
+
+
+def test_clarification_no_longer_offers_train_or_bus_buttons() -> None:
+    """
+    Offering "Train" before knowing the origin asks the traveller to decide what
+    a train is before the agent can tell them whether one runs.
+    """
+    from src.orchestrator.main_graph import _journey_clarification_message
+
+    message, options = _journey_clarification_message(
+        ["mode", "time", "origin"], {"origin": "Kandy", "destination": "Colombo"}
+    )
+
+    assert options == [], "the train/bus buttons are gone"
+    # The question itself stays: the planner cannot know whether a traveller
+    # would accept a bus where a train runs, and one line of prose is a cheaper
+    # thing to answer than a row of buttons that pre-empt the decision.
+    assert "Train or bus?" in message
+    assert "Where are you starting from?" in message
+
+
+def test_a_preference_reply_is_only_read_after_being_asked() -> None:
+    """
+    "faster" in reply to the question means speed. In "what time is the bus?" it
+    means a timetable, and reading it as a preference would override it.
+    """
+    from src.planner.nlp_parser import extract_preference
+
+    assert extract_preference("faster", asked=True) == "time"
+    assert extract_preference("faster", asked=False) == ""
+    assert extract_preference("cheapest") == "budget", "an explicit answer needs no context"
+    assert extract_preference("what time is the bus?", asked=True) == ""

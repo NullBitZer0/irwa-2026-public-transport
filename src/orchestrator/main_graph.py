@@ -115,6 +115,7 @@ async def planning_agent_node(state: TransitSessionState) -> dict:
             time_preference=entities.get("departure_time"),
             raw_query=state["user_query"],
             avoid_modes=(advisory or {}).get("advisory", {}).get("avoid_modes") or [],
+            preference=entities.get("preference") or "",
         )
         jdata = journey.data or {}
     except Exception as exc:
@@ -123,6 +124,47 @@ async def planning_agent_node(state: TransitSessionState) -> dict:
 
     missing = jdata.get("missing") or []
     services = jdata.get("services") or []
+    connections = jdata.get("connections") or []
+
+    # No direct service, but a change exists. Ask which matters more instead of
+    # guessing: the planner picking for the traveller would be its opinion of
+    # whether their time or their money is worth more, and it is not the one
+    # paying.
+    if jdata.get("needs_preference"):
+        # Remember that the question has been asked, so the next turn's answer
+        # ("faster") is understood rather than treated as a timetable query.
+        SLOTS.merge(state["session_id"], {"preference_asked": True})
+        options = jdata.get("preference_options") or [
+            {"label": "⚡ Fastest", "value": "time"},
+            {"label": "💰 Cheapest", "value": "budget"},
+        ]
+        return {
+            "messages": [
+                _prepend_conditions(
+                    advisory,
+                    f"There's no direct service from **{entities.get('origin')}** to "
+                    f"**{entities.get('destination')}**, but you can change "
+                    "once along the way.\n\n"
+                    "Would you rather get there **as soon as possible**, or "
+                    "**spend as little as possible**?",
+                )
+            ],
+            "route_options": [],
+            "clarification": {"missing": ["preference"], "options": options},
+            "conditions": advisory,
+        }
+
+    # The traveller has chosen, so here are the options for that choice.
+    if connections and not services:
+        return {
+            "messages": [
+                _prepend_conditions(
+                    advisory, _connections_message(connections, entities)
+                )
+            ],
+            "route_options": _with_provenance(connections),
+            "conditions": advisory,
+        }
 
     if missing:
         msg, options = _journey_clarification_message(missing, jdata)
@@ -226,13 +268,11 @@ def _journey_clarification_message(missing: list[str], jdata: dict) -> tuple[str
         + f":\n\n{asked}\n\n"
         f'You can answer in one go: *"I need to go from Negombo to Colombo at 10am by bus"*'
     )
-    options: list[dict] = []
-    if "mode" in missing:
-        options = [
-            {"label": "🚆 Train", "value": "train"},
-            {"label": "🚌 Bus", "value": "bus"},
-        ]
-    return msg, options
+    # No train/bus buttons. They asked for a journey and were given a choice of
+    # operator before being asked where they were going, and offering "Train"
+    # here means the traveller has to decide what a train is before the agent
+    # can tell them whether one runs. The mode is the planner's problem.
+    return msg, []
 
 
 def _journey_services_message(services: list[dict], jdata: dict) -> str:
@@ -273,6 +313,71 @@ def _journey_services_message(services: list[dict], jdata: dict) -> str:
         + "\n\nAre you ready to book? Reply **yes** and I'll hold the first one "
         "for you, or name a different service from the list above."
     )
+
+
+def _connections_message(
+    connections: list[dict], entities: dict
+) -> str:
+    """
+    Renders the changes for the strategy the traveller chose, and says which.
+
+    Naming the strategy matters: two different answers to the same question
+    look like the agent changed its mind, and a traveller who asked for the
+    cheap option needs to see that it is cheaper — in fare and in time.
+    """
+    preference = entities.get("preference") or "time"
+    heading = (
+        "Here are the fastest ways to get there, changing once:"
+        if preference == "time"
+        else "Here are the cheapest ways to get there, changing once:"
+    )
+    lines = [heading]
+    for index, connection in enumerate(connections, 1):
+        legs = connection.get("legs") or []
+        if not legs:
+            continue
+
+        # origin → change → destination. Listing every leg's origin and
+        # destination repeats the hub ("Colombo → Colombo → Matara"), which
+        # reads as a detour the traveller does not make.
+        waypoints = (
+            f"{connection.get('origin')} → {connection.get('transfer_station')} "
+            f"→ {connection.get('destination')}"
+        )
+        modes = " + ".join(
+            sorted({leg["mode"].lower() for leg in legs})
+        )
+
+        fare = connection.get("base_fare_lkr")
+        if not connection.get("fare_known", False):
+            # Not zero, and not a quote: a leg has no published fare.
+            fare_text = "fare not published for one of the legs"
+        elif isinstance(fare, (int, float)) and fare:
+            fare_text = f"LKR {fare:,.0f}"
+        else:
+            fare_text = "fare not published"
+
+        duration = connection.get("duration_minutes") or 0
+        hours, minutes = divmod(int(duration), 60)
+
+        # An arrival clock alone is misleading when it is the next morning.
+        arrival = str(connection.get("arrival_time"))
+        next_day = any(leg.get("next_day") for leg in legs) or (
+            connection.get("overnight_change") and duration > 24 * 60
+        )
+        if next_day and not arrival.startswith("00"):
+            arrival = f"{arrival} +1 day"
+
+        lines.append(
+            f"{index}. 🕐 **{connection.get('departure_time')}** → "
+            f"**{arrival}** · {waypoints} ({modes}) · "
+            f"{hours}h {minutes:02d}m · {fare_text}"
+        )
+    lines.append(
+        "\nEach change means a separate ticket, so these are shown as plans "
+        "rather than something you can hold in one go."
+    )
+    return "\n".join(lines)
 
 
 def _seat_options() -> list[dict]:

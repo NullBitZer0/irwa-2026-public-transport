@@ -29,6 +29,9 @@ class ParsedTransitQuery(BaseModel):
     # "how many seats?" again after being told "1" is a small way to make the
     # agent feel like it was not listening.
     seat_count_stated: bool = False
+    # "time" (soonest) or "budget" (cheapest), when there is no direct service
+    # and the traveller has been asked which they want.
+    preference: str = ""
 
 
 SL_STATIONS: list[str] = [
@@ -245,6 +248,37 @@ SEAT_COUNT_PATTERNS = [
 
 MAX_SEATS = 8
 
+# Which the traveller wants when there is no direct service. Matched only
+# against these words, and only in reply to the question — "time" appears in
+# ordinary journey queries ("what time is the train"), so a bare mention of it
+# must not read as choosing the fast option.
+BUDGET_WORDS = {"cheaper", "cheap", "cheapest", "budget", "save", "saving", "economy", "lowest cost"}
+TIME_WORDS = {"faster", "fastest", "quickest", "soonest", "fast", "quick", "speed", "time"}
+
+
+def extract_preference(user_query: str, asked: bool = False) -> str:
+    """
+    "budget" or "time" when the traveller has answered the question, else "".
+
+    `asked` matters: outside the context of the question, "time" is far more
+    likely to be part of "what time does the bus leave" than a preference for
+    speed, and treating it as one would silently override their timetable.
+    """
+    text = user_query.strip().lower()
+    if _has_word(text, BUDGET_WORDS):
+        return "budget"
+    if not asked or not _has_word(text, TIME_WORDS):
+        return ""
+
+    # "what time is the bus?" is a timetable question, not a request for speed.
+    # Cheap to exclude and it would otherwise be read as choosing fast.
+    if any(
+        marker in text
+        for marker in ("what time", "which time", "time of", "time does", "arrive", "depart", "o'clock")
+    ) or re.search(r"\d{1,2}\s*(am|pm|:\d{2})", text):
+        return ""
+    return "time"
+
 
 def extract_seat_count(user_query: str) -> tuple[int, bool]:
     """
@@ -318,6 +352,7 @@ def extract_transit_intent(user_query: str) -> ParsedTransitQuery:
         intent = "CHECK_SEAT"
 
     seat_count, seat_count_stated = extract_seat_count(user_query)
+    preference = extract_preference(user_query)
 
     # Stations (English + Singlish direction markers, with fallback ordering)
     origin, destination = _detect_origin_destination(user_query)
@@ -331,6 +366,7 @@ def extract_transit_intent(user_query: str) -> ParsedTransitQuery:
         departure_time=departure_time,
         passengers=seat_count,
         seat_count_stated=seat_count_stated,
+        preference=preference,
     )
 
 

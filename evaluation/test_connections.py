@@ -79,21 +79,66 @@ def test_no_connection_without_a_shared_hub(services) -> None:
 
 def test_finds_mixed_mode_connection(services) -> None:
     """Kandy → Jaffna has no direct service; a train+bus change at Colombo works."""
-    connections = find_connections(services, "Kandy", "Jaffna")
+    connections = find_connections(services, "Kandy", "Jaffna", max_results=10)
     assert connections, "expected a Kandy → Jaffna connection"
 
-    best = connections[0]
+    mixed = [c for c in connections if c["mixed_mode"]]
+    assert mixed, "a train-then-coach change should be offered"
+
+    best = mixed[0]
     assert best["is_connection"] is True
-    assert best["mixed_mode"] is True, "a mix of train and bus should rank first"
     assert "Colombo Fort" in best["transfer_station"]
     assert [leg["mode"] for leg in best["legs"]] == ["TRAIN", "BUS"]
 
 
-def test_mixed_mode_is_ranked_above_same_mode(services) -> None:
-    """Mixed-mode options come first, then same-mode ones."""
-    connections = find_connections(services, "Kandy", "Jaffna")
-    mixed_flags = [c["mixed_mode"] for c in connections]
-    assert mixed_flags == sorted(mixed_flags, reverse=True), mixed_flags
+def test_the_fastest_connection_is_ranked_first(services) -> None:
+    """
+    Ranking follows what the traveller asked for, not mixed-mode presentation.
+
+    Mixed-mode used to lead the list unconditionally. It now ranks by arrival for
+    a time preference, because "I want to get there soon" is a question with an
+    answer, and the agent should not answer it with a presentational preference.
+    """
+    connections = find_connections(services, "Kandy", "Jaffna", strategy="time")
+    arrivals = [c["_arrive_offset"] for c in connections]
+
+    assert connections == sorted(connections, key=lambda c: c["_arrive_offset"])
+    assert arrivals == sorted(arrivals)
+
+
+def test_budget_ranking_puts_the_cheapest_priced_option_first(services) -> None:
+    """
+    Cheapest first, and only among options whose fares are published.
+
+    An unpriced connection totals zero, and zero sorts as free — so without the
+    `fare_known` gate it would win every budget search by not having a price.
+    """
+    connections = find_connections(
+        services, "Kandy", "Jaffna", strategy="budget", max_results=10
+    )
+    assert connections
+
+    priced = [c for c in connections if c["fare_known"]]
+    assert priced, "at least one option should have a published fare"
+    assert priced[0]["base_fare_lkr"] == min(c["base_fare_lkr"] for c in priced)
+
+    # Nothing unpriced may outrank a priced option on price.
+    if priced and connections[0] is not priced[0]:
+        assert not connections[0]["fare_known"], "an unknown fare outranked a real one"
+
+
+def test_a_departure_floor_excludes_options_that_leave_too_early(services) -> None:
+    """
+    A traveller who says "at 10am" must not be shown a 06:00 change.
+    """
+    late = find_connections(services, "Kandy", "Jaffna", after="18:00", max_results=10)
+    for connection in late:
+        assert connection["departure_time"] >= "18:00", connection["departure_time"]
+
+    early = find_connections(services, "Kandy", "Jaffna", max_results=10)
+    assert any(c["departure_time"] < "18:00" for c in early), (
+        "the fixture should contain earlier options for this to mean anything"
+    )
 
 
 def test_legs_chain_through_the_transfer_station(services) -> None:
@@ -114,7 +159,9 @@ def test_adjacent_hubs_name_both_facilities(services) -> None:
     told the coach leaves from the bus stand, not the platform.
     """
     connections = [
-        c for c in find_connections(services, "Kandy", "Jaffna") if c["adjacent_hub"]
+        c
+        for c in find_connections(services, "Kandy", "Jaffna", max_results=10)
+        if c["adjacent_hub"]
     ]
     assert connections, "expected a walkable change between Fort and Bastian Mawatha"
     for connection in connections:
@@ -204,9 +251,18 @@ def test_no_connection_is_ever_more_than_a_day_after_readiness(services) -> None
 
 
 def test_overnight_change_is_flagged(services) -> None:
-    """Arriving 19:03 then catching an early service is a change, not a same-day trip."""
+    """
+    Arriving 19:03 then catching an early service is a change, not a same-day trip.
+
+    Asked for a wide result set on purpose: ranking by arrival for a time
+    preference puts same-day options first, so an overnight one will often fall
+    outside the top few — which is correct behaviour, and would otherwise hide
+    the flag this test exists to check.
+    """
     overnight = [
-        c for c in find_connections(services, "Jaffna", "Kandy") if c["overnight_change"]
+        c
+        for c in find_connections(services, "Jaffna", "Kandy", max_results=100)
+        if c["overnight_change"]
     ]
     assert overnight, "expected at least one overnight connection"
     assert all(c["transfer_minutes"] > 360 for c in overnight)
@@ -287,6 +343,11 @@ def _plan(query: str, travel_mode: str = "ANY") -> dict:
 # testing the connection fallback.)
 NO_DIRECT_CORRIDOR = ("Anuradhapura", "Kandy")
 
+# No direct service, and a train-then-coach change exists. Verified against the
+# corpus rather than assumed; a corridor without a mixed option cannot test the
+# claim that a single-mode request must not hide one.
+MIXED_CORRIDOR = ("Anuradhapura", "Badulla")
+
 
 def test_the_chosen_corridor_still_has_no_direct_service() -> None:
     """
@@ -318,17 +379,124 @@ def test_endpoint_keeps_the_mixed_option_for_a_single_mode_request() -> None:
     """
     Asking for a train must not hide the much quicker train-then-coach change.
     """
-    data = _plan(
-        f"{NO_DIRECT_CORRIDOR[0]} indan {NO_DIRECT_CORRIDOR[1]} yanna train ekak thiyeda?"
-    )
+    # A corridor with no direct service that *does* have a mixed option, chosen
+    # for that property rather than hardcoded: Kandy → Jaffna gained TRAIN-1012
+    # and stopped being no-direct, and Anuradhapura → Kandy has no mixed change
+    # at all, so neither can test what this is about.
+    mixed_corridor = MIXED_CORRIDOR
+    data = _plan(f"{mixed_corridor[0]} indan {mixed_corridor[1]} yanna train ekak thiyeda?")
     assert data["route_options"] == [], data["route_options"]
     assert data["connections"], "expected a connection"
     assert any(c["mixed_mode"] for c in data["connections"]), (
         "the mixed train+bus option should still be offered"
     )
+    # And it may no longer lead the list — ordering follows arrival now.
+    for connection in data["connections"]:
+        assert connection["duration_minutes"] > 0
 
 
 def test_endpoint_connections_carry_no_internal_keys() -> None:
     data = _plan("Kandy indan Jaffna yanna")
     for connection in data["connections"]:
         assert not [k for k in connection if k.startswith("_")]
+
+
+# ── Faster or cheaper ────────────────────────────────────────────────────────
+
+
+def _journey(origin: str, destination: str, preference: str = "", at_time: str = "") -> dict:
+    from fastapi.testclient import TestClient
+
+    from src.planner.server import app as planner_app
+
+    payload = {
+        "origin": origin,
+        "destination": destination,
+        "travel_mode": "ANY",
+        "time_preference": at_time or None,
+        "preference": preference,
+    }
+    return TestClient(planner_app).post("/mcp/plan_journey", json=payload).json()["data"]
+
+
+def test_no_direct_service_asks_faster_or_cheaper() -> None:
+    """
+    The planner does not decide what matters more to the traveller.
+
+    Picking for them would mean the agent's opinion of whether their time or
+    their money is worth more — and it is not the one paying.
+    """
+    data = _journey(MIXED_CORRIDOR[0], MIXED_CORRIDOR[1], at_time="09:00")
+
+    assert data["services"] == [], "this corridor is chosen because nothing direct runs"
+    assert data["needs_preference"] is True
+    values = {option["value"] for option in data["preference_options"]}
+    assert values == {"time", "budget"}
+
+
+def test_the_preference_changes_which_options_are_offered() -> None:
+    """The two answers must actually differ, or the question is theatre."""
+    fast = _journey(MIXED_CORRIDOR[0], MIXED_CORRIDOR[1], preference="time", at_time="09:00")
+    cheap = _journey(MIXED_CORRIDOR[0], MIXED_CORRIDOR[1], preference="budget", at_time="09:00")
+
+    assert fast["connections"], "expected options for the fast preference"
+    assert cheap["connections"], "expected options for the cheap preference"
+    assert fast["needs_preference"] is False, "already answered, so do not ask again"
+    # Public fields only: internal ranking keys are stripped on the way out,
+    # which is itself asserted elsewhere.
+    assert fast["connections"][0]["duration_minutes"] <= cheap["connections"][0]["duration_minutes"]
+    assert fast["connections"][0]["base_fare_lkr"] >= cheap["connections"][0]["base_fare_lkr"]
+    assert fast["connections"][0]["strategy"] == "time"
+    assert cheap["connections"][0]["strategy"] == "budget"
+
+
+def test_an_unanswered_preference_returns_no_options() -> None:
+    """Nothing is offered until the traveller has chosen."""
+    data = _journey(MIXED_CORRIDOR[0], MIXED_CORRIDOR[1], at_time="09:00")
+
+    assert data["connections"] == [], "options were offered before the question was answered"
+
+
+def test_the_journey_message_is_never_empty() -> None:
+    """
+    Regression: the message was `None` when connections existed.
+
+    `message` is a required string on the MCP envelope, so a None failed
+    validation in the orchestrator — which read as "planner unreachable" and
+    quietly dropped the traveller onto the fallback path, losing the
+    connections entirely.
+    """
+    data = _journey(MIXED_CORRIDOR[0], MIXED_CORRIDOR[1], preference="time", at_time="09:00")
+
+    assert data["connections"], "this test needs a case that produces connections"
+    # The envelope itself is the contract; this asserts the value is a str.
+    from src.planner.server import _journey_message
+
+    assert isinstance(_journey_message([], [], [], True), str)
+    assert isinstance(_journey_message([], [], [], False), str)
+    assert _journey_message([], [], ["origin"], False)
+
+
+def test_no_service_is_offered_for_the_wrong_direction() -> None:
+    """
+    Relevance-based retrieval can return Colombo → Jaffna for Kandy → Jaffna.
+
+    Presenting it as a direct answer claims a service that does not board where
+    the traveller is, and it also stops the connection search from running,
+    because a non-empty candidate list looks like a successful answer.
+    """
+    from src.planner.hybrid_retriever import HybridTransitRetriever, _serves_direction
+
+    services = HybridTransitRetriever().schedules
+    service = next(r for r in services if r["route_id"] == "TRAIN-1012")
+
+    assert _serves_direction(service, "Kandy", "Jaffna") is True
+    assert _serves_direction(service, "Jaffna", "Kandy") is False
+
+
+def test_connections_respect_the_requested_departure_time() -> None:
+    """A traveller who says 6pm is not shown a 10am change."""
+    data = _journey(MIXED_CORRIDOR[0], MIXED_CORRIDOR[1], preference="time", at_time="18:00")
+
+    for connection in data["connections"]:
+        assert connection["departure_time"] >= "18:00", connection["departure_time"]

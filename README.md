@@ -537,7 +537,47 @@ The map is honest about what it is:
   unmapped is reported, never silently dropped, because a route that vanishes is
   reported by users as "the map is missing my bus".
 
-### 7. Conversations, booking and ticket history
+### 7. No direct service? Faster or cheaper
+
+When nothing runs directly from A to B, the agent says so and **asks whether you
+want it soon or cheap** rather than deciding for you:
+
+```
+Agent: There's no direct service from **Anuradhapura** to **Matara**, but you
+       can change once along the way. Would you rather get there **as soon as
+       possible**, or **spend as little as possible**?
+       [⚡ Fastest]  [💰 Cheapest]
+
+You: cheaper
+Agent: Here are the cheapest ways to get there, changing once:
+       1. 🕐 18:15 → 10:00 +1 day · Anuradhapura → Colombo Bastian Mawatha →
+          Colombo Fort → Matara (bus + train) · 15h 45m · LKR 1,676
+```
+
+Choosing **fastest** gives the soonest arrival (two buses, 8h 50m, LKR 2,216);
+choosing **cheapest** gives the lowest fare (bus + train, LKR 1,676). Which mode
+ends up in each leg is decided by the data, not hardcoded — a train is quicker on
+the long leg and a bus is quicker on the short one, and on some corridors that
+reverses.
+
+Details worth knowing:
+
+- **The train/bus buttons are gone.** The traveller described a journey, not a
+  preference for an operator; the mode is the planner's problem. (The question
+  still appears in prose, since the planner cannot know what the traveller will
+  accept.)
+- **An unpublished fare is never shown as free.** Many bus services have no
+  published fare. A change with an unpriced leg is reported as
+  *"fare not published"* and sorted *after* priced options — otherwise zero would
+  win every "cheapest" search by not having a price.
+- **Arrival times say "+1 day"** when the journey crosses midnight, so a clock
+  time is not mistaken for the same morning.
+- **Nothing is offered before the question is answered**, so the agent's opinion
+  of what matters more to you is not applied silently.
+- A change means **two separate tickets**, so these are shown as plans rather
+  than something you can hold in one go.
+
+### 8. Conversations, booking and ticket history
 
 **One conversation per trip.** A conversation opens with a new chat, collects
 what it needs, and ends when the payment completes. After that it becomes
@@ -579,6 +619,9 @@ Notes on that flow:
   strike must never depend on someone pressing a button, because the failure mode
   of gating it is confidently reporting a route as clear because nobody asked.
   The sidebar toggle controls the *simulated* incident only.
+- **A requested time that nothing departs at gets the nearest next departure**,
+  and says so — *"next one — nothing that close to your time"* — rather than
+  silently answering with a different hour.
 - **Every reply asks for whatever is still missing**, one question per line, in
   the order a trip is planned — from, to, when, how — after echoing what has
   already been established. Partial answers are answered with the single
@@ -616,7 +659,7 @@ database, which fails the live red-team job while every other job passes.
 sidebar lists finished conversations with their booking reference and message
 count; clicking one opens the transcript in read-only view.
 
-### 8. Bookings, payment and ticket history
+### 9. Bookings, payment and ticket history
 
 Booking is staged and human-in-the-loop: the agent holds a seat for 10 minutes,
 asks for approval, then stops at the payment step. **Only the last four card
@@ -645,7 +688,7 @@ Bookings and the purchase ledger are persisted in SQLite (`data/booking.db`),
 so they survive a container restart. Without `BOOKING_DB_PATH` the store is
 in-memory, which is what the test suite uses.
 
-### 9. Example Test Queries
+### 10. Example Test Queries
 
 * **Route Discovery (Singlish):**
 > *"Heta ude 6ta Kandy indan Galle yanna train ekak thiyeda?"*

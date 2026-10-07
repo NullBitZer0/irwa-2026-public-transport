@@ -416,6 +416,16 @@ async def chat(request: ChatRequest, user: dict = Depends(current_user)) -> Chat
 
     parsed = extract_transit_intent(user_query)
 
+    # "faster" only means a preference once we have actually asked the question.
+    if not parsed.preference:
+        was_asked = bool(SLOTS.get(session_id).get("preference_asked"))
+        if was_asked:
+            from src.planner.nlp_parser import extract_preference
+
+            parsed = parsed.model_copy(
+                update={"preference": extract_preference(user_query, asked=True)}
+            )
+
     # Fold this turn's entities into the slots gathered so far. Route planning is
     # a slot-filling conversation: "I need to go to Colombo" then "from Kandy at
     # 8am" has to combine, or the second turn asks for the destination again.
@@ -437,6 +447,10 @@ async def chat(request: ChatRequest, user: dict = Depends(current_user)) -> Chat
             # quietly reset three seats back to one.
             "passengers": parsed.passengers if parsed.seat_count_stated else None,
             "seat_count_stated": True if parsed.seat_count_stated else None,
+            # Only when this turn actually answered it: "" means "did not say",
+            # and the merge keeps whatever the traveller chose earlier.
+            "preference": parsed.preference or None,
+            "preference_asked": bool(SLOTS.get(session_id).get("preference_asked")) or None,
         },
     )
 
@@ -457,6 +471,10 @@ async def chat(request: ChatRequest, user: dict = Depends(current_user)) -> Chat
             # ever sees it — which is exactly what happened to these.
             "passengers": int(carried.get("passengers") or 1),
             "seat_count_stated": bool(carried.get("seat_count_stated")),
+            # Whether the faster-or-cheaper question has been put to them, so a
+            # reply of "faster" is only read as an answer when it was asked.
+            "preference": carried.get("preference") or "",
+            "preference_asked": bool(carried.get("preference_asked")),
         },
         "route_options": [],
         "selected_route_id": request.selected_route_id,

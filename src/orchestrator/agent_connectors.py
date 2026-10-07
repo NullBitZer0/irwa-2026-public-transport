@@ -163,6 +163,7 @@ class AgentDispatchBridge:
         time_preference: Optional[str] = None,
         raw_query: str = "",
         avoid_modes: Optional[list[str]] = None,
+        preference: str = "",
     ) -> AgentResponse:
         """
         Clarification-first journey search.
@@ -171,6 +172,9 @@ class AgentDispatchBridge:
         Returns what the traveller still needs to supply (a mode, a time) and,
         when it has enough, the services that board at the requested place and
         time — including long-distance coaches that only pass through.
+
+        `preference` is "time" or "budget" once the traveller has answered the
+        faster-or-cheaper question that follows having no direct service.
         """
         async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
             res = await client.post(
@@ -183,6 +187,7 @@ class AgentDispatchBridge:
                     # text a disruption was inferred from.
                     "avoid_modes": avoid_modes or [],
                     "time_preference": time_preference,
+                    "preference": preference or "",
                     "date_str": "TODAY",
                     "raw_query": raw_query,
                 },
