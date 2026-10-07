@@ -84,7 +84,11 @@ CITY_STATION = {
     "jaffna": "Jaffna",
     "kandy": "Kandy",
     "kegalle": "Kegalle",
-    "kunegala": "Kunegala",
+    # Both spellings map to the one the corpus already uses. They are separate
+    # keys in `MAJOR_CITIES`, and writing "Kunegala" onto rows meant every
+    # generated service was filed under a city name nothing else could match —
+    # so 440 rows existed and none were findable.
+    "kunegala": "Kurunegala",
     "kurunegala": "Kurunegala",
     "mannar": "Mannar",
     "matale": "Matale",

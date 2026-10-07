@@ -114,9 +114,27 @@ def _station_key(name: str) -> str:
     Only the leading token is significant, which lets adjacent-but-differently-named
     facilities match: "Colombo Fort" and "Colombo Bastian Mawatha" both key to
     "colombo", while "Kandy" and "Jaffna" stay distinct.
+
+    The exceptions are multi-word place names where the leading token is not a
+    city on its own. "Nuwara Eliya" keyed to "nuwara", which matches nothing —
+    not the corpus, not `MAJOR_CITIES`, not the fare chart — so every service
+    touching it looked like it served nowhere. `NUWARA_ELIYA` keeps the full
+    name as the key instead.
     """
-    tokens = [t for t in re.split(r"[^a-z0-9]+", name.lower()) if t]
+    lowered = name.lower()
+    if _is_nuwara_eliya(lowered):
+        return NUWARA_ELIYA
+    tokens = [t for t in re.split(r"[^a-z0-9]+", lowered) if t]
     return tokens[0] if tokens else ""
+
+
+# "Nuwara Eliya", and the misspellings that appear in the corpora.
+NUWARA_ELIYA = "nuwaraeliya"
+_NUWARA_ELIYA_SPELLINGS = ("nuwaraeliya", "nuwara eliya", "nuwaraeliya ")
+
+
+def _is_nuwara_eliya(lowered: str) -> bool:
+    return lowered.strip() in _NUWARA_ELIYA_SPELLINGS
 
 
 def _serves_direction(route: dict[str, Any], origin: str, destination: str) -> bool:

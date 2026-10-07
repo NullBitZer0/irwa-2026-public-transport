@@ -254,8 +254,14 @@ function ConnectionDetails({ route }) {
               </div>
             </div>
 
+            {/* A modelled or unpublished leg has no fare. Rendering LKR 0 would
+                read as free, which is the one thing it is not. */}
             <div className="conn__legFare">
-              LKR {Number(leg.base_fare_lkr ?? 0).toLocaleString('en-LK')}
+              {leg.base_fare_lkr ? (
+                `LKR ${Number(leg.base_fare_lkr).toLocaleString('en-LK')}`
+              ) : (
+                'Fare not published'
+              )}
             </div>
           </li>
         ))}

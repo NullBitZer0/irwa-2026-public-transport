@@ -53,6 +53,12 @@ app = FastAPI(
 
 _retriever = HybridTransitRetriever()
 
+# How far to look for a train-then-coach change when the traveller asked for one
+# mode. Deliberately wider than the default result set: the mixed option is
+# usually not the fastest thing on the corridor, so a narrow window tends to
+# exclude the very option being looked for.
+MIXED_FALLBACK_RESULTS = 20
+
 
 class PlanRouteRequest(BaseModel):
     origin: str = ""
@@ -135,10 +141,19 @@ async def plan_route(payload: PlanRouteRequest) -> dict:
         )
         if travel_mode != "ANY":
             already = {c["route_id"] for c in connections}
+            # A wide window on purpose. The default result set is small, so the
+            # one mixed option could fall outside it and never be offered —
+            # which is precisely the case this fallback exists to cover. Asking
+            # for more is cheap; returning a slower list than the traveller
+            # could have had is not.
             extra = [
                 c
                 for c in find_connections(
-                    _retriever.schedules, origin, destination, mode="ANY"
+                    _retriever.schedules,
+                    origin,
+                    destination,
+                    mode="ANY",
+                    max_results=MIXED_FALLBACK_RESULTS,
                 )
                 if c["mixed_mode"] and c["route_id"] not in already
             ]

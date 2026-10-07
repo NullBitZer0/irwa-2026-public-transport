@@ -61,7 +61,11 @@ STATION_ALIASES: dict[str, str] = {
     "hikkaduwa": "Hikkaduwa", "aluthgama": "Aluthgama", "kalutara": "Kalutara",
     "panadura": "Panadura", "moratuwa": "Moratuwa", "mountlavinia": "Mount Lavinia",
     "ambalangoda": "Ambalangoda",
-    "makumbura": "Makumbura MMC", "mmc": "Makumbura MMC", "kadawatha": "Kadawatha",
+    # "Kunegala" is the spelling on the SLTB route codes and the fare chart;
+    # "Kurunegala" is the city. Travellers type both, and "Kunegala to Matara"
+    # otherwise parses with no origin at all.
+    "kunegala": "Kurunegala", "makumbura": "Makumbura MMC",
+    "mmc": "Makumbura MMC", "kadawatha": "Kadawatha",
     "airport": "Katunayake Airport", "katunayake": "Katunayake Airport",
     "jaffna": "Jaffna", "anuradhapura": "Anuradhapura", "kurunegala": "Kurunegala",
     "maho": "Maho", "vavuniya": "Vavuniya", "kilinochchi": "Kilinochchi",

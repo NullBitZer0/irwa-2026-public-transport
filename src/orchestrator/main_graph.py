@@ -518,12 +518,20 @@ async def _keyword_route_search(state: TransitSessionState, entities: dict) -> d
         if routes:
             lines = []
             for i, r in enumerate(routes, 1):
+                # A service with no published fare must not render as LKR 0 —
+                # that reads as free, and it is the one thing it is not.
+                fare = r.get("base_fare_lkr") or 0
+                fare_text = (
+                    "fare not published"
+                    if not fare or r.get("fare_unknown")
+                    else f"LKR {fare:,.0f}"
+                )
                 lines.append(
                     f"{i}. **{r.get('service_name', r.get('route_id'))}** "
                     f"(`{r.get('route_id')}`)  "
                     f"{r.get('origin')} → {r.get('destination')} | "
                     f"Departs {r.get('departure_time')} | "
-                    f"LKR {r.get('base_fare_lkr', '?'):.0f}"
+                    f"{fare_text}"
                 )
             summary = "\n".join(lines)
             msg = (

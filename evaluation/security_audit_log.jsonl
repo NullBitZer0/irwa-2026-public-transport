@@ -1819,3 +1819,47 @@
 {"timestamp": "2026-10-07T19:07:07.418907+00:00", "event_type": "BOOKING_BLOCKED_NO_HITL", "detail": "transaction_id=TXN-84BD87F5 reason=Confirmation token signature does not verify."}
 {"timestamp": "2026-10-07T19:07:07.422566+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=CLARIFY input_length=63"}
 {"timestamp": "2026-10-07T19:07:07.599185+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=CLARIFY input_length=63"}
+{"timestamp": "2026-10-07T20:10:11.811398+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=51"}
+{"timestamp": "2026-10-07T20:10:18.825662+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=58"}
+{"timestamp": "2026-10-07T20:14:10.875411+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=58"}
+{"timestamp": "2026-10-07T20:30:32.797469+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=58"}
+{"timestamp": "2026-10-07T20:30:32.922729+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=31"}
+{"timestamp": "2026-10-07T20:30:55.373632+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=58"}
+{"timestamp": "2026-10-07T20:35:33.554620+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=58"}
+{"timestamp": "2026-10-07T20:36:06.331483+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=29"}
+{"timestamp": "2026-10-07T20:36:06.412686+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=32"}
+{"timestamp": "2026-10-07T20:36:06.413328+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='system\\\\s+override' input_length=15"}
+{"timestamp": "2026-10-07T20:36:06.413867+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='set\\\\s+fare\\\\s+to\\\\s+0' input_length=13"}
+{"timestamp": "2026-10-07T20:36:06.414373+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='script\\\\s*(alert|src)' input_length=25"}
+{"timestamp": "2026-10-07T20:36:06.414998+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='disregard.*instructions?' input_length=60"}
+{"timestamp": "2026-10-07T20:36:06.415603+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='system\\\\s+(override|prompt|message)' input_length=55"}
+{"timestamp": "2026-10-07T20:36:06.415994+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=44"}
+{"timestamp": "2026-10-07T20:36:06.416508+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=44"}
+{"timestamp": "2026-10-07T20:36:06.417064+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=33"}
+{"timestamp": "2026-10-07T20:36:06.417624+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='you\\\\s+are\\\\s+now\\\\s+(a\\\\s+)?(dan|developer\\\\s+mode|jailbroken)' input_length=65"}
+{"timestamp": "2026-10-07T20:36:06.418157+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='system\\\\s+(override|prompt|message)' input_length=63"}
+{"timestamp": "2026-10-07T20:36:06.418956+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='(make|change|force|reduce|lower|adjust).*fare.*(0|zero|o|free)' input_length=51"}
+{"timestamp": "2026-10-07T20:36:06.419688+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='<[^>]*\\\\son\\\\w+\\\\s*=' input_length=42"}
+{"timestamp": "2026-10-07T20:36:06.420296+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='union\\\\s+select' input_length=32"}
+{"timestamp": "2026-10-07T20:36:06.508494+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=56"}
+{"timestamp": "2026-10-07T20:36:06.589165+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=56"}
+{"timestamp": "2026-10-07T20:36:07.216179+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=46"}
+{"timestamp": "2026-10-07T20:36:07.297672+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='ignore\\\\s+(all\\\\s+)?previous\\\\s+instructions' input_length=159"}
+{"timestamp": "2026-10-07T20:36:07.955130+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=109"}
+{"timestamp": "2026-10-07T20:36:08.489194+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=175"}
+{"timestamp": "2026-10-07T20:36:08.568834+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='system\\\\s+(override|prompt|message)' input_length=39"}
+{"timestamp": "2026-10-07T20:36:08.599313+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='repeat\\\\s+(the\\\\s+)?(above|everything)' input_length=65"}
+{"timestamp": "2026-10-07T20:36:08.765831+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=80"}
+{"timestamp": "2026-10-07T20:36:08.809119+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='do\\\\s+anything\\\\s+now' input_length=179"}
+{"timestamp": "2026-10-07T20:36:08.921648+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=CLARIFY input_length=135"}
+{"timestamp": "2026-10-07T20:36:09.046815+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=CLARIFY input_length=61"}
+{"timestamp": "2026-10-07T20:36:09.093645+00:00", "event_type": "PII_REDACTED", "detail": "fields_redacted=1"}
+{"timestamp": "2026-10-07T20:36:09.223629+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=78"}
+{"timestamp": "2026-10-07T20:36:09.400543+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=59"}
+{"timestamp": "2026-10-07T20:36:09.451430+00:00", "event_type": "PROMPT_INJECTION_BLOCKED", "detail": "pattern='script\\\\s*(alert|src)' input_length=46"}
+{"timestamp": "2026-10-07T20:36:10.136373+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=29"}
+{"timestamp": "2026-10-07T20:36:10.805548+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=PLAN_ROUTE input_length=106"}
+{"timestamp": "2026-10-07T20:36:10.984616+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=CLARIFY input_length=63"}
+{"timestamp": "2026-10-07T20:36:11.167102+00:00", "event_type": "BOOKING_BLOCKED_NO_HITL", "detail": "transaction_id=TXN-41CCA289 reason=Confirmation token signature does not verify."}
+{"timestamp": "2026-10-07T20:36:11.171114+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=CLARIFY input_length=63"}
+{"timestamp": "2026-10-07T20:36:11.345548+00:00", "event_type": "QUERY_ALLOWED", "detail": "intent=CLARIFY input_length=63"}

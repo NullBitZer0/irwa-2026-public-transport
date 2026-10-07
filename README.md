@@ -786,10 +786,10 @@ Route retrieval reads `data/processed/train_schedules.json` and
 timetables**, which keeps every row traceable, plus generated rows that are
 always flagged `synthetic: true` with the fields that were derived named.
 
-Across the 22 major-city pairs of interest there are currently **75 direct
-corridors and 80 more reachable with a single change**. The remaining 76 have
-neither a published fare nor a published timetable anywhere in the sources, so
-no service is invented for them and the agent says so.
+All 21 major cities are now mutually reachable: **134 corridors run direct** and
+a further **76 are reachable with a single change**. The fare is published for
+`GEN-` rows and estimated for `MOD-` rows — see below for why the difference
+matters.
 
 When no direct service runs between two stations, the planner falls back to a
 **one-stop connection** and prefers one that mixes train with bus (for example
@@ -829,18 +829,44 @@ python -m src.planner.generate_missing_corridors
 had a published NTC fare but no service rows in the corpus, which meant a real,
 operating corridor looked like it did not exist. This adds service rows for them.
 
-The distinction it is built on:
-
-* A pair **in the fare chart** is a corridor NTC operates and has priced. Filling
-  in its departures completes a record.
-* A pair **with no published fare** is not a corridor we have any published
-  evidence for. Nothing is created for it. The generator reports how many major
-  city pairs remain unreachable rather than papering over it, and the agent tells
-  the traveller to check with the operator.
-
-Generated rows carry `synthetic: true`. The **fare is published**, not derived —
+A pair **in the fare chart** is a corridor NTC operates and has priced, so filling
+in its departures completes a record. The **fare is published**, not derived —
 only the departure times and the derived journey duration are flagged in
-`synthetic_fields`.
+`synthetic_fields`. These rows are bookable.
+
+### Corridors with no published source at all
+
+```bash
+python -m src.planner.generate_unpublished_corridors --dry-run
+python -m src.planner.generate_unpublished_corridors
+```
+
+The remaining major-city pairs have no fare in the chart and no timetable
+anywhere in the sources. Nothing can be *completed* for them, so this generator
+**models** them instead, and the distinction is kept strict:
+
+| | priced corridors | modelled corridors |
+| --- | --- | --- |
+| Prefix | `GEN-` | `MOD-` |
+| Fare | published by NTC | **none written** |
+| Bookable | yes | **no** |
+
+A modelled row carries no `base_fare_lkr` and sets `fare_unknown`, so the Booking
+Agent refuses it. The price the timetable shows comes from the estimator in
+`fares.py` — the same fitted model used everywhere else — marked `est.` and
+carrying `fare_estimated: true`. Charging a traveller an amount we modelled is
+not the same as charging what the operator charges, so modelled fares never reach
+the money path. `evaluation/test_modelled_corridors.py` asserts this.
+
+Timetables are modelled rather than invented flat. Intercity coaches bunch in the
+morning and evening peaks and thin out mid-afternoon, longer corridors run more
+services, journey times vary between runs of one corridor, and a long evening
+departure is flagged as arriving next day. Each corridor is seeded from its own
+route id, so re-running either generator produces no diff — the corpus is a
+committed fixture.
+
+All 210 major-city pairs now have a service: 134 direct, 76 reachable with one
+change, none unreachable.
 
 ### Widening coverage
 

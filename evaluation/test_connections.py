@@ -261,7 +261,7 @@ def test_overnight_change_is_flagged(services) -> None:
     """
     overnight = [
         c
-        for c in find_connections(services, "Jaffna", "Kandy", max_results=100)
+        for c in find_connections(services, "Ampara", "Batticaloa", max_results=100)
         if c["overnight_change"]
     ]
     assert overnight, "expected at least one overnight connection"
@@ -346,7 +346,35 @@ NO_DIRECT_CORRIDOR = ("Ampara", "Batticaloa")
 # No direct service, and a train-then-coach change exists. Verified against the
 # corpus rather than assumed; a corridor without a mixed option cannot test the
 # claim that a single-mode request must not hide one.
+#
+# Both preferences must also return a *priced* option, or the comparison between
+# them compares an unknown fare against a known one and proves nothing. Modelled
+# corridors carry no published fare, so the corpus is re-checked rather than
+# assumed here too.
 MIXED_CORRIDOR = ("Jaffna", "Matara")
+
+# No direct service, and both preferences return a *priced* option that differ.
+# Separate from MIXED_CORRIDOR because the two properties do not coexist: the one
+# corridor left with a mixed change has its fastest option on a modelled leg, and
+# comparing an unknown fare against a known one would prove nothing about which
+# preference is cheaper.
+PREFERENCE_CORRIDOR = ("Galle", "Jaffna")
+
+
+def test_the_chosen_corridor_still_has_a_mixed_option() -> None:
+    """
+    Guards the premise of the single-mode test below.
+
+    It claims a mixed train+bus change is being kept visible, so the corridor
+    has to have one — otherwise the test passes while checking nothing.
+    """
+    origin, destination = MIXED_CORRIDOR
+    retriever = HybridTransitRetriever()
+    connections = find_connections(retriever.schedules, origin, destination, max_results=20)
+    assert any(c["mixed_mode"] for c in connections), (
+        f"{origin} -> {destination} has no mixed train+bus change; pick another "
+        f"corridor for the single-mode tests"
+    )
 
 
 def test_the_chosen_corridor_still_has_no_direct_service() -> None:
@@ -426,7 +454,7 @@ def test_no_direct_service_asks_faster_or_cheaper() -> None:
     Picking for them would mean the agent's opinion of whether their time or
     their money is worth more — and it is not the one paying.
     """
-    data = _journey(MIXED_CORRIDOR[0], MIXED_CORRIDOR[1], at_time="09:00")
+    data = _journey(PREFERENCE_CORRIDOR[0], PREFERENCE_CORRIDOR[1], at_time="09:00")
 
     assert data["services"] == [], "this corridor is chosen because nothing direct runs"
     assert data["needs_preference"] is True
@@ -436,8 +464,8 @@ def test_no_direct_service_asks_faster_or_cheaper() -> None:
 
 def test_the_preference_changes_which_options_are_offered() -> None:
     """The two answers must actually differ, or the question is theatre."""
-    fast = _journey(MIXED_CORRIDOR[0], MIXED_CORRIDOR[1], preference="time", at_time="09:00")
-    cheap = _journey(MIXED_CORRIDOR[0], MIXED_CORRIDOR[1], preference="budget", at_time="09:00")
+    fast = _journey(PREFERENCE_CORRIDOR[0], PREFERENCE_CORRIDOR[1], preference="time", at_time="09:00")
+    cheap = _journey(PREFERENCE_CORRIDOR[0], PREFERENCE_CORRIDOR[1], preference="budget", at_time="09:00")
 
     assert fast["connections"], "expected options for the fast preference"
     assert cheap["connections"], "expected options for the cheap preference"
@@ -452,7 +480,7 @@ def test_the_preference_changes_which_options_are_offered() -> None:
 
 def test_an_unanswered_preference_returns_no_options() -> None:
     """Nothing is offered until the traveller has chosen."""
-    data = _journey(MIXED_CORRIDOR[0], MIXED_CORRIDOR[1], at_time="09:00")
+    data = _journey(PREFERENCE_CORRIDOR[0], PREFERENCE_CORRIDOR[1], at_time="09:00")
 
     assert data["connections"] == [], "options were offered before the question was answered"
 

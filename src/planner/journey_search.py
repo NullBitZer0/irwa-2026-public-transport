@@ -49,7 +49,9 @@ MAJOR_CITIES: frozenset[str] = frozenset(
         "trincomalee",
         "batticaloa",
         "badulla",
-        "kunegala",
+        # One city, one entry. "Kunegala" and "Kurunegala" are the same place,
+        # and listing both made every corridor between them unsatisfiable by
+        # construction while also splitting the corpus by spelling.
         "kurunegala",
         "ratnapura",
         "kegalle",
