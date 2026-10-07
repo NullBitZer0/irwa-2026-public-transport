@@ -39,6 +39,15 @@ class TransitSessionState(TypedDict):
     sets is the client asserting its own approval.
     """
 
+    hitl_tokens: list[str]
+    """
+    One confirmation per leg, for a journey that needs a change.
+
+    A connection is two services and one change, so it is gated twice: each leg's
+    token is bound to that leg's own route and fare. A single token covering the
+    pair would let a confirmation obtained for one leg be spent on the other.
+    """
+
     # ── NLP entities (populated by Planning Agent) ────────────────────────────
     extracted_entities: Optional[dict]
     """Structured entities: origin, destination, mode, date, time, etc."""
@@ -59,6 +68,15 @@ class TransitSessionState(TypedDict):
 
     transaction_id: Optional[str]
     """Seat-hold transaction id, needed by the UI payment portal."""
+
+    transaction_ids: list[str]
+    """
+    Every hold behind the booking.
+
+    A journey with a change holds a seat per leg and is paid for as one purchase,
+    so payment needs all of them. `transaction_id` above stays the first, so the
+    single-service flow is unchanged.
+    """
 
     amount_lkr: Optional[float]
     """Amount due for the held seat, quoted to the traveller."""

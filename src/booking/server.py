@@ -77,6 +77,9 @@ class HoldRequest(BaseModel):
     route_id: str
     provider: str = "SLR"
     session_id: str = "anonymous"
+    # Set when this seat is one leg of a larger journey, so the legs are resumed
+    # and paid for together.
+    booking_group_id: str = ""
     passenger_token: str
     seat_count: int = 1
     fare_lkr: float = 0.0
@@ -143,6 +146,9 @@ class BookTicketRequest(BaseModel):
     # R-09: the signed confirmation the traveller's approval produced.
     hitl_token: str = ""
     session_id: str = "anonymous"
+    # Set when this seat is one leg of a larger journey, so the legs are resumed
+    # and paid for together.
+    booking_group_id: str = ""
     card_last4: str = "0000"      # mock card digits for the demo payment step
 
 
@@ -212,6 +218,20 @@ async def hold_seat(req: HoldRequest) -> dict:
     if inventory["status"] == "SOLD_OUT":
         raise HTTPException(status_code=409, detail="No seats available for this route.")
 
+    # A connection is not a route. The planner builds ids like
+    # `CONN-SLTB-1-COLO-KAND-SLTB-2-KAND-COLO-0510` to represent *two* services
+    # and one change between them, and this endpoint would cheerfully hold a seat
+    # against that id and issue a ticket for a service that does not run.
+    # Connections are expanded into their legs before they get here.
+    if str(req.route_id).upper().startswith("CONN-"):
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "A connection is two services and one change, not a route that can "
+                "be held. Book the legs individually."
+            ),
+        )
+
     txn_id = f"TXN-{uuid.uuid4().hex[:8].upper()}"
     txn = _state_machine.initiate_hold(
         txn_id=txn_id,
@@ -221,6 +241,7 @@ async def hold_seat(req: HoldRequest) -> dict:
         seats=req.seat_count,
         fare=req.fare_lkr,
         session_id=req.session_id,
+        booking_group_id=req.booking_group_id,
     )
 
     return {
@@ -374,6 +395,7 @@ async def begin_booking(req: BookTicketRequest) -> dict:
             seat_count=req.seat_count,
             fare_lkr=req.fare_lkr,
             session_id=req.session_id,
+            booking_group_id=req.booking_group_id,
         )
     )
     txn_id = hold_result["data"]["transaction"]["transaction_id"]
@@ -483,24 +505,43 @@ def pending_holds() -> dict:
     now = datetime.now(tz=timezone.utc)
     entries: list[dict] = []
 
+    # Holds that are legs of one journey are offered as one item. A traveller
+    # resuming an interrupted checkout wants their connection back, not one leg
+    # of it, and paying for half of a journey strands them at the change.
+    grouped: dict[str, list] = {}
     for txn in _state_machine.active_holds():
         if txn.hold_expires_at and now > txn.hold_expires_at:
             continue
         if txn.fare_lkr <= 0:
             continue
+        grouped.setdefault(txn.booking_group_id or txn.transaction_id, []).append(txn)
+
+    for legs in grouped.values():
+        first = legs[0]
         entries.append(
             {
-                "transaction_id": txn.transaction_id,
-                "route_id": txn.route_id,
-                "provider": txn.provider,
-                "seat_count": txn.seat_count,
-                "fare_lkr": txn.fare_lkr,
-                "amount_due_lkr": txn.fare_lkr,
-                "state": txn.state.value,
-                "hold_expires_at": txn.hold_expires_at.isoformat()
-                if txn.hold_expires_at
+                "transaction_id": first.transaction_id,
+                # Every leg, so payment settles the whole journey at once.
+                "transaction_ids": [leg.transaction_id for leg in legs],
+                "booking_group_id": first.booking_group_id or None,
+                "is_connection": len(legs) > 1,
+                "route_id": " → ".join(
+                    f"{leg.route_id}" for leg in legs
+                ),
+                "provider": first.provider,
+                "seat_count": first.seat_count,
+                # The fare is per seat, so the amount due covers every seat on
+                # every leg. Anything else would under-quote the connection.
+                "fare_lkr": first.fare_lkr,
+                "amount_due_lkr": sum(leg.amount_lkr for leg in legs),
+                "state": legs[0].state.value,
+                "hold_expires_at": min(
+                    (leg.hold_expires_at for leg in legs if leg.hold_expires_at),
+                    default=None,
+                ).isoformat()
+                if any(leg.hold_expires_at for leg in legs)
                 else None,
-                "provider_contact": contact_for(txn.provider, txn.route_id),
+                "provider_contact": contact_for(first.provider, first.route_id),
             }
         )
 

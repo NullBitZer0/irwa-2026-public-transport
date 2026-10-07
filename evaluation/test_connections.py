@@ -78,17 +78,17 @@ def test_no_connection_without_a_shared_hub(services) -> None:
 # ── Finding connections ──────────────────────────────────────────────────────
 
 def test_finds_mixed_mode_connection(services) -> None:
-    """Kandy → Jaffna has no direct service; a train+bus change at Colombo works."""
-    connections = find_connections(services, "Kandy", "Jaffna", max_results=10)
-    assert connections, "expected a Kandy → Jaffna connection"
+    """Jaffna → Matara has no direct service; a coach-then-train change at Colombo works."""
+    connections = find_connections(services, "Jaffna", "Matara", max_results=10)
+    assert connections, "expected a Jaffna → Matara connection"
 
     mixed = [c for c in connections if c["mixed_mode"]]
-    assert mixed, "a train-then-coach change should be offered"
+    assert mixed, "a bus-then-train change should be offered"
 
     best = mixed[0]
     assert best["is_connection"] is True
     assert "Colombo Fort" in best["transfer_station"]
-    assert [leg["mode"] for leg in best["legs"]] == ["TRAIN", "BUS"]
+    assert [leg["mode"] for leg in best["legs"]] == ["BUS", "TRAIN"]
 
 
 def test_the_fastest_connection_is_ranked_first(services) -> None:
@@ -99,7 +99,7 @@ def test_the_fastest_connection_is_ranked_first(services) -> None:
     a time preference, because "I want to get there soon" is a question with an
     answer, and the agent should not answer it with a presentational preference.
     """
-    connections = find_connections(services, "Kandy", "Jaffna", strategy="time")
+    connections = find_connections(services, "Jaffna", "Matara", strategy="time")
     arrivals = [c["_arrive_offset"] for c in connections]
 
     assert connections == sorted(connections, key=lambda c: c["_arrive_offset"])
@@ -131,18 +131,18 @@ def test_a_departure_floor_excludes_options_that_leave_too_early(services) -> No
     """
     A traveller who says "at 10am" must not be shown a 06:00 change.
     """
-    late = find_connections(services, "Kandy", "Jaffna", after="18:00", max_results=10)
+    late = find_connections(services, "Jaffna", "Matara", after="18:00", max_results=10)
     for connection in late:
         assert connection["departure_time"] >= "18:00", connection["departure_time"]
 
-    early = find_connections(services, "Kandy", "Jaffna", max_results=10)
+    early = find_connections(services, "Jaffna", "Matara", max_results=10)
     assert any(c["departure_time"] < "18:00" for c in early), (
         "the fixture should contain earlier options for this to mean anything"
     )
 
 
 def test_legs_chain_through_the_transfer_station(services) -> None:
-    for connection in find_connections(services, "Kandy", "Jaffna"):
+    for connection in find_connections(services, "Jaffna", "Matara"):
         first, second = connection["legs"]
         # Same hub, though it may be two adjacent facilities with different names.
         assert _station_key(first["destination"]) == _station_key(second["origin"]), (
@@ -160,7 +160,7 @@ def test_adjacent_hubs_name_both_facilities(services) -> None:
     """
     connections = [
         c
-        for c in find_connections(services, "Kandy", "Jaffna", max_results=10)
+        for c in find_connections(services, "Jaffna", "Matara", max_results=10)
         if c["adjacent_hub"]
     ]
     assert connections, "expected a walkable change between Fort and Bastian Mawatha"
@@ -170,7 +170,7 @@ def test_adjacent_hubs_name_both_facilities(services) -> None:
 
 
 def test_connection_totals_match_its_legs(services) -> None:
-    for connection in find_connections(services, "Kandy", "Jaffna"):
+    for connection in find_connections(services, "Jaffna", "Matara"):
         expected = sum(float(leg["base_fare_lkr"] or 0) for leg in connection["legs"])
         assert connection["base_fare_lkr"] == pytest.approx(expected)
         assert connection["origin"] == connection["legs"][0]["origin"]
@@ -179,7 +179,7 @@ def test_connection_totals_match_its_legs(services) -> None:
 
 def test_connection_is_not_bookable_as_one_ticket(services) -> None:
     """Two legs are two tickets, so the UI must not offer a single seat hold."""
-    for connection in find_connections(services, "Kandy", "Jaffna"):
+    for connection in find_connections(services, "Jaffna", "Matara"):
         assert connection["bookable"] is False
 
 
@@ -187,7 +187,7 @@ def test_connection_is_not_bookable_as_one_ticket(services) -> None:
 
 def test_connection_respects_minimum_changeover(services) -> None:
     """The Kandy→Colombo train arrives 18:05 and the coach leaves 18:30."""
-    best = find_connections(services, "Kandy", "Jaffna")[0]
+    best = find_connections(services, "Jaffna", "Matara")[0]
     assert best["transfer_minutes"] >= 20, best["transfer_minutes"]
 
 
@@ -283,12 +283,12 @@ def test_total_duration_is_positive(services) -> None:
 # ── Mode handling ────────────────────────────────────────────────────────────
 
 def test_train_only_query_keeps_both_legs_as_trains(services) -> None:
-    for connection in find_connections(services, "Kandy", "Jaffna", mode="TRAIN"):
+    for connection in find_connections(services, "Jaffna", "Matara", mode="TRAIN"):
         assert [leg["mode"] for leg in connection["legs"]] == ["TRAIN", "TRAIN"]
 
 
 def test_bus_only_query_keeps_both_legs_as_buses(services) -> None:
-    found = find_connections(services, "Kandy", "Jaffna", mode="BUS")
+    found = find_connections(services, "Jaffna", "Matara", mode="BUS")
     for connection in found:
         assert all(leg["mode"] == "BUS" for leg in connection["legs"])
 
@@ -302,14 +302,14 @@ def test_ranking_is_idempotent(services) -> None:
     The endpoint combines two searches and ranks the union, so ranking must be
     safe to apply to already-ranked connections.
     """
-    once = find_connections(services, "Kandy", "Jaffna")
+    once = find_connections(services, "Jaffna", "Matara")
     twice = rank_connections(rank_connections(list(once)))
     assert [c["route_id"] for c in once] == [c["route_id"] for c in twice]
 
 
 def test_public_connections_hides_internal_keys(services) -> None:
     """Internal ranking keys must not leak into the API response."""
-    stripped = public_connections(find_connections(services, "Kandy", "Jaffna"))
+    stripped = public_connections(find_connections(services, "Jaffna", "Matara"))
     assert stripped
     for connection in stripped:
         assert not [k for k in connection if k.startswith("_")]
@@ -341,12 +341,12 @@ def _plan(query: str, travel_mode: str = "ANY") -> dict:
 # until a direct service was added to the corpus, which is why the pair is
 # asserted rather than assumed: a fixture change should not silently stop
 # testing the connection fallback.)
-NO_DIRECT_CORRIDOR = ("Anuradhapura", "Kandy")
+NO_DIRECT_CORRIDOR = ("Ampara", "Batticaloa")
 
 # No direct service, and a train-then-coach change exists. Verified against the
 # corpus rather than assumed; a corridor without a mixed option cannot test the
 # claim that a single-mode request must not hide one.
-MIXED_CORRIDOR = ("Anuradhapura", "Badulla")
+MIXED_CORRIDOR = ("Jaffna", "Matara")
 
 
 def test_the_chosen_corridor_still_has_no_direct_service() -> None:

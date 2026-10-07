@@ -164,7 +164,10 @@ def test_unpaid_booking_appears_as_awaiting_payment(client: TestClient) -> None:
     entry = entries[0]
     assert entry["transaction_id"] == txn_id
     assert entry["state"] == "AWAITING_PAYMENT"
-    assert entry["amount_due_lkr"] == 950.0
+    # 950 per seat × 2 seats. This used to read back as 950, which under-quoted
+    # the checkout the sidebar was inviting the traveller to pay.
+    assert entry["fare_lkr"] == 950.0
+    assert entry["amount_due_lkr"] == 1900.0
     assert entry["seat_count"] == 2
     assert entry["hold_expires_at"]
     assert entry["provider_contact"]["name"] == "Sri Lanka Transport Board"

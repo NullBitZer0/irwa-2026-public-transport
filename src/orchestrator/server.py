@@ -85,6 +85,9 @@ class ChatRequest(BaseModel):
     # verbatim from the previous turn. There is no boolean equivalent on purpose:
     # `hitl_approved: true` would be the client approving itself.
     hitl_token: Optional[str] = None
+    # A journey with a change is confirmed leg by leg, so the client returns one
+    # token per leg. `hitl_token` above stays for a single-service booking.
+    hitl_tokens: list[str] = []
     selected_route_id: Optional[str] = None
     passenger_token: Optional[str] = None
 
@@ -101,6 +104,8 @@ class ChatResponse(BaseModel):
     booking_status: Optional[str] = None
     # Payment step: a held seat exposes what is owed so the UI can collect it.
     transaction_id: Optional[str] = None
+    # A connection holds a seat per leg, so payment covers a list.
+    transaction_ids: list[str] = []
     amount_lkr: Optional[float] = None
     seat_count: Optional[int] = None
     # Populated when the planner needs the traveller to choose a mode or give a
@@ -109,6 +114,9 @@ class ChatResponse(BaseModel):
     # R-09: the confirmation token for the booking now on screen. The UI holds it
     # while it waits for the traveller and returns it verbatim on approval.
     hitl_token: Optional[str] = None
+    # A journey with a change issues one token per leg. Both come back here, and
+    # both have to come back on approval.
+    hitl_tokens: list[str] = []
 
 
 class PaymentRequest(BaseModel):
@@ -118,21 +126,35 @@ class PaymentRequest(BaseModel):
     `card_last4` is the only card data this system accepts; a real deployment
     would use the payment provider's hosted field so no PAN or CVV is ever
     transmitted to us.
+
+    A journey with a change is two tickets, so `transaction_ids` carries both
+    holds. `transaction_id` remains for a single-service booking.
     """
 
-    transaction_id: str
+    transaction_id: str = ""
+    transaction_ids: list[str] = []
     card_last4: str
     provider: str = "SLR"
 
+    def all_transactions(self) -> list[str]:
+        """Every hold to settle, de-duplicated and order-preserving."""
+        seen: list[str] = []
+        for candidate in [self.transaction_id, *self.transaction_ids]:
+            if candidate and candidate not in seen:
+                seen.append(candidate)
+        return seen
+
 
 class PaymentResponse(BaseModel):
-    """Result of a settled payment."""
+    """Result of a settled payment. A connection returns one ticket per leg."""
 
     status: str
     booking_reference: Optional[str] = None
     receipt: dict = {}
     ticket: dict = {}
     purchase: dict = {}
+    tickets: list[dict] = []
+    receipts: list[dict] = []
 
 
 # ── Auth ──────────────────────────────────────────────────────────────────────
@@ -476,11 +498,13 @@ async def chat(request: ChatRequest, user: dict = Depends(current_user)) -> Chat
             "preference": carried.get("preference") or "",
             "preference_asked": bool(carried.get("preference_asked")),
         },
+        "hitl_tokens": list(request.hitl_tokens or []),
         "route_options": [],
         "selected_route_id": request.selected_route_id,
         "booking_status": None,
         "booking_reference": None,
         "transaction_id": None,
+        "transaction_ids": [],
         "amount_lkr": None,
         "seat_count": None,
         "clarification": None,
@@ -553,6 +577,8 @@ async def chat(request: ChatRequest, user: dict = Depends(current_user)) -> Chat
             transaction_id=result.get("transaction_id"),
             amount_lkr=result.get("amount_lkr"),
             seat_count=result.get("seat_count"),
+        hitl_tokens=result.get("hitl_tokens") or [],
+            transaction_ids=result.get("transaction_ids") or [],
             clarification=result.get("clarification"),
         )
 
@@ -570,6 +596,9 @@ async def payment(request: PaymentRequest, user: dict = Depends(current_user)) -
     actually chosen how to pay. The Orchestrator stays the only client of the
     Booking Agent, so the UI never touches a sub-agent directly.
 
+    A journey with a change arrives here as two holds and leaves as two tickets,
+    which is what it is: the traveller boards two services and buys two seats.
+
     Only `card_last4` is accepted. A full card number must never be sent here:
     a real integration would have the payment provider's hosted field collect it
     and return an opaque token.
@@ -580,35 +609,59 @@ async def payment(request: PaymentRequest, user: dict = Depends(current_user)) -
             detail="card_last4 must be exactly 4 digits; never send a full card number.",
         )
 
-    try:
-        response = await _bridge.settle_booking(
-            transaction_id=request.transaction_id,
-            card_last4=request.card_last4,
-            provider=request.provider,
-        )
-    except Exception as exc:
-        logger.error(f"Payment settlement failed: {exc}")
-        raise HTTPException(status_code=502, detail="Payment could not be completed.")
+    transaction_ids = request.all_transactions()
+    if not transaction_ids:
+        raise HTTPException(status_code=400, detail="No booking to pay for.")
 
-    data = response.data or {}
+    settled: list[dict] = []
+    for transaction_id in transaction_ids:
+        try:
+            response = await _bridge.settle_booking(
+                transaction_id=transaction_id,
+                card_last4=request.card_last4,
+                provider=request.provider,
+            )
+        except Exception as exc:
+            logger.error(f"Payment settlement failed for {transaction_id}: {exc}")
+            raise HTTPException(
+                status_code=502,
+                detail=(
+                    "Payment could not be completed."
+                    + (
+                        f" {len(settled)} earlier ticket(s) were issued — contact the "
+                        f"operator before travelling."
+                        if settled
+                        else ""
+                    )
+                ),
+            ) from exc
+        settled.append(response.data or {})
+
+    primary = settled[0]
 
     # The trip is done. Archive the conversation this seat was held in, and drop
     # its slot memory, so the next chat starts clean. The pairing was recorded
     # when the seat was held, so this does not trust the client to say which
     # conversation it belongs to.
-    owner = CONVERSATIONS.transaction_owner(request.transaction_id)
+    owner = None
+    for transaction_id in transaction_ids:
+        owner = CONVERSATIONS.transaction_owner(transaction_id)
+        if owner:
+            break
     if owner:
         CONVERSATIONS.archive(
-            owner["conversation_id"], booking_reference=data.get("booking_reference")
+            owner["conversation_id"], booking_reference=primary.get("booking_reference")
         )
         SLOTS.clear(owner["session_id"])
 
     return PaymentResponse(
         status="PAID",
-        booking_reference=data.get("booking_reference"),
-        receipt=data.get("receipt") or {},
-        ticket=data.get("ticket") or {},
-        purchase=data.get("purchase") or {},
+        booking_reference=primary.get("booking_reference"),
+        receipt=primary.get("receipt") or {},
+        ticket=primary.get("ticket") or {},
+        purchase=primary.get("purchase") or {},
+        tickets=[item.get("ticket") or {} for item in settled],
+        receipts=[item.get("receipt") or {} for item in settled],
     )
 
 

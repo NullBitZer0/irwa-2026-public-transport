@@ -126,7 +126,16 @@ class SlotStore:
         is no longer looking at.
         """
         trimmed = [
-            {"route_id": r.get("route_id"), "service_name": r.get("service_name")}
+            {
+                "route_id": r.get("route_id"),
+                "service_name": r.get("service_name"),
+                # A connection's legs travel with it. Without them a later "yes"
+                # can only see the connection's id, and there is no route to
+                # price or book under that name. The change point comes too:
+                # the confirmation has to name where the traveller changes.
+                "legs": r.get("legs") or [],
+                "transfer_station": r.get("transfer_station"),
+            }
             for r in routes[:MAX_PROPOSED_ROUTES]
             if r.get("route_id")
         ]

@@ -74,6 +74,13 @@ CITY_COORDS: dict[str, tuple[float, float]] = {
     "Kalpitiya": (8.0333, 79.8333),
     "Jaffna": (9.6615, 80.0255),
     "Puttalam": (8.0313, 79.8281),
+    "Dambulla": (7.8681, 80.6510),
+    "Kegalle": (7.2931, 80.6367),
+    "Kunegala": (7.4699, 80.2049),
+    # Nuwara Eliya is spelled with the space in CITY_COORDS' title case and
+    # without it in MAJOR_CITIES, so the generated corridors resolve it by the
+    # same normalisation used there.
+    "Takunagaya": (7.6367, 81.2478),
 }
 
 # The corpus names bus stops; this maps each of those to the city node it sits in.
@@ -176,6 +183,8 @@ STOP_CITY: dict[str, str] = {
     "Badulla": "Badulla",
     "Monaragala": "Monaragala",
     "Kataragama": "Kataragama",
+    "Hambantota": "Hambantota",
+    "Dambulla": "Dambulla",
     "Kalmunai": "Ampara",
     "Ampara": "Ampara",
     "Akkaraipattu": "Ampara",
@@ -186,9 +195,12 @@ STOP_CITY: dict[str, str] = {
     "Nawalapitiya": "Nawalapitiya",
     "Matale": "Matale",
     "Kurunegala": "Kurunegala",
+    "Kegalle": "Kegalle",
+    "Kunegala": "Kunegala",
     "Ratnapura": "Ratnapura",
     "Anuradhapura": "Anuradhapura",
     "Trincomalee": "Trincomalee",
+    "Takunagaya": "Takunagaya",
     "Batticaloa": "Batticaloa",
     "Mannar": "Mannar",
     "Kalpitiya": "Kalpitiya",

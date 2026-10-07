@@ -106,6 +106,7 @@ export async function chat({
   sessionId = null,
   selectedRouteId = null,
   hitlToken = null,
+  hitlTokens = null,
 }) {
   const res = await fetch(`${BASE}/chat`, {
     credentials: 'include',
@@ -116,6 +117,9 @@ export async function chat({
       session_id: sessionId,
       selected_route_id: selectedRouteId,
       hitl_token: hitlToken,
+      // A journey with a change is confirmed leg by leg; the server refuses to
+      // hold a connection without one token per leg.
+      hitl_tokens: hitlTokens ?? [],
     }),
   })
 
@@ -152,13 +156,21 @@ export async function health() {
  * Settle a held seat.
  * Only the card's last four digits are sent — no PAN or CVV ever reaches an agent.
  */
-export async function pay({ transactionId, cardLast4, provider = 'SLR' }) {
+export async function pay({
+  transactionId,
+  transactionIds,
+  cardLast4,
+  provider = 'SLR',
+}) {
   const res = await fetch(`${BASE}/payment`, {
     credentials: 'include',
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       transaction_id: transactionId,
+      // Every hold. A journey with a change is two seats on two services, and
+      // paying for one would leave the traveller stranded at the change.
+      transaction_ids: transactionIds ?? [],
       card_last4: cardLast4,
       provider,
     }),

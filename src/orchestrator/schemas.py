@@ -66,6 +66,10 @@ class BookingRequestPayload(BaseModel):
         default="anonymous",
         description="Conversation the HITL token is bound to (R-09)",
     )
+    # Set when several legs are one journey. It lets the legs be resumed and paid
+    # for together: without it, a traveller who closed the portal mid-checkout
+    # finds two independent holds and pays for whichever one they notice first.
+    booking_group_id: str = ""
     hitl_token: str = Field(
         default="",
         description=(

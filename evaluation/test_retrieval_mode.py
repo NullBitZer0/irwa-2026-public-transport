@@ -182,14 +182,19 @@ def test_direction_filter_excludes_reversed_service(
     retriever: HybridTransitRetriever,
 ) -> None:
     """
-    Nothing originates at Badulla, so Badulla → Colombo has no direct service.
+    No train originates at Badulla, so a train to Colombo cannot be offered.
 
-    Trains do run the opposite way, and they must not be offered as the answer.
+    Trains do run the opposite way, Colombo → Badulla, and they must not be
+    returned as the answer to a Badulla → Colombo question. Buses now run this
+    corridor, so the request is scoped to trains: without the mode the reverse
+    train would still be the only thing wrong here, and with it the premise is
+    about direction rather than about the corridor having no service at all.
     """
     results = retriever.retrieve_candidates(
         "Badulla idala Colombo yanna train ekak",
         origin="Badulla",
         destination="Colombo Fort",
+        mode="TRAIN",
         top_k=5,
     )
     assert results == [], [r["route_id"] for r in results]

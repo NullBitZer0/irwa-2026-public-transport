@@ -38,6 +38,9 @@ export default function App() {
   // The signed confirmation for the booking currently on screen (R-09). Held
   // while we wait for the traveller, then returned verbatim on approval.
   const [hitlToken, setHitlToken] = useState(null)
+  // One confirmation per leg. A journey with a change is gated leg by leg, so a
+  // single token cannot clear the pair.
+  const [hitlTokens, setHitlTokens] = useState([])
   // The conversation in progress, and the history list beside it. A
   // conversation ends when its payment completes, and becomes read-only.
   const [conversationId, setConversationId] = useState(null)
@@ -211,6 +214,7 @@ export default function App() {
           sessionId,
           selectedRouteId: options.selectedRouteId ?? null,
           hitlToken: options.hitlToken ?? null,
+          hitlTokens,
           conversationId,
         })
 
@@ -221,13 +225,22 @@ export default function App() {
         // The gate is presented with a token attached. Hold on to it so the
         // approve turn can hand it back — that return *is* the approval.
         if (data.hitl_token) setHitlToken(data.hitl_token)
-        if (data.booking_status === 'CONFIRMED') setHitlToken(null)
+        // A connection is confirmed once per leg; hold on to all of them.
+        if (data.hitl_tokens?.length) setHitlTokens(data.hitl_tokens)
+        if (data.booking_status === 'CONFIRMED') {
+          setHitlToken(null)
+          setHitlTokens([])
+        }
 
         // A held seat with an amount due opens the payment portal instead of
         // silently completing the booking.
         if (data.booking_status === 'AWAITING_PAYMENT' && data.transaction_id) {
           setPaymentHold({
             transactionId: data.transaction_id,
+            // A connection holds a seat per leg, and both are paid for together.
+            transactionIds: data.transaction_ids?.length
+              ? data.transaction_ids
+              : [data.transaction_id],
             amountLkr: data.amount_lkr,
             seatCount: data.seat_count,
             routeId: options.selectedRouteId,

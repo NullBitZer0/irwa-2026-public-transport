@@ -23,6 +23,7 @@ export default function PaymentPortal({ hold, onPaid, onCancel }) {
     try {
       const result = await pay({
         transactionId: hold.transactionId,
+        transactionIds: hold.transactionIds,
         cardLast4,
         provider: hold.provider ?? 'SLR',
       })
@@ -40,10 +41,28 @@ export default function PaymentPortal({ hold, onPaid, onCancel }) {
         <h3 className="pay__title">💳 Secure payment</h3>
 
         <dl className="pay__summary">
-          <div>
-            <dt>Transaction</dt>
-            <dd className="mono">{hold.transactionId}</dd>
-          </div>
+          {(hold.transactionIds?.length ?? 0) > 1 ? (
+            <>
+              {/* Two tickets, listed as two. Collapsing them into one line
+                  would hide that the traveller is buying two seats on two
+                  different services. */}
+              <div>
+                <dt>Tickets</dt>
+                <dd className="mono">{hold.transactionIds.length} (one per leg)</dd>
+              </div>
+              {hold.transactionIds.map((id) => (
+                <div key={id}>
+                  <dt>Transaction</dt>
+                  <dd className="mono">{id}</dd>
+                </div>
+              ))}
+            </>
+          ) : (
+            <div>
+              <dt>Transaction</dt>
+              <dd className="mono">{hold.transactionId}</dd>
+            </div>
+          )}
           {hold.routeId && (
             <div>
               <dt>Route</dt>
@@ -52,7 +71,7 @@ export default function PaymentPortal({ hold, onPaid, onCancel }) {
           )}
           <div>
             <dt>Seats</dt>
-            <dd>{hold.seatCount ?? 1}</dd>
+            <dd>{(hold.seatCount ?? 1) * (hold.transactionIds?.length ?? 1)} total</dd>
           </div>
           <div>
             <dt>Amount due</dt>
@@ -103,6 +122,53 @@ export default function PaymentPortal({ hold, onPaid, onCancel }) {
 /** Confirmation shown after a successful settlement. */
 export function PaymentReceipt({ result }) {
   const ticket = result.ticket ?? {}
+  // A journey with a change came back as two tickets. Show both: the traveller
+  // needs both references to board, not just the first.
+  const tickets = result.tickets?.length > 1 ? result.tickets : null
+  const receipts = result.receipts?.length > 1 ? result.receipts : null
+
+  if (tickets) {
+    return (
+      <div className="receipt">
+        <h4 className="receipt__title">
+          🎫 {tickets.length} e-tickets issued
+        </h4>
+        {tickets.map((leg, index) => (
+          <dl
+            className="pay__summary"
+            key={leg.transaction_id ?? leg.booking_reference ?? index}
+          >
+            <div>
+              <dt>Ticket {index + 1} of {tickets.length}</dt>
+              {/* The booking agent issues a transaction-shaped ticket, so it
+                  identifies the service by route and reference. */}
+              <dd className="mono">{leg.booking_reference ?? leg.transaction_id}</dd>
+            </div>
+            <div>
+              <dt>Route</dt>
+              <dd className="mono">{leg.route_id}</dd>
+            </div>
+            <div>
+              <dt>Operator</dt>
+              <dd>{leg.provider}</dd>
+            </div>
+            <div>
+              <dt>Seats</dt>
+              <dd>{leg.seat_count}</dd>
+            </div>
+            <div>
+              <dt>Paid</dt>
+              <dd>
+                LKR{' '}
+                {Number(receipts?.[index]?.amount_lkr ?? 0).toLocaleString('en-LK')}
+              </dd>
+            </div>
+          </dl>
+        ))}
+      </div>
+    )
+  }
+
   return (
     <div className="receipt">
       <h4 className="receipt__title">🎫 E-ticket issued</h4>

@@ -223,6 +223,17 @@ class AgentDispatchBridge:
             res.raise_for_status()
             return AgentResponse(**res.json())
 
+    async def cancel_hold(self, transaction_id: str) -> None:
+        """
+        Releases a held seat.
+
+        Used when a connection cannot be held in full: a traveller left holding
+        one leg of a two-leg journey is worse off than one holding nothing.
+        """
+        async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
+            res = await client.get(f"{self.booking_url}/mcp/cancel/{transaction_id}")
+            res.raise_for_status()
+
     async def fetch_conditions(
         self,
         origin: str = "",

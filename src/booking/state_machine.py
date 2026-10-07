@@ -48,6 +48,9 @@ class BookingTransaction(BaseModel):
     # The conversation this booking belongs to. The HITL confirmation token is
     # bound to it (R-09), so a token from one session cannot clear another's.
     session_id: str = "anonymous"
+    # Set when this seat is one leg of a larger journey. Holds that share it are
+    # paid for together, so an interrupted checkout resumes as the whole trip.
+    booking_group_id: str = ""
     passenger_token: str
     seat_count: int
     # What one seat costs. Kept separate from the total because the fare is
@@ -104,12 +107,14 @@ class BookingStateMachine:
         seats: int,
         fare: float,
         session_id: str = "anonymous",
+        booking_group_id: str = "",
     ) -> BookingTransaction:
         txn = BookingTransaction(
             transaction_id=txn_id,
             route_id=route_id,
             provider=provider,
             session_id=session_id,
+            booking_group_id=booking_group_id,
             passenger_token=passenger_token,
             seat_count=seats,
             fare_lkr=fare,

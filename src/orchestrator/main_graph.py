@@ -13,6 +13,8 @@ Assembles and compiles the LangGraph StateGraph that coordinates all agents:
 Each non-supervisor node writes its output to `messages` and terminates (END).
 """
 
+import uuid
+
 from langgraph.graph import END, StateGraph
 
 from src.orchestrator.agent_connectors import AgentDispatchBridge
@@ -51,7 +53,12 @@ def supervisor_node(state: TransitSessionState) -> dict:
     # R-09: the gate is cleared by returning the signed token, not by setting a
     # flag. Absent a token there is nothing to clear, so the traveller is sent
     # back to the gate with a fresh one rather than straight to the booking.
-    approved = bool(state.get("hitl_token"))
+    #
+    # A connection is approved by returning every leg's token, so both forms
+    # count: a single-service booking returns one token, a two-leg journey a
+    # list. Reading only the scalar would put a traveller who did approve back
+    # in front of the question.
+    approved = bool(state.get("hitl_token") or state.get("hitl_tokens"))
 
     # "Yes" to "are you ready to book?" carries the booking forward, choosing the
     # service that was proposed. Resolved here rather than in the UI so the
@@ -156,6 +163,10 @@ async def planning_agent_node(state: TransitSessionState) -> dict:
 
     # The traveller has chosen, so here are the options for that choice.
     if connections and not services:
+        # Remember them for the same reason direct services are remembered: the
+        # traveller answers "book the 08:00 one", and that has to resolve to the
+        # itinerary they were shown.
+        SLOTS.propose(state["session_id"], connections)
         return {
             "messages": [
                 _prepend_conditions(
@@ -393,6 +404,93 @@ def _seat_options() -> list[dict]:
     ]
 
 
+async def _connection_hitl_checkpoint(
+    state: TransitSessionState, legs: list[dict], seats: int
+) -> dict:
+    """
+    Gates every leg of a connection, and refuses the whole thing if any leg cannot.
+
+    Each leg gets its own signed token, bound to that leg's own route and fare.
+    One token for the pair would let a traveller approve the cheap leg and spend
+    the confirmation on the expensive one.
+
+    An unpriced leg stops the booking rather than being estimated: the traveller
+    is being asked to approve a charge, and there is nothing to approve.
+    """
+    session_id = state["session_id"]
+
+    priced: list[tuple[dict, float]] = []
+    for leg in legs:
+        fare = await _bridge.fetch_fare(leg["route_id"])
+        if fare is None:
+            return {
+                "messages": [
+                    f"\u26a0\ufe0f I can't take this booking: there is no published "
+                    f"fare for **{leg['route_id']}** ({leg['origin']} \u2192 "
+                    f"{leg['destination']}), so I won't ask you to approve a price "
+                    f"I don't have. The timetable shows the route; please book that "
+                    f"leg directly."
+                ],
+                "route_options": [],
+                "booking_status": "ERROR",
+            }
+        priced.append((leg, float(fare)))
+
+    try:
+        tokens = [
+            await _bridge.request_hitl_token(
+                session_id=session_id,
+                route_id=leg["route_id"],
+                fare_lkr=fare,
+                seat_count=seats,
+                provider=_provider_of(leg),
+            )
+            for leg, fare in priced
+        ]
+    except Exception as exc:
+        logger.error(f"[{session_id}] Could not issue HITL tokens for the legs: {exc}")
+        return {
+            "messages": [
+                "\u26a0\ufe0f I can't open the confirmation step for both legs right "
+                "now, so I'm not going to book anything. Please try again in a moment."
+            ],
+            "booking_status": "ERROR",
+            "error": str(exc),
+        }
+
+    total = sum(fare for _, fare in priced)
+    itinerary = "\n".join(
+        f"   {index}. **{leg['origin']} \u2192 {leg['destination']}** "
+        f"({leg['mode'].lower()}, `{leg['route_id']}`) "
+        f"{leg['departure_time']}\u2013{leg['arrival_time']} \u00b7 "
+        f"LKR {fare * seats:,.0f}"
+        for index, ((leg, fare), _) in enumerate(zip(priced, priced), 1)
+    )
+    # Where the change happens belongs to the itinerary, not to a single leg.
+    change = _change_for(state.get("selected_route_id", ""), session_id)
+
+    msg = (
+        "\u26a0\ufe0f **Human-in-the-Loop Confirmation Required**\n\n"
+        f"This journey needs **{len(legs)} tickets** \u2014 "
+        f"{seats} seat{'s' if seats > 1 else ''} each, changing at **{change}**:\n\n"
+        f"{itinerary}\n\n"
+        f"**Total: LKR {total * seats:,.0f}**\n\n"
+        f"Please confirm by:\n"
+        f"- Clicking **\u2705 Confirm & Hold Seats** in the sidebar, or\n"
+        f"- Sending: *\"YES confirm\"*"
+    )
+
+    leg_ids = [leg["route_id"] for leg, _ in priced]
+    logger.info(f"[{session_id}] Connection gate presented for {leg_ids}")
+    return {"messages": [msg], "hitl_tokens": tokens, "hitl_token": tokens[0]}
+
+
+def _provider_of(leg: dict) -> str:
+    """The booking agent only books the providers it knows."""
+    provider = str(leg.get("provider") or "").upper()
+    return provider if provider in {"SLR", "SLTB", "PRIVATE_HIGHWAY"} else "SLTB"
+
+
 async def _keyword_route_search(state: TransitSessionState, entities: dict) -> dict:
     """
     Fallback used only when the Planning Agent's journey endpoint is unreachable.
@@ -490,6 +588,28 @@ async def _keyword_route_search(state: TransitSessionState, entities: dict) -> d
 
 # ── Node: HITL Checkpoint ─────────────────────────────────────────────────────
 
+def _legs_for(route_id: str, session_id: str) -> list[dict] | None:
+    """
+    The individual services behind a connection, or None if this is not one.
+
+    Read back from the proposals we offered rather than re-derived: the traveller
+    is confirming the itinerary they were shown, so the legs must be the ones on
+    screen, not a fresh search that might find something different now.
+    """
+    for proposal in SLOTS.proposed(session_id):
+        if proposal.get("route_id") == route_id and proposal.get("legs"):
+            return proposal["legs"]
+    return None
+
+
+def _change_for(route_id: str, session_id: str) -> str:
+    """Where the traveller changes, named from the itinerary they were shown."""
+    for proposal in SLOTS.proposed(session_id):
+        if proposal.get("route_id") == route_id:
+            return proposal.get("transfer_station") or ""
+    return ""
+
+
 async def hitl_checkpoint_node(state: TransitSessionState) -> dict:
     """
     Pauses the booking flow and asks the traveller to explicitly confirm.
@@ -506,6 +626,13 @@ async def hitl_checkpoint_node(state: TransitSessionState) -> dict:
     """
     route_id = state.get("selected_route_id", "Unknown")
     entities: dict = state.get("extracted_entities") or {}
+    seats = int(entities.get("passengers", 1) or 1)
+
+    # A connection is two services and one change, so it takes two confirmations
+    # and two holds. A journey with a change genuinely is two tickets.
+    legs = _legs_for(route_id, state["session_id"])
+    if legs:
+        return await _connection_hitl_checkpoint(state, legs, seats)
 
     fare = await _bridge.fetch_fare(route_id)
     if fare is None:
@@ -542,7 +669,6 @@ async def hitl_checkpoint_node(state: TransitSessionState) -> dict:
     # Quote per seat and the total when they differ. "LKR 850" for three seats
     # is true of one seat and misleading about the bill, and the traveller is
     # being asked to approve a charge here.
-    seats = int(entities.get("passengers", 1) or 1)
     price = (
         f"**LKR {fare:,.0f} per seat** (LKR {fare * seats:,.0f} for {seats} seat"
         f"{'s' if seats > 1 else ''})"
@@ -564,6 +690,110 @@ async def hitl_checkpoint_node(state: TransitSessionState) -> dict:
 
 # ── Node: Booking Agent ───────────────────────────────────────────────────────
 
+async def _hold_connection(
+    state: TransitSessionState, legs: list[dict], passenger_token: str
+) -> dict:
+    """Holds a seat on every leg of a connection, or holds none of them."""
+    session_id = state["session_id"]
+    entities: dict = state.get("extracted_entities") or {}
+    seats = int(entities.get("passengers", 1) or 1)
+    tokens = list(state.get("hitl_tokens") or [])
+
+    if len(tokens) != len(legs):
+        # The gate produced one token per leg. Anything else means the traveller
+        # has not confirmed this itinerary, and a partial hold would book half a
+        # journey they never agreed to.
+        return {
+            "messages": [
+                "⚠️ I don't have a confirmation for every leg of that journey, so "
+                "I haven't held anything. Please confirm the itinerary again."
+            ],
+            "route_options": [],
+            "booking_status": "ERROR",
+        }
+
+    # One name for the whole journey, so both legs can be found again together.
+    group_id = f"CONN-{uuid.uuid4().hex[:10].upper()}"
+
+    holds: list[dict] = []
+    total = 0.0
+
+    for leg, token in zip(legs, tokens):
+        fare = await _bridge.fetch_fare(leg["route_id"])
+        if fare is None:
+            return {
+                "messages": [
+                    f"⚠️ I can't hold that journey: there is no published fare for "
+                    f"**{leg['route_id']}**, so I won't ask you to approve a price I "
+                    f"don't have. Nothing has been booked."
+                ],
+                "route_options": [],
+                "booking_status": "ERROR",
+            }
+
+        payload = BookingRequestPayload(
+            route_id=leg["route_id"],
+            provider=_provider_of(leg),
+            passenger_token=passenger_token,
+            seat_count=seats,
+            fare_lkr=fare,
+            session_id=session_id,
+            hitl_token=token,
+            booking_group_id=group_id,
+        )
+
+        try:
+            response = await _bridge.begin_booking(payload)
+        except Exception as exc:
+            logger.warning(f"[{session_id}] Hold failed on {leg['route_id']}: {exc}")
+            # Roll back whatever was already held: a half-held connection strands
+            # the traveller at a change with a ticket for the leg they cannot use.
+            for held in holds:
+                try:
+                    await _bridge.cancel_hold(held["transaction_id"])
+                except Exception:
+                    logger.warning(f"[{session_id}] Could not release {held['transaction_id']}")
+            return {
+                "messages": [
+                    "⚠️ I couldn't hold a seat on every leg of that journey, so I've "
+                    "released what was held and booked nothing. Please try again."
+                ],
+                "route_options": [],
+                "booking_status": "ERROR",
+            }
+
+        transaction = (response.data or {}).get("transaction") or {}
+        holds.append(transaction)
+        total += float(transaction.get("amount_lkr") or fare * seats)
+
+    references = ", ".join(
+        f"`{h.get('transaction_id')}`" for h in holds if h.get("transaction_id")
+    )
+    itinerary = "\n".join(
+        f"   {index}. **{leg['origin']} → {leg['destination']}** "
+        f"`{leg['route_id']}` · transaction `{held.get('transaction_id')}`"
+        for index, (leg, held) in enumerate(zip(legs, holds), 1)
+    )
+
+    return {
+        "messages": [
+            f"✅ **Both seats held!**\n\n"
+            f"**Transactions:** {references}\n"
+            f"**Seats:** {seats} per leg\n"
+            f"**Amount due:** LKR {total:,.0f}\n\n"
+            f"{itinerary}\n\n"
+            f"⏱️ You have **10 minutes** to complete payment before the holds expire.\n\n"
+            f"💳 Continue to the secure payment portal to pay for both tickets."
+        ],
+        "booking_reference": holds[0].get("transaction_id"),
+        "booking_status": "AWAITING_PAYMENT",
+        "transaction_id": holds[0].get("transaction_id"),
+        "transaction_ids": [h.get("transaction_id") for h in holds],
+        "amount_lkr": total,
+        "seat_count": seats,
+    }
+
+
 async def booking_agent_node(state: TransitSessionState) -> dict:
     """
     Delegates seat-hold execution to Member 3's Booking Agent via HTTP MCP call.
@@ -573,6 +803,13 @@ async def booking_agent_node(state: TransitSessionState) -> dict:
     route_id = state.get("selected_route_id", "")
     entities: dict = state.get("extracted_entities") or {}
     passenger_token = entities.get("passenger_token", f"GUEST-{state['session_id'][:8]}")
+
+    # A connection holds each leg as its own seat, with its own signed
+    # confirmation. Both holds must succeed: a traveller who paid for one leg and
+    # was left standing at the change is worse off than one who was not booked.
+    legs = _legs_for(route_id, state["session_id"])
+    if legs:
+        return await _hold_connection(state, legs, passenger_token)
 
     # The fare is NEVER taken from the client. The Planner is the pricing
     # authority, so the price is quoted here and cannot be tampered with by

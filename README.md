@@ -782,15 +782,65 @@ asked.
 ## 🗂️ Schedule Data & Coverage
 
 Route retrieval reads `data/processed/train_schedules.json` and
-`data/processed/bus_routes.json`. Those fixtures are **hand-curated from published
-timetables**, which keeps every row trustworthy but caps coverage — currently the
-main intercity corridors rather than every SLTB route.
+`data/processed/bus_routes.json`. Those fixtures start from **published
+timetables**, which keeps every row traceable, plus generated rows that are
+always flagged `synthetic: true` with the fields that were derived named.
+
+Across the 22 major-city pairs of interest there are currently **75 direct
+corridors and 80 more reachable with a single change**. The remaining 76 have
+neither a published fare nor a published timetable anywhere in the sources, so
+no service is invented for them and the agent says so.
 
 When no direct service runs between two stations, the planner falls back to a
 **one-stop connection** and prefers one that mixes train with bus (for example
 train to Colombo Fort, then a coach onwards). Connections are built from service
 endpoints only, because the fixtures carry no per-stop times, so an itinerary is
 never proposed on invented timings.
+
+A connection is **two tickets**, and is booked that way end to end:
+
+| Step | What happens |
+| --- | --- |
+| Offer | Itinerary shown as two legs with the change station named |
+| Confirm | **One signed HITL token per leg**, each bound to its own route, fare and seat count |
+| Hold | A seat on **both** legs; if either fails, the other is released |
+| Pay | One payment settles **both** transactions |
+| Issue | **Two** e-tickets, **two** receipts, both in purchase history |
+
+One token for the pair would let a traveller approve the cheap leg and spend that
+approval on the expensive one, so the tokens are per leg. Half a hold is worse
+than none: a traveller holding one leg of a two-leg journey is stranded at the
+change with a ticket for the service they cannot board, so a partial hold is
+rolled back. An interrupted checkout resumes as the whole journey — legs of one
+booking share a `booking_group_id` and are offered together.
+
+A connection id (`CONN-…`) is **not** bookable on its own. It names an
+itinerary, not a service, so the Booking Agent refuses it rather than issuing a
+ticket for something that does not run.
+
+### Completing corridors from the published fare chart
+
+```bash
+python -m src.planner.generate_missing_corridors --dry-run
+python -m src.planner.generate_missing_corridors
+```
+
+`data/processed/ntc_bus_fares.json` prices 794 city pairs. Some of those pairs
+had a published NTC fare but no service rows in the corpus, which meant a real,
+operating corridor looked like it did not exist. This adds service rows for them.
+
+The distinction it is built on:
+
+* A pair **in the fare chart** is a corridor NTC operates and has priced. Filling
+  in its departures completes a record.
+* A pair **with no published fare** is not a corridor we have any published
+  evidence for. Nothing is created for it. The generator reports how many major
+  city pairs remain unreachable rather than papering over it, and the agent tells
+  the traveller to check with the operator.
+
+Generated rows carry `synthetic: true`. The **fare is published**, not derived —
+only the departure times and the derived journey duration are flagged in
+`synthetic_fields`.
 
 ### Widening coverage
 
