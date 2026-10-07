@@ -345,7 +345,19 @@ React frontend is the only interface.
 
 </details>
 
-### 3. Retrieval: two interchangeable backends
+### 3. Why the app needs `docker compose up` after a rebuild
+
+The frontend proxies `/api/*` to the orchestrator. nginx resolves that hostname
+**once, when it loads its config**, and keeps the address for the life of the
+process — so recreating a container (which gives it a new IP) leaves the proxy
+dialling an address that no longer exists and returning **502**, even though the
+backend is healthy and its own healthcheck passes.
+
+`frontend/nginx.conf` therefore uses Docker's embedded DNS as an explicit
+`resolver` with a variable upstream, which re-resolves per request. The symptom
+to recognise is a 502 with every container reporting healthy.
+
+### 4. Retrieval: two interchangeable backends
 
 `src/planner/hybrid_retriever.py` has one retrieval interface and two
 implementations, selected with `RETRIEVER_BACKEND`:
@@ -426,7 +438,7 @@ generated times and fare flagged `synthetic` in the API and named in
 `synthetic_fields`, which the UI no longer surfaces. It
 is northbound only, so the reverse query correctly returns nothing.
 
-### 4. Live weather and news
+### 5. Live weather and news
 
 A fifth agent gathers current weather (Open-Meteo, no API key) and live transit
 news (public RSS), and feeds the Planning Agent a verdict for your journey. The
@@ -458,7 +470,7 @@ classification and planner logic as a live headline — nothing is special-cased
 and is always labelled as simulated. `GET :8103/mcp/sources` lists what the
 agent reads.
 
-### 5. Sign-in and your profile
+### 6. Sign-in and your profile
 
 The app opens on a login page. Create an account, or use the demo traveller:
 
@@ -496,7 +508,7 @@ registers a throwaway traveller before probing, and its preflight fails if an
 unauthenticated `/chat` is anything other than `401` — a security report that
 cannot tell whether the target was protected is not evidence.
 
-### 6. Timetables and the route map
+### 7. Timetables and the route map
 
 Two views in the sidebar, both served from the same corpus as the chat.
 
@@ -537,7 +549,7 @@ The map is honest about what it is:
   unmapped is reported, never silently dropped, because a route that vanishes is
   reported by users as "the map is missing my bus".
 
-### 7. No direct service? Faster or cheaper
+### 8. No direct service? Faster or cheaper
 
 When nothing runs directly from A to B, the agent says so and **asks whether you
 want it soon or cheap** rather than deciding for you:
@@ -577,7 +589,7 @@ Details worth knowing:
 - A change means **two separate tickets**, so these are shown as plans rather
   than something you can hold in one go.
 
-### 8. Conversations, booking and ticket history
+### 9. Conversations, booking and ticket history
 
 **One conversation per trip.** A conversation opens with a new chat, collects
 what it needs, and ends when the payment completes. After that it becomes
@@ -659,7 +671,7 @@ database, which fails the live red-team job while every other job passes.
 sidebar lists finished conversations with their booking reference and message
 count; clicking one opens the transcript in read-only view.
 
-### 9. Bookings, payment and ticket history
+### 10. Bookings, payment and ticket history
 
 Booking is staged and human-in-the-loop: the agent holds a seat for 10 minutes,
 asks for approval, then stops at the payment step. **Only the last four card
@@ -688,7 +700,7 @@ Bookings and the purchase ledger are persisted in SQLite (`data/booking.db`),
 so they survive a container restart. Without `BOOKING_DB_PATH` the store is
 in-memory, which is what the test suite uses.
 
-### 10. Example Test Queries
+### 11. Example Test Queries
 
 * **Route Discovery (Singlish):**
 > *"Heta ude 6ta Kandy indan Galle yanna train ekak thiyeda?"*

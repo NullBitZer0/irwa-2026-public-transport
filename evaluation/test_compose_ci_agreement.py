@@ -26,6 +26,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+NGINX_CONF = ROOT / "frontend" / "nginx.conf"
 COMPOSE = (ROOT / "docker-compose.yml").read_text()
 WORKFLOW = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
 GITIGNORE = (ROOT / ".gitignore").read_text()
@@ -133,3 +134,42 @@ def test_the_healthcheck_wait_counts_services_rather_than_hardcoding() -> None:
     """
     assert "hardcoding" in WORKFLOW or "--format json" in WORKFLOW
     assert re.search(r"healthcheck", WORKFLOW), "the health wait must derive the count from the config"
+
+
+# ── The proxy must survive a backend restart ─────────────────────────────────
+
+
+def test_the_api_proxy_resolves_the_backend_at_request_time() -> None:
+    """
+    A static `proxy_pass http://orchestrator:8000/` breaks on every rebuild.
+
+    nginx resolves that hostname once, when it loads the config, and keeps the
+    address for the life of the process. Recreating a container gives it a new
+    IP, so the proxy keeps dialling an address that no longer exists and answers
+    502 — while the backend is healthy, its own healthcheck passes, and a direct
+    request from inside the frontend container succeeds. It looks exactly like a
+    broken backend, and restarting nginx is the only thing that fixes it until
+    the next rebuild.
+    """
+    config = NGINX_CONF.read_text()
+
+    assert "resolver 127.0.0.11" in config, (
+        "no resolver configured, so the upstream address is resolved once at startup"
+    )
+    assert "proxy_pass $orchestrator_upstream" in config, (
+        "proxy_pass has a variable upstream, which forces per-request resolution"
+    )
+
+
+def test_the_api_prefix_is_stripped_before_proxying() -> None:
+    """
+    Regression from the fix above: a variable proxy_pass stops nginx replacing
+    the matched prefix, so /api/chat reaches the backend as /api/chat and 404s.
+
+    A regex location with the remainder captured is what keeps /api/chat -> /chat
+    while still resolving the upstream per request.
+    """
+    config = NGINX_CONF.read_text()
+
+    assert "location ~ ^/api/" in config, "the /api location must capture the remainder"
+    assert "proxy_pass $orchestrator_upstream/$1" in config
