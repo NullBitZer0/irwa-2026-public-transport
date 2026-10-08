@@ -1,0 +1,405 @@
+[
+  {
+    "id": "S2-01",
+    "title": "Session cookie is HttpOnly",
+    "objective": "A script in the page must not be able to read the session cookie.",
+    "input": "POST /auth/register, read the Set-Cookie header.",
+    "expected": "Set-Cookie contains HttpOnly.",
+    "actual": "HttpOnly present.",
+    "evidence": [
+      "Set-Cookie: lankajourney_session=<token-masked>; HttpOnly; Max-Age=43200; Path=/; SameSite=lax"
+    ],
+    "outcome": "SECURE"
+  },
+  {
+    "id": "S2-02",
+    "title": "Session cookie uses SameSite=Lax",
+    "objective": "Cookie must not be sent on cross-site requests.",
+    "input": "POST /auth/login, read the Set-Cookie header.",
+    "expected": "SameSite=lax present.",
+    "actual": "SameSite=lax present.",
+    "evidence": [
+      "Set-Cookie: lankajourney_session=<token-masked>; HttpOnly; Max-Age=43200; Path=/; SameSite=lax"
+    ],
+    "outcome": "SECURE"
+  },
+  {
+    "id": "S2-03",
+    "title": "Login error does not reveal whether an account exists",
+    "objective": "A failed login must look identical for a known and an unknown e-mail.",
+    "input": "Wrong password for a registered e-mail vs. any password for an unregistered e-mail.",
+    "expected": "Same HTTP status and same message.",
+    "actual": "Identical responses.",
+    "evidence": [
+      "known e-mail   -> 401 'Email or password is incorrect.'",
+      "unknown e-mail -> 401 'Email or password is incorrect.'"
+    ],
+    "outcome": "SECURE"
+  },
+  {
+    "id": "S2-04",
+    "title": "Password is stored only as a scrypt hash",
+    "objective": "A database leak must not reveal passwords.",
+    "input": "Create a user, inspect the stored password field.",
+    "expected": "No plaintext; scrypt format.",
+    "actual": "Stored as scrypt hash.",
+    "evidence": [
+      "stored value starts with: scrypt$16384$8$1$e522018…",
+      "plaintext password contained: False"
+    ],
+    "outcome": "SECURE"
+  },
+  {
+    "id": "S2-05",
+    "title": "Password hash is not exposed in the public profile",
+    "objective": "API responses must never carry the hash.",
+    "input": "Project a user row with public_profile().",
+    "expected": "No password_hash / scrypt string.",
+    "actual": "Hash omitted.",
+    "evidence": [
+      "fields returned: ['card_added_at', 'card_brand', 'card_last4', 'contact_number', 'created_at', 'email', 'full_name', 'has_card', 'id']"
+    ],
+    "outcome": "SECURE"
+  },
+  {
+    "id": "S2-06",
+    "title": "Session token is stored only as a SHA-256 digest",
+    "objective": "A stolen database must not yield usable sessions.",
+    "input": "Create a session, compare the raw token to the stored value.",
+    "expected": "Stored value is the digest, not the token.",
+    "actual": "Digest stored.",
+    "evidence": [
+      "stored digest (first 16 chars): de116d8d88d08978…  length=64",
+      "raw token present in DB: False"
+    ],
+    "outcome": "SECURE"
+  },
+  {
+    "id": "S2-07",
+    "title": "Logout revokes the session on the server",
+    "objective": "A captured cookie must stop working after logout.",
+    "input": "Log in, keep the token, log out, then send the OLD token from a fresh client.",
+    "expected": "HTTP 401 and no session row.",
+    "actual": "Old token rejected.",
+    "evidence": [
+      "replay of the old token -> HTTP 401",
+      "server still resolves the token: False"
+    ],
+    "outcome": "SECURE"
+  },
+  {
+    "id": "S2-08",
+    "title": "Profile endpoint requires authentication",
+    "objective": "Anonymous callers must not read profile data.",
+    "input": "GET /auth/me with no cookie.",
+    "expected": "HTTP 401.",
+    "actual": "HTTP 401.",
+    "evidence": [
+      "GET /auth/me -> 401"
+    ],
+    "outcome": "SECURE"
+  },
+  {
+    "id": "S2-09",
+    "title": "Full card number is never returned",
+    "objective": "Only brand and last four digits may leave the server.",
+    "input": "PATCH /profile with card_number=4111111111111111.",
+    "expected": "Response has brand + last4 only.",
+    "actual": "Only brand/last4 returned.",
+    "evidence": [
+      "brand='Visa' last4='1111'",
+      "PAN in response body: False"
+    ],
+    "outcome": "SECURE"
+  },
+  {
+    "id": "S2-10",
+    "title": "Full card number cannot be written to the account store",
+    "objective": "The persistence layer must have no column or code path for a full PAN.",
+    "input": "update_profile(full_name=…, card_number=PAN) on a file-backed store; read the raw SQLite file.",
+    "expected": "PAN absent from the row, the schema and the database file.",
+    "actual": "PAN silently dropped; not stored.",
+    "evidence": [
+      "users columns: ['id', 'email', 'password_hash', 'created_at', 'full_name', 'contact_number', 'card_brand', 'card_last4', 'card_added_at']",
+      "PAN bytes found in the database file: False",
+      "note: the call does NOT raise — the unknown field is silently ignored (safe, but not 'rejected')"
+    ],
+    "outcome": "SECURE"
+  },
+  {
+    "id": "S2-11",
+    "title": "Old-format NIC is tokenised",
+    "objective": "NIC must not reach the agents.",
+    "input": "'NIC 912345678V'",
+    "expected": "Raw NIC absent; TOKEN_NIC_ present.",
+    "actual": "output: 'NIC TOKEN_NIC_c3310920'",
+    "evidence": [
+      "'NIC 912345678V' -> 'NIC TOKEN_NIC_c3310920'"
+    ],
+    "outcome": "SECURE"
+  },
+  {
+    "id": "S2-12",
+    "title": "New-format NIC is tokenised",
+    "objective": "NIC must not reach the agents.",
+    "input": "'NIC 200012345678'",
+    "expected": "Raw NIC absent; TOKEN_NIC_ present.",
+    "actual": "output: 'NIC TOKEN_NIC_5d3bc31d'",
+    "evidence": [
+      "'NIC 200012345678' -> 'NIC TOKEN_NIC_5d3bc31d'"
+    ],
+    "outcome": "SECURE"
+  },
+  {
+    "id": "S2-13",
+    "title": "Phone number and passport are tokenised",
+    "objective": "Phone / passport must not reach the agents.",
+    "input": "'Call 0771234567; passport N1234567'",
+    "expected": "Both replaced by tokens.",
+    "actual": "output: 'Call TOKEN_TEL_0994db07; passport TOKEN_PPT_c2dab11e'",
+    "evidence": [
+      "-> 'Call TOKEN_TEL_0994db07; passport TOKEN_PPT_c2dab11e'"
+    ],
+    "outcome": "SECURE"
+  },
+  {
+    "id": "S2-14",
+    "title": "Token vault stores ciphertext and supports clear()",
+    "objective": "A vault dump must not reveal identifiers.",
+    "input": "Redact a NIC, read the vault entry, call clear().",
+    "expected": "Ciphertext only; lookup impossible after clear().",
+    "actual": "Ciphertext stored; clear() works.",
+    "evidence": [
+      "vault[TOKEN_NIC_f2706d5b] = 9xjKn7XoiWGhVWgJOo2qdO0sOkNYJF7t… (base64 AES-256-GCM)",
+      "plaintext in vault value: False",
+      "see S2-30: this method exists but is never called by the application"
+    ],
+    "outcome": "SECURE"
+  },
+  {
+    "id": "S2-15",
+    "title": "Another user's transcript is not readable (BOLA / IDOR)",
+    "objective": "A signed-in traveller must only see their own conversations.",
+    "input": "User A chats; user B calls GET /conversations and GET /conversations/{A's id}.",
+    "expected": "HTTP 403/404 for the transcript; A's conversation absent from B's list.",
+    "actual": "B read A's transcript and saw it in the list.",
+    "evidence": [
+      "B: GET /conversations/CNV-8B93C9F4DE -> HTTP 200",
+      "B's list contains A's conversation: True",
+      "B sees A's text: True",
+      "B's list also exposes A's session_id: True"
+    ],
+    "outcome": "VULNERABLE"
+  },
+  {
+    "id": "S2-16",
+    "title": "PII masking survives formatting variants",
+    "objective": "People write numbers with spaces/hyphens; masking must still work.",
+    "input": "Gateway input with 9 re-formatted phone / NIC / passport values.",
+    "expected": "All variants masked.",
+    "actual": "9 of 9 variants passed through unmasked.",
+    "evidence": [
+      "'077 123 4567': LEAKED",
+      "'077-123-4567': LEAKED",
+      "'+94 77 123 4567': LEAKED",
+      "'(+94) 771234567': LEAKED",
+      "'０７７１２３４５６７': LEAKED",
+      "'9123 45678V': LEAKED",
+      "'912345678 V': LEAKED",
+      "'n1234567': LEAKED",
+      "'N 1234567': LEAKED"
+    ],
+    "outcome": "VULNERABLE"
+  },
+  {
+    "id": "S2-17",
+    "title": "Card number and e-mail typed in chat are masked",
+    "objective": "Payment cards and e-mail must never reach agents or storage.",
+    "input": "POST /chat containing an e-mail address and a 16-digit card number.",
+    "expected": "Both removed before the agents and the transcript store.",
+    "actual": "Unmasked: card (spaced), card (plain), e-mail.",
+    "evidence": [
+      "text handed to the agents: 'book it, my email ravi.perera@example.test and card 4111 1111 1111 1111 or 4111111111111111'",
+      "stored transcript row: 'book it, my email ravi.perera@example.test and card 4111 1111 1111 1111 or 4111111111111111'"
+    ],
+    "outcome": "VULNERABLE"
+  },
+  {
+    "id": "S2-18",
+    "title": "passenger_token cannot carry a raw NIC",
+    "objective": "Every client-supplied field must be masked or validated, not only `query`.",
+    "input": "POST /chat with passenger_token='912345678V'.",
+    "expected": "Raw NIC rejected or tokenised before the booking flow.",
+    "actual": "Booking flow received '912345678V'.",
+    "evidence": [
+      "extracted_entities.passenger_token = '912345678V'",
+      "this value is what the Booking Agent writes to bookings/purchases"
+    ],
+    "outcome": "VULNERABLE"
+  },
+  {
+    "id": "S2-19",
+    "title": "Login is throttled after repeated failures",
+    "objective": "Unlimited guessing allows account takeover.",
+    "input": "10 wrong passwords, then the correct one.",
+    "expected": "HTTP 429 or a temporary lock-out.",
+    "actual": "No throttling.",
+    "evidence": [
+      "status codes of 10 failures: [401, 401, 401, 401, 401, 401, 401, 401, 401, 401]",
+      "correct password afterwards -> HTTP 200 (200 means no lock-out)"
+    ],
+    "outcome": "VULNERABLE"
+  },
+  {
+    "id": "S2-20",
+    "title": "Weak passwords are rejected",
+    "objective": "Trivially guessable passwords make brute force practical.",
+    "input": "Register with ['12345678', 'password', 'aaaaaaaa', 'qwertyui'].",
+    "expected": "All rejected (HTTP 400).",
+    "actual": "Accepted: ['12345678', 'password', 'aaaaaaaa', 'qwertyui'].",
+    "evidence": [
+      "accepted weak passwords: ['12345678', 'password', 'aaaaaaaa', 'qwertyui']"
+    ],
+    "outcome": "VULNERABLE"
+  },
+  {
+    "id": "S2-21",
+    "title": "Registration does not reveal existing accounts",
+    "objective": "Account enumeration helps targeted attacks.",
+    "input": "Register an e-mail that already exists.",
+    "expected": "A response that does not confirm the account exists.",
+    "actual": "HTTP 400: 'an account with that email already exists'",
+    "evidence": [
+      "duplicate registration -> 400 'an account with that email already exists'"
+    ],
+    "outcome": "VULNERABLE"
+  },
+  {
+    "id": "S2-22",
+    "title": "Another user cannot ride on my conversation memory",
+    "objective": "Trip details gathered for A must never be processed for B.",
+    "input": "B posts to /chat with A's conversation_id.",
+    "expected": "HTTP 403/404; A's slots not used; A's transcript unchanged.",
+    "actual": "HTTP 200; B's turn carried A's origin='Kandy'.",
+    "evidence": [
+      "A's slot memory: origin='Kandy' destination='Colombo Fort' time='08:00'",
+      "state handed to the agents for B's turn: origin='Kandy' destination='Colombo Fort'",
+      "B's message appended to A's transcript: True"
+    ],
+    "outcome": "VULNERABLE"
+  },
+  {
+    "id": "S2-23",
+    "title": "Purchase history shows only my own tickets",
+    "objective": "Booking references and card digits belong to their owner.",
+    "input": "A new user (no purchases) calls GET /purchases while two other travellers have tickets.",
+    "expected": "Empty list for the new user.",
+    "actual": "The new user received 2 other travellers' tickets.",
+    "evidence": [
+      "SLR-2026-AAAAAA card ****4242 (user A)",
+      "SLR-2026-BBBBBB card ****1881 (user C)"
+    ],
+    "outcome": "VULNERABLE"
+  },
+  {
+    "id": "S2-24",
+    "title": "Personal data is not readable in the database files",
+    "objective": "Anyone with a copy of the file must not read personal data.",
+    "input": "Store a profile and a chat message in file-backed stores; read the raw files.",
+    "expected": "Sensitive fields encrypted at rest.",
+    "actual": "Readable in clear text: ['full name', 'contact number', 'e-mail', 'chat text'].",
+    "evidence": [
+      "full name: readable = True",
+      "contact number: readable = True",
+      "e-mail: readable = True",
+      "chat text: readable = True"
+    ],
+    "outcome": "VULNERABLE"
+  },
+  {
+    "id": "S2-25",
+    "title": "Internal error details are not returned",
+    "objective": "Errors must not reveal paths, users or schema.",
+    "input": "Force an exception inside the agent graph.",
+    "expected": "Generic error message.",
+    "actual": "HTTP 500: 'sqlite3.OperationalError: unable to open /app/state/conversations.db (uid=1000)'",
+    "evidence": [
+      "response detail: 'sqlite3.OperationalError: unable to open /app/state/conversations.db (uid=1000)'"
+    ],
+    "outcome": "VULNERABLE"
+  },
+  {
+    "id": "S2-26",
+    "title": "Session cookie carries the Secure flag by default",
+    "objective": "Without Secure the cookie is sent over plain HTTP.",
+    "input": "Register with COOKIE_SECURE unset (the shipped default).",
+    "expected": "Set-Cookie contains Secure.",
+    "actual": "Secure flag missing.",
+    "evidence": [
+      "Set-Cookie: lankajourney_session=<token-masked>; HttpOnly; Max-Age=43200; Path=/; SameSite=lax"
+    ],
+    "outcome": "VULNERABLE"
+  },
+  {
+    "id": "S2-27",
+    "title": "Booking Agent rejects anonymous callers",
+    "objective": "The agent that holds ticket data must authenticate its callers.",
+    "input": "Anonymous GET /mcp/purchases (no cookie, no service credential).",
+    "expected": "HTTP 401/403.",
+    "actual": "HTTP 200 with 1 ledger row(s).",
+    "evidence": [
+      "fields exposed: ['amount_paid_lkr', 'booking_reference', 'card_last4', 'fare_lkr', 'passenger_token', 'provider', 'provider_contact', 'purchased_at', 'receipt_id', 'route_id', 'seat_count', 'transaction_id']",
+      "docker-compose.yml publishes this agent as host port 8102"
+    ],
+    "outcome": "VULNERABLE"
+  },
+  {
+    "id": "S2-28",
+    "title": "Every protected endpoint rejects anonymous callers",
+    "objective": "Authentication must guard the whole API, not one route.",
+    "input": "Anonymous request to every non-public orchestrator route.",
+    "expected": "HTTP 401 everywhere.",
+    "actual": "12 routes checked; not 401: []",
+    "evidence": [
+      "GET    /auth/me                           -> 401",
+      "PATCH  /profile                           -> 401",
+      "POST   /conversations                     -> 401",
+      "GET    /conversations                     -> 401",
+      "GET    /conversations/{conversation_id}   -> 401",
+      "POST   /chat                              -> 401",
+      "POST   /payment                           -> 401",
+      "GET    /purchases                         -> 401",
+      "POST   /demo_incident                     -> 401",
+      "GET    /pending_holds                     -> 401",
+      "GET    /schedules                         -> 401",
+      "GET    /map-routes                        -> 401"
+    ],
+    "outcome": "SECURE"
+  },
+  {
+    "id": "S2-29",
+    "title": "Security audit log holds metadata only",
+    "objective": "The log is a report deliverable and must not become a PII store.",
+    "input": "Trigger redaction, a blocked prompt containing a NIC, and an allowed chat turn; read the new log lines.",
+    "expected": "No identifiers and no message text in the log.",
+    "actual": "Found in log: nothing.",
+    "evidence": [
+      "event types written: ['PII_REDACTED', 'PROMPT_INJECTION_BLOCKED', 'QUERY_ALLOWED']",
+      "lines written: 4"
+    ],
+    "outcome": "SECURE"
+  },
+  {
+    "id": "S2-30",
+    "title": "Application code clears the PII vault",
+    "objective": "pii_masker.py promises the vault is cleared at session end (data minimisation).",
+    "input": "Search src/ for any call to PIITokenizer.clear().",
+    "expected": "At least one call-site (e.g. when a conversation is archived).",
+    "actual": "Call-sites found: none.",
+    "evidence": [
+      "pii_masker.py docstring: 'Clears the in-memory vault at session end.'",
+      "call-sites outside pii_masker.py: NONE"
+    ],
+    "outcome": "VULNERABLE"
+  }
+]
