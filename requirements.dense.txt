@@ -1,0 +1,10 @@
+# Dense-retrieval extras for the planner image.
+#
+# sentence-transformers pulls in PyTorch (~2GB), so it is opt-in via the
+# `dense` build arg rather than always installed. Without it the OpenSearch
+# backend still serves BM25 and the retriever degrades to sparse-only — see
+# `OpenSearchBackend.dense`, which returns an empty list rather than failing.
+#
+# Install with:  docker compose build planner
+# (docker-compose.yml sets `dense: "true"` on the planner service.)
+sentence-transformers>=3.0.0

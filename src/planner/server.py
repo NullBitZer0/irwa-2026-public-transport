@@ -541,5 +541,21 @@ def quote_fare(route_id: str) -> dict:
 
 @app.get("/health")
 def health() -> dict:
-    return {"status": "ok", "agent": "planner", "version": "0.1.0-stub"}
+    """
+    Liveness, plus the two degradations a caller cannot otherwise see.
+
+    `retrieval_fallback` and `index_freshness` are advisory. Retrieval still
+    answers when either is set — that is the point of both mechanisms — so
+    reporting a bare "ok" would hide the difference between "serving from the
+    index" and "serving from the in-memory corpus because the index is stale".
+    """
+    return {
+        "status": "ok",
+        "agent": "planner",
+        "version": "0.1.0-stub",
+        "retrieval_backend": _retriever.backend_name,
+        "retrieval_fallback": _retriever.fallback_reason,
+        "index_freshness": _retriever.index_freshness,
+        "corpus_size": len(_retriever.schedules),
+    }
 

@@ -364,8 +364,8 @@ implementations, selected with `RETRIEVER_BACKEND`:
 
 | Backend | What it does | When to use it |
 |---|---|---|
-| `fixtures` (default) | Keyword scoring over the JSON timetables | Always available, deterministic, no infrastructure |
-| `opensearch` | Real BM25 + k-NN vector search, fused with RRF | Demonstrating the IR component |
+| `fixtures` (default) | Keyword scoring over the JSON timetables | Always available, deterministic, no infrastructure; what the tests run on |
+| `opensearch` | Real BM25 + k-NN vector search, fused with RRF | Running the actual hybrid pipeline |
 
 Everything *after* the search — the mode filter, the direction check that stops
 "Colombo → Jaffna" being answered with a Jaffna → Colombo service, and the RRF
@@ -377,13 +377,41 @@ what counts as a valid answer. Both are tested against the same invariants
 
 ```bash
 echo "RETRIEVER_BACKEND=opensearch" >> .env
-RETRIEVER_BACKEND=opensearch python -m src.planner.opensearch_ingest   # 812 routes
+docker compose --profile ingest run --rm ingest      # indexes every corpus row
 docker compose up -d --build planner
 ```
 
 The ingest creates the index with both a `text` (BM25) and a `knn_vector` (dense)
-field. Indexing is reproducible: it recreates the index rather than appending, so
-a re-ingest cannot leave stale documents behind.
+field, embedding with `all-MiniLM-L6-v2` (384 dims). Indexing is reproducible: it
+recreates the index rather than appending, so a re-ingest cannot leave stale
+documents behind.
+
+Dense retrieval needs `sentence-transformers`, which pulls in ~2GB of PyTorch.
+Only the Planner ever embeds anything, so it is opt-in per image via a `dense`
+build arg rather than installed for all five agents — `docker-compose.yml` sets
+it on the `planner` and `ingest` services. Without it the planner still serves
+BM25 and logs that it has degraded to sparse-only, which is the documented
+behaviour rather than a failure.
+
+**The index must be re-ingested when the corpus changes.** A stale index does not
+error: BM25 stops finding the newer services, both retrievers return nothing, and
+`retrieve_candidates` falls back to the in-memory pool. The answer is still
+correct, but for the wrong reason — and a genuine indexing bug would look
+identical. So drift is surfaced instead of absorbed:
+
+```console
+$ curl -s localhost:8101/health | jq '{retrieval_backend, index_freshness, corpus_size}'
+{
+  "retrieval_backend": "opensearch",
+  "index_freshness": null,
+  "corpus_size": 4311
+}
+```
+
+A non-null `index_freshness` names both counts and the command to re-run. It is
+also logged at startup. This exists because the index was silently two corpus
+generations behind — 812 documents against 4,311 rows — and every answer was
+still correct.
 
 Two deliberate design choices:
 

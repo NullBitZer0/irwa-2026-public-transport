@@ -159,6 +159,49 @@ class HybridTransitRetriever:
         self._search, self._fallback_reason = _select_backend(
             backend or RETRIEVER_BACKEND
         )
+        # Recorded, not just logged: see `index_freshness`.
+        self._staleness: str | None = self._check_index_freshness()
+        if self._staleness:
+            # Not fatal — retrieval answers either way — but it must not be
+            # something only the health endpoint reveals.
+            logger.warning("Retrieval index is stale: %s", self._staleness)
+
+    def _check_index_freshness(self) -> str | None:
+        """
+        Is the index still describing the corpus it was built from?
+
+        The failure this catches is quiet. Nothing raises when the index drifts:
+        BM25 just stops finding the newer services, both retrievers return an
+        empty list, and `retrieve_candidates` falls through to the in-memory pool.
+        The answer is still right — the direction filter already narrowed the pool
+        to services that actually run that way — but it is right for the wrong
+        reason, and a genuine indexing bug would look identical.
+
+        So it is surfaced the same way a backend fallback is, on the retriever.
+        """
+        counter = getattr(self._search, "indexed_doc_count", None)
+        if counter is None:
+            return None  # fixture backend has no index to drift from
+        try:
+            indexed = counter()
+        except Exception as exc:
+            return f"could not read index size: {exc}"
+        if indexed is None:
+            return None
+
+        corpus = len(self.schedules)
+        if indexed != corpus:
+            return (
+                f"index '{OPENSEARCH_INDEX}' holds {indexed} documents but the "
+                f"corpus has {corpus} — re-run "
+                f"`python -m src.planner.opensearch_ingest`"
+            )
+        return None
+
+    @property
+    def index_freshness(self) -> str | None:
+        """Why the index disagrees with the corpus, or None when it agrees."""
+        return self._staleness
 
     # ── Search backends ──────────────────────────────────────────────────────
     #
@@ -379,6 +422,20 @@ class OpenSearchBackend(SearchBackend):
                 ) from exc
             self._embedder = SentenceTransformer("all-MiniLM-L6-v2")
         return self._embedder.encode(text, normalize_embeddings=True).tolist()
+
+    def indexed_doc_count(self) -> int | None:
+        """
+        How many documents the index holds, or None if it cannot be asked.
+
+        Used to notice the index drifting from the corpus — see
+        `HybridTransitRetriever._check_index_freshness`.
+        """
+        try:
+            client = self._connect()
+            count = client.count(index=OPENSEARCH_INDEX)
+        except Exception:
+            return None
+        return int(count.get("count", 0))
 
     def available(self) -> tuple[bool, str | None]:
         """Can this backend actually serve a query right now?"""

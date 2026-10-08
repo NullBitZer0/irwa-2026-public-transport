@@ -50,6 +50,14 @@ services:
   planner:
     <<: *agent
     container_name: lankajourney-planner
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # Dense retrieval needs sentence-transformers (~2GB of PyTorch), which the
+      # other agents never use. Opt the planner in so hybrid retrieval is real
+      # rather than BM25-only. Drop this to `false` for a smaller, faster build.
+      args:
+        dense: "true"
     environment:
       # Retrieval backend: "fixtures" (default, deterministic, no infrastructure)
       # or "opensearch" for real BM25 + k-NN. See README for enabling the latter.
@@ -58,6 +66,10 @@ services:
       - OPENSEARCH_USER=${OPENSEARCH_USER:-admin}
       - OPENSEARCH_PASSWORD=${OPENSEARCH_INITIAL_ADMIN_PASSWORD:-}
       - OPENSEARCH_INDEX=${OPENSEARCH_INDEX:-transit_routes}
+      # The dense path downloads the sentence encoder on first use. The agents
+      # run as the host user, whose HOME is `/` and is not writable, so the model
+      # cache needs a path that is.
+      - HF_HOME=/tmp/hf-cache
     command:
       - uvicorn
       - src.planner.server:app
@@ -115,12 +127,20 @@ services:
   # One-shot: indexes the timetable corpus into OpenSearch with real embeddings.
   # Runs to completion and exits — not part of the long-running stack.
   #   docker compose --profile ingest run --rm ingest
-  # Needs sentence-transformers, which the planner image deliberately omits, so
-  # this is a separate profile rather than a planner command.
+  #
+  # Needs sentence-transformers to embed the corpus, so it opts into the dense
+  # build arg the same way the planner does. Without real embeddings the index
+  # would hold `text` only and every k-NN query would fail, so this arg is not
+  # optional here — the ingest either embeds or it is not an ingest.
   ingest:
     <<: *agent
     container_name: lankajourney-ingest
     profiles: ["ingest"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        dense: "true"
     command:
       - python
       - -m
@@ -130,6 +150,9 @@ services:
       - OPENSEARCH_USER=${OPENSEARCH_USER:-admin}
       - OPENSEARCH_PASSWORD=${OPENSEARCH_INITIAL_ADMIN_PASSWORD:-}
       - OPENSEARCH_INDEX=${OPENSEARCH_INDEX:-transit_routes}
+      # See the planner: HOME is not writable for the runtime user, and the
+      # encoder is downloaded rather than baked into the image.
+      - HF_HOME=/tmp/hf-cache
     depends_on:
       - opensearch
 

@@ -17,11 +17,24 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Dependencies first so layer caching survives source edits.
-# sentence-transformers is intentionally excluded: it is only needed by the
-# offline OpenSearch ingest script (src/planner/opensearch_ingest.py), never by
-# a running agent, and it would pull in ~2GB of PyTorch for no benefit.
 COPY requirements.docker.txt .
 RUN pip install --no-cache-dir -r requirements.docker.txt
+
+# Dense retrieval, opt-in. sentence-transformers pulls in ~2GB of PyTorch, which
+# the Orchestrator, Booking and Conditions agents have no use for — they never
+# embed anything. Only the Planner does, when RETRIEVER_BACKEND=opensearch.
+#
+# Off by default so `docker compose build` stays quick and the other agents stay
+# small. The planner service sets --build-arg dense=true. Without it the planner
+# still serves BM25 and degrades to sparse-only, which is logged rather than
+# silent.
+ARG dense=false
+COPY requirements.dense.txt .
+RUN if [ "$dense" = "true" ]; then \
+        pip install --no-cache-dir -r requirements.dense.txt; \
+    else \
+        echo "dense retrieval disabled — build with --build-arg dense=true"; \
+    fi
 
 COPY pyproject.toml ./
 COPY src/ ./src/
