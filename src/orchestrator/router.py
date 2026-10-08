@@ -87,12 +87,35 @@ def _has_journey_endpoints(query: str) -> bool:
         return False
 
     if parsed.origin and parsed.destination:
-        return True
+        # "Kandy Fort" resolves to both endpoints, so a question *about that
+        # station* parses as a complete journey. The guard this function's own
+        # docstring describes could never fire while the check was "two
+        # endpoints and stop".
+        return not _asks_about_a_place(query)
 
     if parsed.origin or parsed.destination:
         return _looks_like_travel_request(query, parsed)
 
-    return False
+    # No place name at all, but unmistakably about travelling — "train up into
+    # the tea country". A journey whose endpoints were given as a region rather
+    # than a station. It belongs to the planner, which asks for what is missing;
+    # sending it to the clarify node tells the traveller we did not understand a
+    # sentence that plainly asked for a train.
+    return _looks_like_unplaced_travel_request(parsed)
+
+
+def _session_is_mid_question(slots: Optional[dict]) -> bool:
+    """
+    True when the conversation has one endpoint and is waiting on the other.
+
+    The origin alone does not make a journey: "I need to go to Colombo" has a
+    destination and nowhere to start from, which is a question, not a search.
+    Judged on its own a one-word reply like "Ella" looks like nonsense, but it is
+    the missing half of a trip the traveller is already building.
+    """
+    if not slots:
+        return False
+    return bool(slots.get("origin") or slots.get("destination"))
 
 
 def _session_has_journey(slots: Optional[dict]) -> bool:
@@ -199,6 +222,25 @@ def _looks_like_conditions_query(query: str) -> bool:
     return has_condition
 
 
+# Asking *about* a place, rather than asking to travel to it. A station name plus
+# one of these is a question about the station — it wants directions,
+# accessibility or facilities, not a timetable, and answering it with route
+# options answers a different question.
+_PLACE_QUESTION_WORDS: frozenset[str] = frozenset(
+    {
+        "accessible", "accessibility", "wheelchair", "parking", "toilet",
+        "restroom", "location", "located", "address", "map", "facilities",
+        "facility", "platform", "counter", "shelter", "sandbox",
+    }
+)
+
+
+def _asks_about_a_place(query: str) -> bool:
+    """True when the message asks about a station rather than a journey to it."""
+    tokens = set(re.findall(r"[a-z]+", query.lower()))
+    return bool(tokens & _PLACE_QUESTION_WORDS)
+
+
 def _looks_like_travel_request(query: str, parsed: object) -> bool:
     """
     Does a single-endpoint message read as a request to travel somewhere?
@@ -211,6 +253,26 @@ def _looks_like_travel_request(query: str, parsed: object) -> bool:
 
     tokens = re.findall(r"[a-z]+", query.lower())
     return any(token in _TRAVEL_INTENT_WORDS for token in tokens)
+
+
+def _looks_like_unplaced_travel_request(parsed: object) -> bool:
+    """
+    Does a message with no resolvable place still ask for a journey?
+
+    Stricter than `_looks_like_travel_request`, which is safe whenever a station
+    was named. With nothing named, "want" and "get" are far too common in
+    sentences that are not route searches — "I want to know about baggage"
+    would be dragged into a journey search and answered with a question about
+    origins. So this requires an explicit transport mode or a departure time:
+    the traveller naming the thing they want without saying where.
+
+    The planner then asks for the endpoints it is missing, which is the same
+    question a traveller who typed half a sentence already gets.
+    """
+    return (
+        getattr(parsed, "mode", "ANY") != "ANY"
+        or bool(getattr(parsed, "departure_time", None))
+    )
 
 
 def classify_user_intent(
@@ -278,13 +340,16 @@ def classify_user_intent(
         # classifier decided. Either this message names the endpoints, or the
         # conversation already has them and this turn is answering a question.
         if intent == "CLARIFY" and (
-            _has_journey_endpoints(query) or _session_has_journey(session_slots)
+            _has_journey_endpoints(query)
+            or _session_has_journey(session_slots)
+            or _session_is_mid_question(session_slots)
         ):
-            reason = (
-                "journey already in progress"
-                if _session_has_journey(session_slots)
-                else "origin and destination detected"
-            )
+            if _session_has_journey(session_slots):
+                reason = "journey already in progress"
+            elif _session_is_mid_question(session_slots):
+                reason = "waiting on the other endpoint"
+            else:
+                reason = "origin and destination detected"
             logger.info(f"Intent CLARIFY → PLAN_ROUTE ({reason})")
             return "PLAN_ROUTE"
 
@@ -298,7 +363,11 @@ def classify_user_intent(
             return "CONDITIONS"
         return (
             "PLAN_ROUTE"
-            if (_has_journey_endpoints(query) or _session_has_journey(session_slots))
+            if (
+                _has_journey_endpoints(query)
+                or _session_has_journey(session_slots)
+                or _session_is_mid_question(session_slots)
+            )
             else "CLARIFY"
         )
 

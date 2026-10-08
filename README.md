@@ -766,6 +766,43 @@ Bookings and the purchase ledger are persisted in SQLite (`data/booking.db`),
 so they survive a container restart. Without `BOOKING_DB_PATH` the store is
 in-memory, which is what the test suite uses.
 
+### Seat availability
+
+The number of seats left is **shown before approval**, not discovered at the
+hold. The confirmation reads *"…**38 seats left** at LKR 1,320 per seat"*, and a
+two-leg connection states the count for **each** leg.
+
+If there is not enough room, the booking is refused and the traveller is offered
+the departures that do have seats:
+
+```
+⚠️ I can't hold that one — SLTB-2-COLO-MATA-0630 is fully booked.
+
+Nothing has been booked. These other departures on the same corridor do have room:
+
+   1. 08:00 → Matara (SLTB-2-COLO-MATA-0800) — 38 left
+```
+
+It never picks a departure on the traveller's behalf — that would substitute a
+different journey for the one they asked about. It also checks every leg of a
+connection, since a connection is sold as a pair.
+
+Two bugs were fixed here:
+
+- **The hold only refused a fully sold-out coach.** It checked `available > 0`
+  and ignored how many were wanted, so a six-seat booking was confirmed against
+  three free seats — a ticket sold that could not be honoured.
+- **Availability was re-rolled on every call**, and never below 4. One coach
+  could report 5 free seats and then 12, and `SOLD_OUT` was unreachable
+  (`randint(3, 18)` never returns 0), so the refusal path could not run at all.
+  Availability is now keyed to the service, so a coach reports the same seats all
+  day, and roughly one service in eight is genuinely sold out.
+
+Seats are re-checked at the hold as well, because availability can change between
+the traveller approving and confirming. An unreachable Booking Agent yields
+*unknown*, never *available* — failing open there is how a booking ends with a
+ticket nobody can honour.
+
 ### 11. Example Test Queries
 
 * **Route Discovery (Singlish):**

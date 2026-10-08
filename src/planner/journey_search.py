@@ -62,6 +62,11 @@ MAJOR_CITIES: frozenset[str] = frozenset(
         "nuwaraeliya",
         "takunagaya",
         "dambulla",
+        # Reachable only by rail (TRAIN-1008, Kandy 08:47). Listed so the planner
+        # will answer for it at all: without it, a traveller asking for Ella is
+        # told the system only plans between major cities, which is true and
+        # useless — the service exists and is in the corpus.
+        "ella",
     }
 )
 

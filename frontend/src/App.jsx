@@ -339,7 +339,23 @@ bookingReference: data.booking_reference,
     send(input)
   }
 
-  function handleExample(query) {
+  /**
+   * Runs a worked example.
+   *
+   * Some switch the simulated incident on first, so the advisory path can be
+   * demonstrated in one click instead of requiring the traveller to find the
+   * demo toggle. Only the invented incident is added — real headlines are
+   * checked on every query either way.
+   */
+  async function handleExample(example) {
+    const query = typeof example === 'string' ? example : example.query
+    if (typeof example !== 'string' && example.enableIncident) {
+      const armed = await setDemoIncident({
+        incidentId: 'negombo_highway_accident',
+        active: true,
+      })
+      setDemoIncidentActive(armed.ok && armed.incident_check_armed === true)
+    }
     send(query)
   }
 

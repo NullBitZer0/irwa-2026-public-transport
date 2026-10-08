@@ -233,18 +233,24 @@ def test_the_default_store_is_in_memory() -> None:
 
 
 @pytest.fixture()
-def api_client():
+def api_client(monkeypatch):
     """
     Orchestrator with an in-memory conversation store and a stubbed graph.
 
     The graph is stubbed so these tests exercise the endpoint contract —
     including the archive-on-payment rule — without needing the sub-agents.
+
+    Restored by monkeypatch. Assigning `orch._graph` directly left the stub in
+    place for the rest of the session, so every test file that sorted after this
+    one silently ran against a graph that returns "echo: ..." and never books
+    anything. Those tests passed in isolation and failed in the suite, which is
+    the worst way for a stub to behave.
     """
     from fastapi.testclient import TestClient
 
     from src.orchestrator import server as orch
 
-    orch.CONVERSATIONS = ConversationStore()
+    monkeypatch.setattr(orch, "CONVERSATIONS", ConversationStore())
     orch.SLOTS._sessions.clear()
 
     class StubResult(dict):
@@ -262,7 +268,9 @@ def api_client():
             "booking_reference": "SLR-2026-STUB" if confirmed else None,
         }
 
-    orch._graph = type("StubGraph", (), {"ainvoke": staticmethod(fake_run)})()
+    monkeypatch.setattr(
+        orch, "_graph", type("StubGraph", (), {"ainvoke": staticmethod(fake_run)})()
+    )
 
     # The endpoint is authenticated, so the fixture signs in as well as stubs.
     return sign_in(TestClient(orch.app))

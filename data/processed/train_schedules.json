@@ -8,6 +8,7 @@
     "departure_time": "07:00",
     "arrival_time": "09:30",
     "stops": [
+      "Colombo Fort",
       "Maradana",
       "Ragama",
       "Gampaha",
@@ -32,6 +33,7 @@
     "departure_time": "06:20",
     "arrival_time": "14:45",
     "stops": [
+      "Colombo Fort",
       "Maradana",
       "Ragama",
       "Gampaha",
@@ -59,6 +61,7 @@
     "departure_time": "05:55",
     "arrival_time": "15:00",
     "stops": [
+      "Colombo Fort",
       "Maradana",
       "Ragama",
       "Gampaha",
@@ -86,6 +89,7 @@
     "departure_time": "06:00",
     "arrival_time": "10:30",
     "stops": [
+      "Colombo Fort",
       "Maradana",
       "Ragama",
       "Gampaha",
@@ -111,6 +115,7 @@
     "departure_time": "06:45",
     "arrival_time": "10:00",
     "stops": [
+      "Colombo Fort",
       "Maradana",
       "Mount Lavinia",
       "Moratuwa",
@@ -139,6 +144,7 @@
     "departure_time": "07:30",
     "arrival_time": "14:30",
     "stops": [
+      "Colombo Fort",
       "Maradana",
       "Ragama",
       "Gampaha",
@@ -215,6 +221,7 @@
     "departure_time": "05:50",
     "arrival_time": "07:00",
     "stops": [
+      "Colombo Fort",
       "Maradana",
       "Ragama",
       "Katunayake Airport"
@@ -234,6 +241,7 @@
     "departure_time": "07:15",
     "arrival_time": "09:45",
     "stops": [
+      "Colombo Fort",
       "Maradana",
       "Mount Lavinia",
       "Moratuwa",

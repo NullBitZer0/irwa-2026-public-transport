@@ -69,15 +69,68 @@ function safeHttpUrl(value) {
   }
 }
 
+/**
+ * Worked examples, one per capability.
+ *
+ * Every query here was run against the live corpus and checked to return what
+ * its label claims. That matters more than it sounds: an example that quietly
+ * returns nothing is worse than no example, because it reads as a broken system.
+ *
+ * `enableIncident` switches the simulated incident on before sending, so the
+ * advisory path can be demonstrated in one click rather than requiring the
+ * traveller to find the demo toggle first. Real headlines are checked either
+ * way — the toggle only adds the invented one.
+ */
 const EXAMPLES = [
-  'Heta ude Colombo indan Kandy yanna train ekak balanna',
-  'Express train from Colombo Fort to Kandy tomorrow morning',
-  'Makumbura idala Galle yanna highway bus ekak thiyeda?',
-  'Kandy indan Jaffna yanna train ekak thiyeda?',
-  'Kandy indan Galle yanna train ekak',
-  'Kandy yanna train ekak thiyeda?',
-  'Heta ude 6ta Kandy yanna dumriya ekak',
-  'What are the baggage rules on SLR?',
+  {
+    label: 'Fares, origin → destination',
+    query: 'Colombo to Kandy at 9am by bus, 1 seat',
+    shows: 'Six services with their published fares and departure times.',
+  },
+  {
+    label: 'Bus-only corridor',
+    query: 'Colombo to Trincomalee at 9am by bus, 1 seat',
+    shows: 'No train runs this way; only the coach is offered.',
+  },
+  {
+    label: 'Trains',
+    query: 'Train from Colombo Fort to Kandy at 7am, 1 seat',
+    shows: 'Rail services only, filtered by the mode you asked for.',
+  },
+  {
+    label: 'No bus at all → train',
+    query: 'Kandy to Ella at 8am by train',
+    shows:
+      'Kandy–Ella is rail-only. Asking by bus returns nothing, so the train is '
+      + 'the whole answer.',
+  },
+  {
+    label: 'Combined route (two tickets)',
+    query: 'Ampara to Kegalle at 12pm',
+    shows:
+      'No direct service. The agent finds a change at Kandy and asks whether you '
+      + 'want it fastest or cheapest — then offers a booking that issues two '
+      + 'tickets.',
+  },
+  {
+    label: 'Incident advisory',
+    query: 'Bus from Negombo to Colombo at 8am',
+    shows:
+      'Switches the simulated highway accident on, then shows how the advisory '
+      + 'reaches the journey and suggests the next entrance.',
+    enableIncident: true,
+  },
+]
+
+const EXAMPLE_GROUPS = [
+  {
+    title: 'Routes, fares and modes',
+    queries: EXAMPLES.slice(0, 4),
+  },
+  {
+    title: 'Connections and live conditions',
+    queries: EXAMPLES.slice(4),
+  },
 ]
 
 /**
@@ -91,7 +144,7 @@ const EXAMPLES = [
  * @param {{sessionId:string|null, status:string, agentStatus:object|null,
  *          purchases:Array, pendingHolds:Array, purchasesLoading:boolean,
  *          demoIncidentActive:boolean, demoBusy:boolean,
- *          onExample:(q:string)=>void, onReset:()=>void,
+ *          onExample:(example:object|string)=>void, onReset:()=>void,
  *          onRefreshPurchases:()=>void, onResumePayment:(hold:object)=>void,
  *          onToggleDemoIncident:()=>void,
  *          conversations:Array, viewingId:string|null,
@@ -328,15 +381,29 @@ export default function Sidebar({
 
       <section className="panel">
         <h2>Try a query</h2>
-        <ul className="examples">
-          {EXAMPLES.map((q) => (
-            <li key={q}>
-              <button className="examples__btn" onClick={() => onExample(q)}>
-                {q}
-              </button>
-            </li>
-          ))}
-        </ul>
+        <p className="muted">
+          Each of these was checked against the live corpus, so it demonstrates
+          something real rather than a plausible-looking prompt.
+        </p>
+        {EXAMPLE_GROUPS.map((group) => (
+          <div key={group.title} className="examples__group">
+            <h3 className="examples__groupTitle">{group.title}</h3>
+            <ul className="examples">
+              {group.queries.map((example) => (
+                <li key={example.query}>
+                  <button
+                    className="examples__btn"
+                    onClick={() => onExample(example)}
+                    title={example.shows}
+                  >
+                    <span className="examples__label">{example.label}</span>
+                    <span className="examples__query">{example.query}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </section>
 
       <ConversationHistory

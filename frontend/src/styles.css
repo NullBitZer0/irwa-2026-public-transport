@@ -134,11 +134,39 @@ code {
   font-size: 0.82rem;
   cursor: pointer;
   transition: border-color 0.15s ease, background 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
 }
 
 .examples__btn:hover {
   border-color: var(--accent);
   background: #22394a;
+}
+
+/* The capability the example demonstrates, above the query that shows it. */
+.examples__label {
+  font-weight: 600;
+  font-size: 0.78rem;
+  color: var(--accent);
+}
+
+.examples__query {
+  color: var(--text-dim);
+  font-size: 0.76rem;
+}
+
+.examples__group {
+  margin-top: 0.7rem;
+}
+
+.examples__groupTitle {
+  margin: 0 0 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-dim);
 }
 
 /* ── Chat ──────────────────────────────────────────────────────────────── */

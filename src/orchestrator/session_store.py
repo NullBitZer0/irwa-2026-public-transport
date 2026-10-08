@@ -42,6 +42,10 @@ SLOT_KEYS = (
     # Kept alongside the count, or the agent forgets the traveller already said
     # "2 seats" and asks them again a turn later.
     "seat_count_stated",
+    # Which slots the last reply asked for, so a bare answer fills the right one.
+    # "Ella" on its own is not a request to travel — it is the answer to "where
+    # are you heading?", and without this it is filed as unintelligible.
+    "awaiting",
 )
 
 # Services the planner last proposed for this session, so a plain "yes" can mean
@@ -135,6 +139,15 @@ class SlotStore:
                 # the confirmation has to name where the traveller changes.
                 "legs": r.get("legs") or [],
                 "transfer_station": r.get("transfer_station"),
+                # Kept so a proposal can still be *described* later. When a
+                # service is refused for lack of seats the alternatives are read
+                # back out of here, and a card with no departure time is not an
+                # alternative — it is a route id.
+                "departure_time": r.get("departure_time"),
+                "arrival_time": r.get("arrival_time"),
+                "origin": r.get("origin"),
+                "destination": r.get("destination"),
+                "base_fare_lkr": r.get("base_fare_lkr"),
             }
             for r in routes[:MAX_PROPOSED_ROUTES]
             if r.get("route_id")

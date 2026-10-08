@@ -67,12 +67,40 @@ def test_no_connections_to_the_same_station(services) -> None:
     assert find_connections(services, "Kandy", "Kandy") == []
 
 
-def test_no_connection_without_a_shared_hub(services) -> None:
+def test_no_connection_without_a_shared_hub() -> None:
     """
-    Ella → Kandy is a known data gap: Kandy → Ella runs, the reverse does not, and
-    nothing reaches Kandy from Ella either, so no connection can be built.
+    A connection needs a hub reachable from both ends.
+
+    Stated against a purpose-built corpus rather than the real one: every major
+    city pair now has either a direct service or a one-change connection, so no
+    real corridor demonstrates this any more. The property is still true, and it
+    is what stops the planner inventing a change that does not exist.
     """
-    assert find_connections(services, "Ella", "Kandy") == []
+    def service(route_id, origin, destination, departure, arrival):
+        return {
+            "route_id": route_id,
+            "service_name": f"{origin} - {destination}",
+            "provider": "SLTB",
+            "origin": origin,
+            "destination": destination,
+            "departure_time": departure,
+            "arrival_time": arrival,
+            "stops": [origin, destination],
+            "base_fare_lkr": 500.0,
+            "transit_type": "EXPRESS_BUS",
+        }
+
+    # Alpha → Hub → Gamma: the first leg arrives where the second departs.
+    isolated = [
+        service("S-A-H", "Alpha", "Hub", "06:00", "08:00"),
+        service("S-H-G", "Hub", "Gamma", "09:00", "11:00"),
+        service("S-B-X", "Beta", "Other", "06:00", "07:00"),
+    ]
+
+    assert find_connections(isolated, "Alpha", "Gamma"), "the hub joins the two"
+    assert find_connections(isolated, "Beta", "Gamma") == [], (
+        "Beta and Gamma share no hub, so there is no connection to build"
+    )
 
 
 # ── Finding connections ──────────────────────────────────────────────────────

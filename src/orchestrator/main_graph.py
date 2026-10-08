@@ -14,10 +14,11 @@ Each non-supervisor node writes its output to `messages` and terminates (END).
 """
 
 import uuid
+from typing import Optional
 
 from langgraph.graph import END, StateGraph
 
-from src.orchestrator.agent_connectors import AgentDispatchBridge
+from src.orchestrator.agent_connectors import AgentDispatchBridge, NoSeatsError
 from src.orchestrator.logger import get_logger
 from src.orchestrator.router import _is_booking_ready, classify_user_intent
 from src.orchestrator.schemas import BookingRequestPayload, RouteRequestPayload
@@ -129,6 +130,16 @@ async def planning_agent_node(state: TransitSessionState) -> dict:
         logger.warning(f"[{state['session_id']}] Journey search unavailable: {exc}")
         return await _keyword_route_search(state, entities)
 
+    # A colloquial region ("the tea country") is a place the traveller named that
+    # no service stops at. It is passed to the planner for display so the
+    # question asked back names real towns, but never used as an endpoint: that
+    # would be booking a journey they did not ask for.
+    if "destination" in (jdata.get("missing") or []):
+        region = _region_for(state["user_query"])
+        if region:
+            jdata["region_places"] = list(region[1])
+            jdata["region_label"] = region[0]
+
     missing = jdata.get("missing") or []
     services = jdata.get("services") or []
     connections = jdata.get("connections") or []
@@ -227,6 +238,25 @@ async def planning_agent_node(state: TransitSessionState) -> dict:
     }
 
 
+def _region_for(query: str) -> tuple[str, tuple[str, ...]] | None:
+    """
+    The colloquial region named in a query, if any.
+
+    Returns the phrase the traveller used and the towns it covers, so the reply
+    can name both rather than silently substituting a destination.
+    """
+    from src.planner.nlp_parser import REGION_PLACES, extract_region_places
+
+    places = extract_region_places(query)
+    if not places:
+        return None
+    lowered = query.lower()
+    for region, towns in REGION_PLACES.items():
+        if region in lowered and tuple(places) == towns:
+            return region, towns
+    return None
+
+
 def _journey_clarification_message(missing: list[str], jdata: dict) -> tuple[str, list[dict]]:
     """
     Builds the "what do I still need to know?" reply and its quick replies.
@@ -279,11 +309,29 @@ def _journey_clarification_message(missing: list[str], jdata: dict) -> tuple[str
         + f":\n\n{asked}\n\n"
         f'You can answer in one go: *"I need to go from Negombo to Colombo at 10am by bus"*'
     )
+    # A region is not a station. "Up into the tea country" names somewhere real,
+    # so asking an open "where are you heading?" makes the traveller do the
+    # mapping themselves. Offering the towns that region actually covers is the
+    # answer to the question they asked — and picking one for them would be
+    # booking them a journey they did not name.
+    options: list[dict] = []
+    for place in jdata.get("region_places") or []:
+        options.append({"label": place, "value": place})
+
+    if options:
+        msg += (
+            "\n\nBy **"
+            + jdata["region_label"]
+            + "** I mean places a service actually calls at: "
+            + ", ".join(f"**{o['label']}**" for o in options)
+            + ". Which one?"
+        )
+
     # No train/bus buttons. They asked for a journey and were given a choice of
     # operator before being asked where they were going, and offering "Train"
     # here means the traveller has to decide what a train is before the agent
     # can tell them whether one runs. The mode is the planner's problem.
-    return msg, []
+    return msg, options
 
 
 def _journey_services_message(services: list[dict], jdata: dict) -> str:
@@ -419,6 +467,26 @@ async def _connection_hitl_checkpoint(
     """
     session_id = state["session_id"]
 
+    # Every leg, not just the first. A connection is sold as a pair, so a second
+    # leg with two seats free is as much a refusal as the first being sold out.
+    short: list[tuple[dict, dict]] = []
+    leg_availabilities: list[tuple[dict, dict]] = []
+    for leg in legs:
+        availability = await _bridge.fetch_seat_availability(
+            leg["route_id"], seat_count=seats
+        )
+        if availability is None:
+            continue
+        leg_availabilities.append((leg, availability))
+        if not availability["sufficient"]:
+            short.append((leg, availability))
+
+    if short:
+        blocked_leg, blocked = short[0]
+        return await _no_seats_response(
+            state, blocked_leg["route_id"], blocked, legs, seats, legs=legs
+        )
+
     priced: list[tuple[dict, float]] = []
     for leg in legs:
         fare = await _bridge.fetch_fare(leg["route_id"])
@@ -459,12 +527,21 @@ async def _connection_hitl_checkpoint(
         }
 
     total = sum(fare for _, fare in priced)
+    seats_left = {
+        leg["route_id"]: avail["available_seats"] for leg, avail in leg_availabilities
+    }
     itinerary = "\n".join(
         f"   {index}. **{leg['origin']} \u2192 {leg['destination']}** "
         f"({leg['mode'].lower()}, `{leg['route_id']}`) "
         f"{leg['departure_time']}\u2013{leg['arrival_time']} \u00b7 "
         f"LKR {fare * seats:,.0f}"
-        for index, ((leg, fare), _) in enumerate(zip(priced, priced), 1)
+        + (
+            f" \u00b7 *{seats_left[leg['route_id']]} seat"
+            f"{'s' if seats_left[leg['route_id']] != 1 else ''} left*"
+            if leg["route_id"] in seats_left
+            else ""
+        )
+        for index, (leg, fare) in enumerate(priced, 1)
     )
     # Where the change happens belongs to the itinerary, not to a single leg.
     change = _change_for(state.get("selected_route_id", ""), session_id)
@@ -610,6 +687,118 @@ def _legs_for(route_id: str, session_id: str) -> list[dict] | None:
     return None
 
 
+async def _no_seats_response(
+    state: TransitSessionState,
+    route_id: str,
+    availability: dict,
+    legs: Optional[list[dict]],
+    seats: int,
+) -> dict:
+    """
+    Refuses the booking and offers somewhere else to go.
+
+    A refusal on its own is a dead end. The traveller asked for a seat, and the
+    useful answer names the other services on the same corridor that *do* have
+    seats, so the next thing they can say is a departure time. It never picks one
+    for them — that would be substituting a different journey for the one they
+    asked about without asking.
+    """
+    session_id = state["session_id"]
+    available = availability.get("available_seats", 0)
+    options = await _alternatives_with_seats(state, route_id, seats, legs)
+
+    sold_out = available <= 0
+    reason = (
+        f"**{route_id}`** is fully booked."
+        if sold_out
+        else f"**{route_id}`** has only **{available} seat"
+        f"{'s' if available != 1 else ''}** left, and you asked for **{seats}**."
+    )
+
+    if not options:
+        msg = (
+            f"⚠️ I can't hold that one — {reason}\n\n"
+            f"I haven't booked anything and nothing is being charged. There is no "
+            f"other service on this corridor with {seats} seat"
+            f"{'s' if seats != 1 else ''} free right now — try a different time, or "
+            f"ask me to check again later."
+        )
+    else:
+        lines = "\n".join(
+            f"   {index}. **{opt['departure_time']}** → {opt['destination']} "
+            f"(`{opt['route_id']}`) — *{opt['available_seats']} left*"
+            for index, opt in enumerate(options, 1)
+        )
+        msg = (
+            f"⚠️ I can't hold that one — {reason}\n\n"
+            f"Nothing has been booked. These other departures on the same corridor "
+            f"do have room:\n\n{lines}\n\n"
+            f"Tell me which one, or try a different time."
+        )
+
+    logger.info(
+        f"[{session_id}] Refused booking {route_id}: {available} seat(s) for {seats}"
+    )
+    return {
+        "messages": [msg],
+        "route_options": _with_provenance(options),
+        "booking_status": "NO_SEATS",
+        "hitl_tokens": [],
+        "hitl_token": None,
+    }
+
+
+async def _alternatives_with_seats(
+    state: TransitSessionState,
+    route_id: str,
+    seats: int,
+    legs: Optional[list[dict]],
+) -> list[dict]:
+    """
+    Other services on the same corridor that have the seats wanted.
+
+    Compares against the *proposals already shown* rather than searching again:
+    these are the services the traveller is looking at, and re-searching could
+    offer something that is not on screen. Each is then checked with the Booking
+    Agent, because a service appearing in a timetable is not a promise of a seat.
+    """
+    candidates: list[dict] = []
+    for proposal in SLOTS.proposed(state["session_id"]):
+        if proposal.get("route_id") == route_id:
+            continue
+        proposed_legs = proposal.get("legs") or []
+        if legs and proposed_legs:
+            # Same corridor, different departures: compare the endpoints rather
+            # than the exact legs, or no alternative can ever match.
+            if {(leg["origin"], leg["destination"]) for leg in proposed_legs} != {
+                (leg["origin"], leg["destination"]) for leg in legs
+            }:
+                continue
+        candidates.append(proposal)
+
+    checkable: list[dict] = []
+    for candidate in candidates[:4]:
+        service_ids = (
+            [leg["route_id"] for leg in candidate.get("legs") or []]
+            or [candidate["route_id"]]
+        )
+        counts = []
+        for service_id in service_ids:
+            availability = await _bridge.fetch_seat_availability(
+                service_id, seat_count=seats
+            )
+            # Unknown is not available. Offering it would send the traveller to a
+            # service that then refuses them.
+            if availability is None or not availability["sufficient"]:
+                counts = []
+                break
+            counts.append(availability["available_seats"])
+        if counts:
+            checkable.append({**candidate, "available_seats": min(counts)})
+
+    return checkable
+
+
 def _change_for(route_id: str, session_id: str) -> str:
     """Where the traveller changes, named from the itinerary they were shown."""
     for proposal in SLOTS.proposed(session_id):
@@ -656,6 +845,15 @@ async def hitl_checkpoint_node(state: TransitSessionState) -> dict:
             "route_options": [],
         }
 
+    # Availability before approval, not after. Asking someone to confirm a seat we
+    # then cannot hold wastes their confirmation and implies a seat is theirs when
+    # it is not.
+    availability = await _bridge.fetch_seat_availability(route_id, seat_count=seats)
+    if availability is not None and not availability["sufficient"]:
+        return await _no_seats_response(
+            state, route_id, availability, None, seats
+        )
+
     try:
         token = await _bridge.request_hitl_token(
             session_id=state["session_id"],
@@ -684,10 +882,17 @@ async def hitl_checkpoint_node(state: TransitSessionState) -> dict:
         else f"**LKR {fare:,.0f}**"
     )
 
+    remaining = (
+        f" — **{availability['available_seats']} seat"
+        f"{'s' if availability['available_seats'] != 1 else ''} left**"
+        if availability is not None
+        else ""
+    )
+
     msg = (
         f"⚠️ **Human-in-the-Loop Confirmation Required**\n\n"
         f"You are about to hold **{seats} seat{'s' if seats > 1 else ''}** on "
-        f"route **`{route_id}`** at {price}.\n\n"
+        f"route **`{route_id}`**{remaining} at {price}.\n\n"
         f"Please confirm by:\n"
         f"- Clicking **✅ Confirm & Hold Seat** in the sidebar, or\n"
         f"- Sending: *\"YES confirm {route_id}\"*"
@@ -761,6 +966,19 @@ async def _hold_connection(
                     await _bridge.cancel_hold(held["transaction_id"])
                 except Exception:
                     logger.warning(f"[{session_id}] Could not release {held['transaction_id']}")
+
+            # Someone else took the last seat between the traveller approving it
+            # and confirming. Say so, and name the departures that still have
+            # room, rather than reporting a generic failure.
+            if isinstance(exc, NoSeatsError):
+                availability = {
+                    "available_seats": exc.available_seats,
+                    "sufficient": False,
+                }
+                return await _no_seats_response(
+                    state, leg["route_id"], availability, legs, seats
+                )
+
             return {
                 "messages": [
                     "⚠️ I couldn't hold a seat on every leg of that journey, so I've "
@@ -881,6 +1099,20 @@ async def booking_agent_node(state: TransitSessionState) -> dict:
             "amount_lkr": amount,
             "seat_count": seats,
         }
+
+    except NoSeatsError as exc:
+        # The gate checked and the seats were there; they were not by the time the
+        # traveller confirmed. Offer the departures that still have room.
+        logger.info(
+            f"[{state['session_id']}] No seats for {route_id}: {exc.available_seats}"
+        )
+        return await _no_seats_response(
+            state,
+            route_id,
+            {"available_seats": exc.available_seats, "sufficient": False},
+            None,
+            seats,
+        )
 
     except Exception as exc:
         logger.warning(f"[{state['session_id']}] Booking Agent unreachable: {exc}")

@@ -214,9 +214,29 @@ async def hold_seat(req: HoldRequest) -> dict:
     # persist the note itself, so the tokenised form is not stored anywhere.
     _tokenizer.redact(req.raw_note or "")
 
-    inventory = _transit_gateway.check_seat_inventory(req.route_id)
-    if inventory["status"] == "SOLD_OUT":
-        raise HTTPException(status_code=409, detail="No seats available for this route.")
+    # Compare against the number actually wanted, not just "is it sold out".
+    # A coach with three seats left is a different problem from one with none,
+    # and checking only for zero meant a six-seat booking was confirmed against
+    # three free seats — a ticket sold that cannot be honoured.
+    inventory = _transit_gateway.check_seat_inventory(
+        req.route_id, seat_count=req.seat_count
+    )
+    available = int(inventory.get("available_seats") or 0)
+    if inventory["status"] in ("SOLD_OUT", "INSUFFICIENT") or available < req.seat_count:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": (
+                    "No seats available for this route."
+                    if available == 0
+                    else f"Only {available} seat(s) left on this service."
+                ),
+                "code": "NO_SEATS" if available == 0 else "INSUFFICIENT_SEATS",
+                "route_id": req.route_id,
+                "available_seats": available,
+                "requested_seats": req.seat_count,
+            },
+        )
 
     # A connection is not a route. The planner builds ids like
     # `CONN-SLTB-1-COLO-KAND-SLTB-2-KAND-COLO-0510` to represent *two* services
@@ -550,9 +570,23 @@ def pending_holds() -> dict:
 
 
 @app.get("/mcp/inventory/{route_id}")
-def check_inventory(route_id: str) -> dict:
-    """Returns seat availability for a route."""
-    return _transit_gateway.check_seat_inventory(route_id)
+def check_inventory(route_id: str, seat_count: int = 1) -> dict:
+    """
+    Seat availability for one service.
+
+    Read-only, so the Orchestrator can tell the traveller how many seats are left
+    *before* they are asked to approve anything. Finding out at the hold means
+    holding a seat they cannot have, and asking about the fare first implies the
+    seat is theirs.
+
+    Wrapped in the same envelope as every other MCP endpoint, so the Orchestrator
+    reads one shape from this agent.
+    """
+    return {
+        "status": "SUCCESS",
+        "data": _transit_gateway.check_seat_inventory(route_id, seat_count=seat_count),
+        "message": "Seat availability for this service.",
+    }
 
 
 @app.post("/mcp/cancel/{transaction_id}")

@@ -222,20 +222,22 @@ def test_no_service_in_requested_direction_returns_nothing(
     retriever: HybridTransitRetriever,
 ) -> None:
     """
-    A known data gap: Kandy → Ella is a published service, Ella → Kandy is not in
-    the fixtures, so the reverse direction must return nothing rather than
-    something that looks plausible.
+    Kandy → Hambantota has no direct service in either direction.
+
+    So the reverse direction must return nothing rather than something that
+    looks plausible. It used to be Ella → Kandy, which stopped being a gap once
+    Ella became a plannable city and a coach was generated back up the corridor.
     """
     results = retriever.retrieve_candidates(
-        "Ella idala Kandy yanna train ekak",
-        origin="Ella",
+        "Hambantota indala Kandy yanna train ekak",
+        origin="Hambantota",
         destination="Kandy",
         top_k=5,
     )
     assert results == [], [r["route_id"] for r in results]
-    # …and there is no Ella → Kandy coach either, so nothing to point at.
+    # …and there is no Hambantota → Kandy coach either, so nothing to point at.
     assert (
-        retriever.reverse_direction_options("Ella", "Kandy", mode="BUS") == []
+        retriever.reverse_direction_options("Hambantota", "Kandy", mode="BUS") == []
     )
 
 

@@ -8,7 +8,7 @@ Typed async HTTP clients connecting the Orchestrator to:
 """
 
 import os
-from typing import Optional
+from typing import Any, Optional
 
 import httpx
 
@@ -25,6 +25,24 @@ _PLANNER_URL: str = os.getenv("PLANNER_AGENT_URL", "http://localhost:8001")
 _BOOKING_URL: str = os.getenv("BOOKING_AGENT_URL", "http://localhost:8002")
 _CONDITIONS_URL: str = os.getenv("CONDITIONS_AGENT_URL", "http://localhost:8003")
 _TIMEOUT: float = float(os.getenv("AGENT_TIMEOUT_SECONDS", "10.0"))
+
+
+class NoSeatsError(Exception):
+    """
+    The Booking Agent refused because there are not enough seats.
+
+    Distinct from any other failure so the caller can offer alternatives instead
+    of reporting "something went wrong". Carries the structured detail the Booking
+    Agent returns, rather than leaving the caller to parse an HTTP body.
+    """
+
+    def __init__(self, detail: dict[str, Any]) -> None:
+        super().__init__(detail.get("message") or "No seats available.")
+        self.detail = detail
+
+    @property
+    def available_seats(self) -> int:
+        return int(self.detail.get("available_seats") or 0)
 
 
 class AgentDispatchBridge:
@@ -220,8 +238,53 @@ class AgentDispatchBridge:
                 # rejects the payload.
                 json=payload.model_dump(exclude_none=True),
             )
+            if res.status_code == 409:
+                # The Booking Agent says there is no room. That is a decision
+                # with a remedy, not a transport failure, so it is raised as
+                # something the caller can act on rather than swallowed by
+                # raise_for_status().
+                try:
+                    detail = (res.json() or {}).get("detail") or {}
+                except Exception:
+                    detail = {}
+                raise NoSeatsError(detail if isinstance(detail, dict) else {"message": str(detail)})
             res.raise_for_status()
             return AgentResponse(**res.json())
+
+    async def fetch_seat_availability(
+        self, route_id: str, seat_count: int = 1
+    ) -> Optional[dict[str, Any]]:
+        """
+        How many seats are left on a service.
+
+        Returns None when the Booking Agent cannot be reached or does not know,
+        which the caller must treat as "unknown" rather than "free". A planner
+        that quietly assumes availability is one that promises seats it does not
+        have.
+
+        Endpoint: GET /mcp/inventory/{route_id} (Booking Agent)
+        """
+        try:
+            async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
+                res = await client.get(
+                    f"{self.booking_url}/mcp/inventory/{route_id}",
+                    params={"seat_count": seat_count},
+                )
+                res.raise_for_status()
+                payload = res.json()
+        except Exception as exc:
+            logger.warning(f"Seat availability lookup failed for {route_id}: {exc}")
+            return None
+
+        data = payload.get("data") or {}
+        if not data:
+            return None
+        return {
+            "route_id": route_id,
+            "available_seats": int(data.get("available_seats") or 0),
+            "status": data.get("status") or "UNKNOWN",
+            "sufficient": int(data.get("available_seats") or 0) >= seat_count,
+        }
 
     async def cancel_hold(self, transaction_id: str) -> None:
         """

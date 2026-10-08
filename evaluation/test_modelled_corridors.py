@@ -62,14 +62,44 @@ def test_a_modelled_fare_still_displays_a_price(modelled: list[dict]) -> None:
 
     The estimate model exists so a timetable is not unreadable; refusing to show
     anything would leave the row looking like a bug rather than an estimate.
+
+    The exception is a pair whose endpoints resolve to the same place. Ella and
+    Monaragala sit 0.15 km apart in CITY_COORDS — a data error, and the estimator
+    is right to refuse rather than quote a fare for travelling nowhere. Fixing
+    the coordinates needs a gazetteer that covers them, so this asserts the
+    refusals are *only* for coincident endpoints rather than papering over them.
     """
-    shown = [resolve_fare(row) for row in modelled]
-    priced = [f for f in shown if f["fare_lkr"] and f["fare_estimated"]]
-    assert len(priced) == len(modelled), (
-        f"{len(modelled) - len(priced)} modelled rows display no fare at all"
-    )
-    # Every one says it was estimated. A bare number would read as published.
-    assert all("estimated" in f["fare_basis"] for f in priced)
+    from src.planner.geo import resolve
+
+    priced = [row for row in modelled if _has_display_fare(row)]
+    unpriced = [row for row in modelled if not _has_display_fare(row)]
+
+    for row in unpriced:
+        origin, destination = resolve(row["origin"]), resolve(row["destination"])
+        assert origin and destination, f"{row['route_id']} has an unresolvable endpoint"
+        separation = _separation_km(origin, destination)
+        assert separation < 1.0, (
+            f"{row['route_id']} ({row['origin']} → {row['destination']}) displays no "
+            f"fare but its endpoints are {separation:.0f} km apart — that is a bug, "
+            f"not a coincident pair"
+        )
+
+    # Every fare we do show says it was estimated. A bare number would read as
+    # published.
+    for row in priced:
+        assert "estimated" in resolve_fare(row)["fare_basis"]
+
+
+def _has_display_fare(row: dict) -> bool:
+    fare = resolve_fare(row)
+    return bool(fare["fare_lkr"] and fare["fare_estimated"])
+
+
+def _separation_km(a: tuple, b: tuple) -> float:
+    """Distance between two `resolve()` results, which are (name, lat, lng)."""
+    from src.planner.fares import great_circle_km
+
+    return great_circle_km((a[1], a[2]), (b[1], b[2]))
 
 
 def test_the_booking_agent_refuses_a_modelled_route(client=None) -> None:

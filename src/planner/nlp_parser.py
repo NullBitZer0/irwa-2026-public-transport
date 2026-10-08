@@ -319,6 +319,53 @@ def extract_seat_count(user_query: str) -> tuple[int, bool]:
     return 1, False
 
 
+# Places people name by what they are rather than by what they are called.
+#
+# A region is not a station. "Up into the tea country" names somewhere real, but
+# it covers several towns that buses and trains actually stop at, so resolving it
+# to one of them would be inventing a destination the traveller did not name and
+# might not have meant. These are surfaced as a choice instead, and the traveller
+# picks.
+#
+# Kept small and only where the towns are the ones an intercity service actually
+# calls at — the coverage can be checked against the corpus rather than asserted.
+REGION_PLACES: dict[str, tuple[str, ...]] = {
+    "tea country": ("Nuwara Eliya", "Ella", "Bandarawela"),
+    "hill country": ("Nuwara Eliya", "Ella", "Kandy"),
+    "up country": ("Kandy", "Nuwara Eliya"),
+    "southern coast": ("Galle", "Matara", "Hambantota"),
+    "south coast": ("Galle", "Matara", "Hambantota"),
+    "east coast": ("Batticaloa", "Ampara", "Trincomalee"),
+    "north coast": ("Jaffna", "Mannar", "Trincomalee"),
+    "wet zone": ("Galle", "Kurunegala", "Kandy"),
+    "airport": ("Katunayake Airport", "Negombo"),
+    "port city": ("Colombo",),
+}
+
+
+def extract_region_places(user_query: str) -> tuple[str, ...]:
+    """
+    The towns a colloquial region name covers, or () when it names none.
+
+    Deliberately returns candidates rather than a destination. The planner asks
+    the traveller to choose; nothing here decides for them.
+
+    Filtered to towns the planner will actually accept. Offering "Ella" and then
+    replying "I can only plan between major cities" is worse than never offering
+    it — it looks like a broken system rather than an honest limit.
+    """
+    from src.planner.hybrid_retriever import _station_key
+    from src.planner.journey_search import MAJOR_CITIES
+
+    text = user_query.strip().lower()
+    for region, places in REGION_PLACES.items():
+        if region in text:
+            return tuple(
+                place for place in places if _station_key(place) in MAJOR_CITIES
+            )
+    return ()
+
+
 def extract_transit_intent(user_query: str) -> ParsedTransitQuery:
     """
     Simplify-first rule-based extraction (English + Singlish).

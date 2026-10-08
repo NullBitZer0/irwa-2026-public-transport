@@ -193,6 +193,46 @@ def current_user(
     return user
 
 
+def _is_bare_place(query: str, parsed) -> bool:
+    """
+    Is this message nothing but a place name?
+
+    The shape that answers a "where are you going?" question with one word. It
+    must carry no travel verb, mode, time or seat count: if it does, it is a new
+    request rather than an answer, and overwriting the slot being filled would
+    discard what the traveller just told us.
+    """
+    from src.orchestrator.router import _looks_like_travel_request
+
+    if not (parsed.origin or parsed.destination):
+        return False
+    if parsed.mode != "ANY" or parsed.departure_time:
+        return False
+    return not _looks_like_travel_request(query, parsed)
+
+
+def _record_awaiting(session_id: str, result: dict) -> None:
+    """
+    Store which slots the last reply was missing.
+
+    Replaced rather than merged: what is outstanding now is the only thing the
+    next message could be answering. Cleared once nothing is missing, so a bare
+    place name later in the conversation is not mistaken for a reply.
+    """
+    clarification = result.get("clarification") or {}
+    missing = [m for m in (clarification.get("missing") or []) if m in _FILLABLE_SLOTS]
+    # An empty list, not None: `merge` skips None as "not stated", which would
+    # leave a stale awaiting behind and make a later bare place name look like an
+    # answer to a question nobody asked.
+    SLOTS.merge(session_id, {"awaiting": missing})
+
+
+# Slots a traveller can answer with a bare value. `time` and `mode` are absent on
+# purpose: "morning" and "train" are ordinary English and reading them into a
+# slot nobody asked for would corrupt a journey that is otherwise complete.
+_FILLABLE_SLOTS = frozenset({"origin", "destination"})
+
+
 def _set_session_cookie(response: Response, token: str) -> None:
     response.set_cookie(
         key=SESSION_COOKIE,
@@ -438,6 +478,23 @@ async def chat(request: ChatRequest, user: dict = Depends(current_user)) -> Chat
 
     parsed = extract_transit_intent(user_query)
 
+    # A bare place name answers the question we asked last turn. "Ella" alone is
+    # not a journey request — it is the destination for a trip whose origin and
+    # time are still open, and reading it as the origin would send the traveller
+    # to Ella from Ella.
+    slots = SLOTS.get(session_id) or {}
+    awaiting = list(slots.get("awaiting") or [])
+    if awaiting and _is_bare_place(user_query, parsed):
+        place = parsed.origin or parsed.destination
+        # A lone place name parses as an origin, because nothing says otherwise.
+        # Asked where they are *heading*, it is the destination — reading it as
+        # the origin would send the traveller to Ella from Ella.
+        filled = "destination" if "destination" in awaiting else "origin"
+        parsed = parsed.model_copy(update={"origin": None, "destination": place})
+        if filled == "origin":
+            parsed = parsed.model_copy(update={"origin": place, "destination": None})
+        logger.info(f"Read bare {place!r} as the {filled}")
+
     # "faster" only means a preference once we have actually asked the question.
     if not parsed.preference:
         was_asked = bool(SLOTS.get(session_id).get("preference_asked"))
@@ -475,6 +532,7 @@ async def chat(request: ChatRequest, user: dict = Depends(current_user)) -> Chat
             "preference_asked": bool(SLOTS.get(session_id).get("preference_asked")) or None,
         },
     )
+
 
     initial_state = {
         "session_id": session_id,
@@ -524,6 +582,12 @@ async def chat(request: ChatRequest, user: dict = Depends(current_user)) -> Chat
 
     try:
         result = await _graph.ainvoke(initial_state)
+
+        # Record what the reply asked for, so a bare answer next turn lands in
+        # the right slot. "Ella" is the answer to "where are you heading?", not
+        # a journey request — without this it is filed as unintelligible and the
+        # traveller is told we did not understand them.
+        _record_awaiting(session_id, result)
 
         # F-07: the audit log previously recorded only *blocked* input, so a
         # successful injection left no trace. Allowed traffic is now logged too —
