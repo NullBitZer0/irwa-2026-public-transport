@@ -72,13 +72,24 @@ def index_mapping() -> dict[str, Any]:
 
 
 def document_text(schedule: dict[str, Any]) -> str:
-    """The BM25 field. Include the places a traveller might actually type."""
+    """
+    The BM25 field. Include the places and the mode a traveller might actually type.
+
+    Naming the mode matters more than it looks. Without it the indexed text for a
+    train and a coach on the same corridor is near-identical, so "train to Matara
+    from Colombo" matched only on *Matara* and *Colombo* and the buses won on term
+    frequency — the trains did not appear in the top ten. Saying "train" or "bus"
+    is what lets a mode filter be a word rather than an accident.
+    """
     stops = ", ".join(schedule.get("stops", []) or [])
+    provider = str(schedule.get("provider") or "")
+    mode = "train" if provider.upper() == "SLR" else "bus"
+    classes = " ".join(schedule.get("classes") or [])
     return (
-        f"{schedule.get('service_name', '')} operated by "
-        f"{schedule.get('provider', '')} running from "
+        f"{mode} {schedule.get('service_name', '')} operated by "
+        f"{provider} running from "
         f"{schedule.get('origin', '')} to {schedule.get('destination', '')}. "
-        f"Stops: {stops}."
+        f"Stops: {stops}. Class: {classes}. Route {schedule.get('route_id', '')}."
     )
 
 
