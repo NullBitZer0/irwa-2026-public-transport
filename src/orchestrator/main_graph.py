@@ -476,7 +476,7 @@ async def _connection_hitl_checkpoint(
         f"{itinerary}\n\n"
         f"**Total: LKR {total * seats:,.0f}**\n\n"
         f"Please confirm by:\n"
-        f"- Clicking **\u2705 Confirm & Hold Seats** in the sidebar, or\n"
+        f"- Clicking **\u2705 Confirm & Hold Both Seats** in the sidebar, or\n"
         f"- Sending: *\"YES confirm\"*"
     )
 

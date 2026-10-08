@@ -72,7 +72,17 @@ export default function ChatMessage({ message }) {
 /** A single route option, or a multi-leg connection when `route.legs` is present. */
 function RouteCard({ route, onSelect }) {
   const isConnection = Boolean(route.is_connection)
-  const canBook = onSelect && route.bookable !== false && !isConnection
+  // A connection is bookable as a journey — two tickets, one approval each,
+  // held together — and the planner says whether it can be. It cannot when a leg
+  // has no published fare, because the traveller would be approving a charge we
+  // cannot quote. Falls back to inspecting the legs for older payloads.
+  const connectionBookable =
+    isConnection &&
+    (route.bookable_as_connection ??
+      (route.fare_known && (route.legs ?? []).every((leg) => leg.base_fare_lkr)))
+  const canBook =
+    onSelect &&
+    (isConnection ? connectionBookable : route.bookable !== false)
   // A missing fare must not read as "free".
   const fare =
     route.fare_unknown || !route.base_fare_lkr
@@ -195,14 +205,17 @@ function RouteCard({ route, onSelect }) {
 
       {canBook && (
         <button className="btn btn--primary" onClick={() => onSelect(route)}>
-          Confirm &amp; Hold Seat
+          {isConnection ? `Book both tickets` : 'Confirm & Hold Seat'}
         </button>
       )}
 
       {isConnection && (
         <p className="route__note">
-          🔁 Two legs — book each ticket separately. Change at{' '}
-          <strong>{route.transfer_station}</strong>.
+          🔁 Two tickets — one per leg, changing at{' '}
+          <strong>{route.transfer_station}</strong>.{' '}
+          {connectionBookable
+            ? "You'll approve both, and pay for both together."
+            : 'A leg has no published fare, so this journey cannot be booked online.'}
         </p>
       )}
     </article>

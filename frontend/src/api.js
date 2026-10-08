@@ -240,6 +240,24 @@ export async function setDemoIncident({ incidentId = null, active = true } = {})
 }
 
 /**
+ * Reads whether a simulated incident is currently on.
+ *
+ * Synced on load: the switch's real position lives on the Conditions Agent, and
+ * assuming it is off after a reload makes the button offer to switch on an
+ * incident that is already running.
+ */
+export async function fetchDemoIncidentState() {
+  try {
+    const res = await fetch(`${BASE}/demo_incident`, { credentials: 'include' })
+    if (!res.ok) return { armed: false, ok: false }
+    const body = await res.json()
+    return { armed: body.incident_check_armed === true, ok: true }
+  } catch {
+    return { armed: false, ok: false }
+  }
+}
+
+/**
  * Opens a new conversation.
  *
  * Called on load and again after a payment completes: the finished trip becomes

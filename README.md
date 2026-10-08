@@ -797,7 +797,10 @@ train to Colombo Fort, then a coach onwards). Connections are built from service
 endpoints only, because the fixtures carry no per-stop times, so an itinerary is
 never proposed on invented timings.
 
-A connection is **two tickets**, and is booked that way end to end:
+A connection is **two tickets**, and is purchasable from the UI as one journey.
+The card on the itinerary offers **"Book both tickets"** — not a single seat
+hold, because a change is two services and one ticket would be for a service the
+traveller never boards.
 
 | Step | What happens |
 | --- | --- |
@@ -806,6 +809,12 @@ A connection is **two tickets**, and is booked that way end to end:
 | Hold | A seat on **both** legs; if either fails, the other is released |
 | Pay | One payment settles **both** transactions |
 | Issue | **Two** e-tickets, **two** receipts, both in purchase history |
+
+The planner decides whether a connection can be sold at all, and says so in the
+offer itself: `bookable` is `False` (not one ticket) while
+`bookable_as_connection` is `True` when every leg has a published fare. A
+connection containing a modelled leg is not offered for purchase, because the
+traveller would be approving a charge we cannot quote.
 
 One token for the pair would let a traveller approve the cheap leg and spend that
 approval on the expensive one, so the tokens are per leg. Half a hold is worse

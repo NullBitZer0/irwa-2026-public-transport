@@ -692,6 +692,30 @@ class DemoIncidentRequest(BaseModel):
     active: bool = True
 
 
+@app.get("/demo_incident")
+async def demo_incident_state(user: dict = Depends(current_user)) -> dict:
+    """
+    Whether the incident check is currently armed.
+
+    Read-only, for the UI to sync with on load. Without it the button starts
+    showing "Simulate" every time the page is reloaded, even with an incident
+    live — so the traveller presses it to clear what is already on and switches
+    it on again instead.
+    """
+    try:
+        response = await _bridge.get_incident_state()
+    except Exception as exc:
+        logger.warning(f"Could not read the demo incident state: {exc}")
+        return {"status": "UNAVAILABLE", "active": [], "incident_check_armed": False}
+
+    data = response.data or {}
+    return {
+        "status": "OK",
+        "active": data.get("active") or [],
+        "incident_check_armed": bool(data.get("simulated_incident_active")),
+    }
+
+
 @app.post("/demo_incident")
 async def demo_incident(
     request: DemoIncidentRequest, user: dict = Depends(current_user)
@@ -718,7 +742,13 @@ async def demo_incident(
         "simulated": True,
         # Whether incident checking is armed at all, which is what the toggle
         # shows: an empty `active` list while armed means "looking, found nothing".
-        "incident_check_armed": bool(data.get("incident_check_armed")),
+        #
+        # Read from `simulated_incident_active`, which is the key the Conditions
+        # Agent actually sends. Asking for `incident_check_armed` here returned
+        # nothing, so the toggle read `false` in both directions: switching an
+        # incident on never showed as on, and the button could not be pressed
+        # again to switch it off.
+        "incident_check_armed": bool(data.get("simulated_incident_active")),
         "message": response.message,
     }
 

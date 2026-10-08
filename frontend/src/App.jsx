@@ -9,6 +9,7 @@ import {
   logout as logoutRequest,
   me,
   setDemoIncident,
+  fetchDemoIncidentState,
   startConversation,
 } from './api.js'
 import { renderMarkdown } from './markdown.js'
@@ -92,6 +93,12 @@ export default function App() {
     loadPurchases()
     refreshConversations()
     beginConversation()
+    // The switch's position lives on the Conditions Agent, not in this tab.
+    // Without this, reloading mid-demo shows "Simulate" over a live incident and
+    // the next press turns it on again rather than clearing it.
+    fetchDemoIncidentState().then((state) => {
+      if (state.ok) setDemoIncidentActive(state.armed)
+    })
   }, [user])
 
   async function handleSignOut() {
@@ -443,15 +450,27 @@ bookingReference: data.booking_reference,
 
         {pendingRoute && (
           <div className="hitl">
-<span>
-              Human-in-the-Loop: approve the seat hold for{' '}
-              <code>{pendingRoute.route_id}</code>
-              {pendingRoute.base_fare_lkr ? (
-                <> — LKR {Number(pendingRoute.base_fare_lkr).toLocaleString('en-LK')}</>
-              ) : null}
+            <span>
+              Human-in-the-Loop: approve{' '}
+              {pendingRoute.legs?.length ? (
+                <>
+                  <strong>both tickets</strong> for{' '}
+                  <code>{pendingRoute.route_id}</code> — changing at{' '}
+                  <strong>{pendingRoute.transfer_station}</strong>
+                </>
+              ) : (
+                <>
+                  the seat hold for <code>{pendingRoute.route_id}</code>
+                  {pendingRoute.base_fare_lkr
+                    ? ` — LKR ${Number(pendingRoute.base_fare_lkr).toLocaleString('en-LK')}`
+                    : null}
+                </>
+              )}
             </span>
             <button className="btn btn--primary" onClick={handleApprove} disabled={busy}>
-              ✅ Confirm &amp; Hold Seat
+              {pendingRoute.legs?.length
+                ? '✅ Confirm & Hold Both Seats'
+                : '✅ Confirm & Hold Seat'}
             </button>
           </div>
         )}

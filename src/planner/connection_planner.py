@@ -320,9 +320,14 @@ def find_connections(
                     "overnight_change": overnight_change,
                     "adjacent_hub": adjacent_hub,
                     "is_connection": True,
-                    # A connection is two separate tickets, so it is not bookable
-                    # as a single seat hold.
+                    # A connection is not one seat hold: it is two tickets on
+                    # two services. `bookable` is therefore False and the UI must
+                    # not offer a single-seat purchase — see
+                    # `bookable_as_connection`, set below, for the real answer.
                     "bookable": False,
+                    # It is still purchasable — as a journey. The Orchestrator
+                    # gates each leg separately and holds them together, so the
+                    # UI books both tickets in one action via this flag rather
                     "mixed_mode": mixed,
                     "modes": sorted(modes),
                     "duration_minutes": second_arr - first_dep,
@@ -336,4 +341,9 @@ def find_connections(
     for connection in connections:
         connection["strategy"] = strategy
         connection["fare_known"] = _price_known(connection)
+        # Bookable as a journey — two tickets, gated separately — only when every
+        # leg has a published fare. The traveller approves a charge, so there has
+        # to be one; the UI books both tickets in one action off this flag rather
+        # than inferring it from the legs.
+        connection["bookable_as_connection"] = connection["fare_known"]
     return rank_connections(connections, strategy=strategy)[:max_results]

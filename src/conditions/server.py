@@ -249,6 +249,26 @@ class SimulateRequest(BaseModel):
     active: bool = True
 
 
+@app.get("/mcp/simulate_incident")
+async def simulate_incident_state() -> dict:
+    """
+    Whether an incident is currently simulated.
+
+    Read-only, so the UI can show the switch's real position after a reload
+    instead of assuming the default.
+    """
+    return {
+        "status": "SUCCESS",
+        "data": {
+            "active": active_simulations(),
+            "simulated_incident_active": incident_check_armed(),
+        },
+        "message": (
+            "Simulated incident active." if incident_check_armed() else "No simulated incident."
+        ),
+    }
+
+
 @app.post("/mcp/simulate_incident")
 async def simulate_incident(req: SimulateRequest) -> dict:
     """

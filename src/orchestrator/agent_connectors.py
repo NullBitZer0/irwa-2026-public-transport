@@ -281,6 +281,17 @@ class AgentDispatchBridge:
             res.raise_for_status()
             return AgentResponse(**res.json())
 
+    async def get_incident_state(self) -> AgentResponse:
+        """
+        Reads whether an incident is currently simulated.
+
+        Endpoint: GET /mcp/simulate_incident (Live Conditions Agent)
+        """
+        async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
+            res = await client.get(f"{self.conditions_url}/mcp/simulate_incident")
+            res.raise_for_status()
+            return AgentResponse(**res.json())
+
     async def request_hitl_token(
         self,
         session_id: str,
