@@ -36,6 +36,7 @@ from src.booking.hitl_token import (  # noqa: E402
 
 SESSION = "sess-1"
 ROUTE = "TRAIN-1007"
+BUS_ROUTE = "SLTB-1-A-C-0600"
 FARE = 900.0
 
 
@@ -212,3 +213,51 @@ def test_the_token_carries_no_secret() -> None:
     assert secret not in token
     body, _signature = token.split(".", 1)
     assert "HITL_TOKEN_SECRET" not in body
+
+
+# ── The approval must cover the seat count, not just the route ───────────────
+#
+# `issue_hitl_token` carried `seats` and `provider` in the signed payload, but
+# verification only compared session, route, fare and expiry. A token approving
+# one seat at LKR 850 could therefore be replayed to hold six: the traveller
+# approved LKR 850 and was billed LKR 5,100. These hold that closed.
+
+
+def test_a_token_for_one_seat_cannot_hold_six() -> None:
+    token = _token(route_id=BUS_ROUTE, seat_count=1, fare_lkr=850.0, provider="SLTB")
+    with pytest.raises(HitlTokenError, match="seat"):
+        verify_hitl_token(
+            token,
+            session_id=SESSION,
+            route_id=BUS_ROUTE,
+            fare_lkr=850.0,
+            seat_count=6,
+            provider="SLTB",
+        )
+
+
+def test_a_token_cannot_be_replayed_to_another_operator() -> None:
+    token = _token(route_id=BUS_ROUTE, seat_count=2, fare_lkr=850.0, provider="SLR")
+    with pytest.raises(HitlTokenError, match="operator"):
+        verify_hitl_token(
+            token,
+            session_id=SESSION,
+            route_id=BUS_ROUTE,
+            fare_lkr=850.0,
+            seat_count=2,
+            provider="SLTB",
+        )
+
+
+def test_the_matching_seat_count_still_verifies() -> None:
+    """Binding the claim must not break the ordinary approval."""
+    token = _token(route_id=BUS_ROUTE, seat_count=2, fare_lkr=850.0, provider="SLTB")
+    claims = verify_hitl_token(
+        token,
+        session_id=SESSION,
+        route_id=BUS_ROUTE,
+        fare_lkr=850.0,
+        seat_count=2,
+        provider="SLTB",
+    )
+    assert claims["seats"] == 2

@@ -306,6 +306,11 @@ async def await_payment(req: AwaitPaymentRequest) -> dict:
             session_id=txn.session_id,
             route_id=txn.route_id,
             fare_lkr=txn.fare_lkr,
+            # The approval is for a number of seats on one operator, not merely
+            # for a route. Without these two the token could be replayed to hold
+            # more seats than the traveller was ever shown.
+            seat_count=txn.seat_count,
+            provider=txn.provider,
         )
     except HitlTokenError as exc:
         log_security_event(

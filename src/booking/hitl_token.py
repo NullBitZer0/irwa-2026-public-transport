@@ -110,12 +110,25 @@ def issue_hitl_token(
     return f"{body}.{signature}"
 
 
-def verify_hitl_token(token: str, session_id: str, route_id: str, fare_lkr: float) -> dict:
+def verify_hitl_token(
+    token: str,
+    session_id: str,
+    route_id: str,
+    fare_lkr: float,
+    seat_count: int | None = None,
+    provider: str | None = None,
+) -> dict:
     """
     Verifies a token and that it authorises *this* booking.
 
     Raises HitlTokenError on any failure. Callers must not downgrade a failure to
     a warning: a token that does not verify means no approval happened.
+
+    `seat_count` and `provider` are optional only so older callers keep working,
+    but every hold path passes them. They were carried in the signed payload and
+    never checked, which meant a token approving one seat at LKR 850 could be
+    replayed to hold six — the traveller approved LKR 850 and was billed LKR
+    5,100. Binding the claim is only meaningful if something verifies it.
     """
     if not token:
         raise HitlTokenError("No human-in-the-loop confirmation supplied.")
@@ -146,6 +159,17 @@ def verify_hitl_token(token: str, session_id: str, route_id: str, fare_lkr: floa
     # Bound to the cent, so a token for one fare cannot be replayed on another.
     if round(float(claims.get("fare", -1)), 2) != round(float(fare_lkr), 2):
         raise HitlTokenError("Confirmation token does not match the quoted fare.")
+    # The traveller approved a number of seats, not a route. Without this the
+    # approval is for one seat however many the request asks for.
+    if seat_count is not None and int(claims.get("seats", -1)) != int(seat_count):
+        raise HitlTokenError(
+            f"Confirmation token was issued for {claims.get('seats')} seat(s), "
+            f"not {seat_count}."
+        )
+    if provider is not None and str(claims.get("provider", "")).upper() != str(
+        provider
+    ).upper():
+        raise HitlTokenError("Confirmation token was issued for a different operator.")
 
     return claims
 
