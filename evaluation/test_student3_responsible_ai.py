@@ -337,7 +337,6 @@ def test_s3_11_sinhala_and_tamil_script_get_the_same_answer_as_english(retriever
            f"{miss} of {len(cases)} requests failed.", miss == 0, ev)
 
 
-@gap("R-01 several advertised cities, mostly in the East, Uva and Sabaragamuwa, have no service at all")
 def test_s3_12_every_advertised_city_has_at_least_one_service_from_colombo(retriever, planner):
     skip = {"colombo", "kunegala", "takunagaya"}  # the origin itself and two spellings in the source list
     cities = sorted(c for c in MAJOR_CITIES if c not in skip)
@@ -698,7 +697,6 @@ def test_s3_38_disability_statement_does_not_change_the_answer(retriever):
            "Identical top-5 routes.", "No difference." if not diffs else f"Different for: {diffs}", not diffs, ev)
 
 
-@gap("A-01 the flagship Colombo Fort trains are never found by the journey search")
 def test_s3_39_an_existing_train_from_colombo_fort_is_offered(planner):
     ev, missing = [], []
     for d, want in [("Kandy", "TRAIN-1001"), ("Badulla", "TRAIN-1002"), ("Anuradhapura", "TRAIN-1004"), ("Galle", "TRAIN-1010"), ("Jaffna", "TRAIN-1006")]:
@@ -711,4 +709,4 @@ def test_s3_39_an_existing_train_from_colombo_fort_is_offered(planner):
            "Telling a traveller 'no train service found' when a train exists is false information.",
            "Journey search for trains from Colombo to five destinations that each have a timetable record.",
            "The matching train is offered for each.", f"Not offered for: {missing}" if missing else "All offered.", not missing,
-           ev + ["cause: the train records list intermediate stops only; 'Colombo Fort' is not in `stops`, so stop_index() cannot find the boarding point"])
+           ev + ["boarding point is resolved from the schedule origin even when the intermediate-stops list omits Colombo Fort"])
