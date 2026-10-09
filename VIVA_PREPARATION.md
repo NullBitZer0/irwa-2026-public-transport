@@ -706,13 +706,13 @@ an injection path.
 MRR and NDCG@5 over 30 queries (`evaluate_ir.py`).
 
 **8.19 Measured vs proposed?**
-**Measured:** MRR, NDCG@5, 714 pytest results, 33 red-team checks.
+**Measured:** MRR, NDCG@5, 737 pytest results, 33 red-team checks.
 **Proposed, no numbers:** recall@k for embeddings, end-to-end booking success,
 hallucination rate, latency percentiles, cost per journey.
 
 **8.20 "What is your model's accuracy?"**
 *The honest answer: I have measured retrieval ranking (MRR/NDCG over 30 queries)
-and 714 deterministic tests, but I have no validated end-to-end accuracy figure
+and 737 deterministic tests, but I have no validated end-to-end accuracy figure
 for journey planning, because the ground truth set is not yet good enough to
 support one. I can tell you exactly what I measured and what I have not.*
 
@@ -1285,7 +1285,7 @@ index silently drifts from its data, and refusing to invent a route.*
 
 | Metric | Value | How |
 |---|---|---|
-| Unit/integration tests | 714 passed, 3 skipped, 16 xfailed | `pytest -q` |
+| Unit/integration tests | 737 passed, 3 skipped, 32 xfailed | `pytest -q` |
 | Red-team security checks | 33/33 secure | `redteam_prompt_injection.py --strict` |
 | IR MRR (fixtures) | 0.878 | `evaluate_ir.py` |
 | IR MRR (opensearch) | 0.794 | `evaluate_ir.py` |
@@ -1374,7 +1374,7 @@ exactly this.
 3. **"What stops a double booking?"** — Nothing robust. No idempotency key.
 4. **"Can an approval token be reused?"** — Within its TTL, yes.
 5. **"What is your accuracy?"** — Have the measured numbers ready (MRR 0.794
-   OpenSearch, 0.878 fixtures; 714 tests) and state plainly that no
+   OpenSearch, 0.878 fixtures; 737 tests) and state plainly that no
    end-to-end accuracy figure exists.
 
 ---
