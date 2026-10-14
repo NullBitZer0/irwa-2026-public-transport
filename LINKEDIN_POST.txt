@@ -153,3 +153,93 @@ GitHub: github.com/NullBitZer0/irwa-2026-public-transport
 We'd love to hear your ideas.
 
 #AgenticAI #ArtificialIntelligence #MachineLearning #InformationRetrieval #NaturalLanguageProcessing #LargeLanguageModels #MultiAgentSystems #ResponsibleAI #AISecurity #AIInnovation #DataScience #SLIIT #SriLanka
+
+
+===========================================================================
+ATTACHMENTS — NOT PART OF THE POST
+Cut everything above this line before pasting. Attach the files below.
+===========================================================================
+
+A. ARCHITECTURE DIAGRAMS — attach these first (4 images)
+
+ 1. docs/diagrams/system_diagram_overview.png
+    Full system overview: agents, services, data flow.
+
+ 2. docs/diagrams/agent_flow_1_request_ingress.png
+    Request ingress: security gateway, PII masking, intent router.
+
+ 3. docs/diagrams/agent_flow_2_langgraph_state_graph.png
+    LangGraph orchestration state graph.
+
+ 4. docs/diagrams/agent_flow_3_human_in_the_loop_booking_sequence.png
+    Human-in-the-loop booking sequence — the security story.
+
+B. APPLICATION SCREENSHOTS — pick 6 to 8, upload in this order
+
+This order matters. It tells a story from question to issued ticket, and puts the
+provenance closeup where it does the most work.
+
+ 5. docs/video/stills/04_query_typed.png          Natural-language query
+ 6. docs/video/stills/05_clarify_response.png      Slot filling / clarification
+ 7. docs/video/stills/07_routes_returned.png       Ranked route results
+ 8. docs/video/stills/08_provenance_closeup.png    PROVENANCE — the differentiator
+ 9. docs/video/stills/11_hitl_gate.png             Human approval gate
+10. docs/video/stills/13_payment_portal.png        Payment step
+11. docs/video/stills/16_receipt.png               Ticket issued
+12. docs/video/stills/20_pii_response.png          PII tokenisation in action
+
+    If you want to show connections (two-leg journeys), the remaining stills are
+    09_route_card_closeup, 10_routes_fullpage, 12_hitl_closeup, 14_payment_closeup,
+    15_payment_ready, 17_purchase_history, 18_timetables, 19_pii_query_typed,
+    01_login_form, 02_login_filled, 03_chat_open, 06_chips_closeup.
+
+C. SECURITY AND EVALUATION EVIDENCE (5 images)
+
+13. evidence/screenshots/student1_fig_redteam_audit_suite.png
+        The 33-case red-team run.
+
+14. evidence/screenshots/student1_fig_prompt_injection_refusal.png
+        Prompt injection attempted and resisted.
+
+15. evidence/screenshots/student1_fig_guardrail_regression.png
+        Guardrail regression suite — 27 evasion cases.
+
+16. evidence/screenshots/student2_fig_hitl_token_verification.png
+        Signed approval token verification.
+
+17. evidence/screenshots/student2_fig_ir_benchmark_metrics.png
+        MRR and NDCG@5 results.
+
+D. DEMONSTRATION VIDEO — REQUIRED BY THE BRIEF
+
+WARNING: no video file exists yet. docs/video/ contains only the 20 stills.
+The narration script is at docs/video_script.md.
+
+Render the video from the stills, save it into docs/video/, and attach it.
+The brief states the GenAI video must be attached, so the post is incomplete
+without it.
+
+===========================================================================
+BEFORE YOU POST — FINAL CHECK
+===========================================================================
+
+ [ ] Lecturer tagged: Mr. Samadhi Chathuranga Rathnayake
+ [ ] Any other lecturers tagged
+ [ ] All four team members tagged with correct LinkedIn handles
+ [ ] Team member roles filled in
+ [ ] GitHub repo is public and contains no .env or API keys
+ [ ] Demo video rendered and attached
+ [ ] Architecture diagram attached
+ [ ] You can defend every number in this post if asked
+
+CLAIMS DELIBERATELY NOT MADE, because they are not true:
+
+  - MCP protocol implementation (the /mcp/ route prefix is cosmetic)
+  - Encryption at rest
+  - TLS
+  - Native Sinhala
+  - Real payment gateway
+  - Live operator integration
+  - Any IR score above the actual 0.794 MRR
+
+If an examiner checks any of these, the post holds up. That is the point.
