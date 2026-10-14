@@ -1,0 +1,253 @@
+INDIVIDUAL LINKEDIN POST — AI SECURITY AUDIT & VULNERABILITY ASSESSMENT
+(IT3041 individual assignment — paste everything below this line into LinkedIn)
+
+
+🔐 BEYOND BUILDING AI: Can We Really Trust the Intelligent Systems We Develop?
+
+Testing an Agentic AI System for Prompt Injection, Jailbreak Resistance, and Prompt Leakage
+
+Developing an intelligent AI system is an achievement. But how do we know whether that system is secure, reliable, ethical, and capable of withstanding unexpected or malicious inputs?
+
+That question is what drove my independent security audit. I evaluated an agentic public transport planning and booking system — four AI agents that retrieve route data and can hold seats and take payment — by attacking it deliberately and documenting what actually happened.
+
+This investigation was conducted as a requirement of the Individual AI Security Audit and Vulnerability Assessment Assignment, under the IT3041 – Information Retrieval and Web Analytics module of the BSc (Hons) Data Science degree programme at the Department of Computer Science, Faculty of Computing, Sri Lanka Institute of Information Technology (SLIIT).
+
+
+🎯 THE CHALLENGE: CAN INTELLIGENT AI SYSTEMS BE TRUSTED?
+
+Modern agentic AI systems combine LLMs, autonomous agents, information retrieval, APIs, and automated workflows. The same properties that make them useful — autonomy, tool use, the ability to act — are exactly what makes them dangerous when the inputs are hostile.
+
+Most systems are tested for whether they work. Very few are tested for what they do when someone is actively trying to make them misbehave. That gap is what I set out to measure.
+
+
+🛡️ MY ASSIGNED SECURITY SPECIALIZATION
+
+Prompt Injection and Jailbreak Analysis
+
+My investigation focused on six assigned attack areas:
+
+✅ Prompt Injection — can untrusted text reach an LLM unchecked?
+
+✅ Jailbreak Attempts — can safety behaviour be bypassed through persona or framing?
+
+✅ Prompt Leakage — can the system prompt or internal schemas be extracted?
+
+✅ Instruction Override — can I claim a higher-priority instruction and have it obeyed?
+
+✅ Prompt Manipulation — can I attack the system's logic rather than the model's judgement?
+
+✅ Prompt Robustness — does the defence survive obfuscation?
+
+
+🧪 MY SECURITY TESTING APPROACH
+
+I independently designed and conducted 16 structured security test cases spanning those six areas — later expanded into a 33-case automated regression suite so the fixes would stay fixed.
+
+My methodology:
+
+🔹 Test case design — realistic scenarios against the live system, not abstract payloads.
+
+🔹 Expected behaviour — define how a secure agent should respond, in advance.
+
+🔹 Actual behaviour — record what the system really did.
+
+🔹 Evidence collection — captured results and observations for every test.
+
+🔹 Vulnerability analysis — identify the weakness and explain what it permits.
+
+🔹 Risk classification — rate severity by impact and likelihood.
+
+One methodological point worth stating: I distinguished between a payload being BLOCKED by a control, and the model simply declining to comply. They look identical from outside, but only one is a guarantee. That distinction changed several of my findings.
+
+
+📊 WHAT DID MY INVESTIGATION REVEAL?
+
+My assessment produced three principal findings.
+
+🔎 FINDING 01 — The security guardrail existed but was never invoked on the main AI entry path
+
+I found that the system did have an input guardrail — but it was attached only to the booking agent. The conversational endpoint, which is where user text actually reaches the language model, passed input through with no equivalent check.
+
+The implication is significant: the control existed, so the team believed it was protected, while the primary attack surface was unguarded. A payload the system would have rejected at booking could reach the model through the chat path.
+
+This was a coverage defect, not a detection defect — the detection logic worked; it simply wasn't in the right place. I would rate this the most important finding of the assessment, because a control that isn't wired into the path that matters provides no protection at all.
+
+🔎 FINDING 02 — The guardrail was evaded 10 times out of 10 by encoding
+
+My first run found the keyword-based filter was bypassed completely — by leetspeak substitution, zero-width characters inserted mid-word, hyphenation, and paraphrase.
+
+The root cause was that matching ran against the raw request text. An attacker controls the surface form of their input but not its intent, so any denylist operating on raw text is one normalisation step behind the attacker.
+
+The fix was not to keep adding patterns. I moved the comparison point upstream: canonicalise the input first — folding leetspeak, mapping homoglyphs, stripping zero-width characters, collapsing separators — then match against the normalised form, so the defence targets the shape of a phrase rather than one spelling of it. A regression suite of 27 evasion cases now guards it.
+
+🔎 FINDING 03 — The human approval gate could be bypassed by the caller
+
+The system had a human-in-the-loop confirmation step before booking — a control intended to ensure the agent never acted without a real person agreeing.
+
+That confirmation was transmitted as a plain value supplied by the client. Any caller could assert that approval had already happened, while the agent proceeded as though a human had consented.
+
+I replaced it with a server-signed, expiring authorisation token that the booking service verifies itself, so the client can claim anything but cannot manufacture a valid approval.
+
+An important part of this finding is that my own remediation introduced a second weakness. The new token carried claims that were signed but not fully verified server-side, meaning an approval could be replayed at a larger scale than the one originally approved. I reproduced this end-to-end before correcting it, and all claims are now bound. It is a lesson I have kept: a signature proves origin, not content.
+
+These findings helped me understand how AI systems behave under hostile conditions, and why functional testing alone cannot establish an AI system's security.
+
+
+⚠️ UNDERSTANDING SECURITY RISKS
+
+I rated each finding across five severity levels: Critical, High, Medium, Low, and Informational — considering both technical impact and how likely the attack was in practice.
+
+One finding stands out. I classified the bypassable human approval gate as CRITICAL because it defeats the system's central consent control entirely: an agent that can book and charge without a human behind it can cause direct financial harm to a user, and the failure requires no special skill — a single crafted request. Likelihood is high because the original design trusted the client by construction, not because of a mistake in it.
+
+I also recorded CVSS base scores for comparability, but I did not treat them as authoritative. CVSS has no vector for "an AI agent acts without authorised consent" — the failure mode that mattered most here — so a base score alone would have understated it. My primary rating therefore combined OWASP LLM risk classification with actual business impact.
+
+
+💡 FROM VULNERABILITY IDENTIFICATION TO SECURITY RECOMMENDATIONS
+
+✅ Recommendation 01 — Enforce controls at the boundary, not inside the component. A guardrail on one agent is not a system guardrail. Every ingress path should invoke the same validation.
+
+✅ Recommendation 02 — Normalise before matching, and target phrase structure rather than literal keywords. A denylist should be the last layer, never the only one.
+
+✅ Recommendation 03 — Replace client-asserted state with server-issued, expiring, scope-bound authorisation. Never accept a client's claim that an approval occurred.
+
+✅ Recommendation 04 — Validate model output against an allow-list before it reaches the client, and escape before rendering. Treat model output as untrusted input — it is, in effect, attacker-controlled by proxy.
+
+✅ Recommendation 05 — Log both allowed and blocked decisions, with message content deliberately excluded. An attacker who is never blocked leaves no trace at all.
+
+These recommendations are deliberately architectural. Prompt-level persuasion is advice, not a boundary — system instructions and user input share one token space, so no delimiter makes them reliably distinct.
+
+
+🤖 WHY AI RED TEAMING MATTERS
+
+The most significant lesson from this assessment was learning to tell a control apart from a coincidence.
+
+The underlying model refused every jailbreak I tested — persona attacks, fake administrator overrides, encoding-based smuggling, and repeated prompt-extraction attempts. That is genuinely reassuring. But a refusal is not a security control: it varies with model version, temperature and phrasing, and it says nothing about what the surrounding architecture permits.
+
+This is why all my remediations are structural rather than prompt-based. The model behaving well is a defence in depth. Enforcement at ingress, allow-listed output, and signed authorisation are the actual guarantee.
+
+AI systems should therefore be evaluated not only on whether they perform their intended task, but on how they behave when facing unexpected inputs, adversarial attempts, misleading information, and ethical challenges — none of which appear in ordinary functional testing.
+
+
+🌍 THE BIGGER PICTURE: RESPONSIBLE AND TRUSTWORTHY AI
+
+Security is one pillar of responsible AI, not a separate concern beside it.
+
+Privacy — I verified that personal identifiers are tokenised before reaching any model, and found that this masking was implemented but not wired into the main chat path. The same lesson applies: a control that is not connected is not a control.
+
+Transparency — I favoured reporting weaknesses over quietly patching them, and preserved the state of the system as found, because a security assessment that reports only successes is not an assessment.
+
+Fairness and reliability — security controls that only hold for some users or some input languages are not reliable controls. My evasion testing deliberately included code-mixed natural language, because defences that assume clean English input fail exactly where real users are not clean.
+
+My assessment reinforced the relationship between AI security, privacy, reliability, and responsible AI — together producing systems that are genuinely trustworthy. No evaluation guarantees complete security, but structured, evidence-based testing materially reduces risk.
+
+
+🎓 MY ACADEMIC LEARNING EXPERIENCE
+
+Through this individual assignment, I gained practical experience in:
+
+✅ AI security auditing and vulnerability assessment.
+
+✅ Designing systematic test cases with defined expected behaviour.
+
+✅ Evaluating real AI system behaviour rather than assumed behaviour.
+
+✅ Identifying and classifying security risks by impact and likelihood.
+
+✅ Developing evidence-based, practical mitigation recommendations.
+
+✅ Communicating technical security findings professionally.
+
+Most importantly, it encouraged me to think not only as an AI developer, but as an AI security analyst — critically examining the systems we build, including the ones I contributed to. Finding a weakness in my own remediation was the clearest lesson of all: the people best placed to find a flaw in your security control are usually the people who just wrote it.
+
+
+🙏 ACADEMIC GUIDANCE AND APPRECIATION
+
+I would like to express my sincere gratitude to [Tag: Mr. Samadhi Chathuranga Rathnayake], Lecturer in Charge of the IT3041 – Information Retrieval and Web Analytics module, for providing this valuable opportunity to explore AI Security, Vulnerability Assessment, and Responsible AI through a practical individual investigation.
+
+I also extend my appreciation to [Tag: other lecturers who guided and supported the assignment] for their valuable guidance, constructive feedback, and encouragement throughout this learning experience.
+
+
+🌟 MY BIGGEST TAKEAWAY
+
+"Building intelligent AI systems is important. But understanding their vulnerabilities, evaluating their risks, and improving their trustworthiness is equally essential for the future of Artificial Intelligence."
+
+Security is not a phase added after a system works. It is a property of the architecture — and it can only be demonstrated by testing, not assumed.
+
+💬 What do you believe is the greatest security challenge facing Agentic AI systems today?
+
+I would love to hear your perspectives and learn from professionals working in AI Security and Responsible AI.
+
+#AISecurity #AIRedTeaming #VulnerabilityAssessment #AgenticAI #ResponsibleAI #CyberSecurity #ArtificialIntelligence #LLMSecurity #InformationRetrieval #DataPrivacy #TrustworthyAI #DataScience #SLIIT
+
+
+===========================================================================
+ATTACHMENTS — NOT PART OF THE POST
+Cut everything above this line before pasting. Attach the files below.
+===========================================================================
+
+BRIEF REQUIREMENT: minimum 15 test cases. The post claims 16.
+Keep that number consistent with whatever report you submit.
+
+A. YOUR TESTING EVIDENCE — attach these first (3 images, individual)
+
+These are your own figures, not another student's — this is an individual
+submission and the brief requires your own investigation.
+
+ 1. evidence/screenshots/student1_fig_redteam_audit_suite.png
+       The full red-team run across the assigned attack areas.
+
+ 2. evidence/screenshots/student1_fig_prompt_injection_refusal.png
+       A prompt injection attempt and the system's response.
+
+ 3. evidence/screenshots/student1_fig_guardrail_regression.png
+       The guardrail regression suite (evasion cases).
+
+B. SUPPORTING SYSTEM EVIDENCE (1 image)
+
+ 4. evidence/screenshots/student2_fig_hitl_token_verification.png
+       Signed authorisation token verification — backs Finding 03.
+       Credit the booking/security team if you attach it.
+
+C. MISSING — RECOMMENDED BY THE BRIEF
+
+The brief explicitly encourages "risk assessment charts or vulnerability
+classification diagrams". No such figure exists in the repository yet.
+
+Worth creating before you post. Suggested content — a 5x5 severity/likelihood
+matrix with your three findings plotted, each labelled with severity and test
+reference. This is one of the scored bonus-marks criteria and it is currently
+the weakest part of the evidence set.
+
+D. SCREENSHOT HYGIENE
+
+The brief requires "screenshots of testing outcomes with sensitive information
+removed". Before attaching, confirm none of your screenshots contain:
+
+  - Real NIC, phone or passport numbers
+  - Session tokens or cookies
+  - API keys
+  - Demo credentials (demo@lankajourney.lk / demotravel123 appear in the README)
+
+===========================================================================
+BEFORE YOU POST — FINAL CHECK
+===========================================================================
+
+ [ ] Lecturer tagged: Mr. Samadhi Chathuranga Rathnayake
+ [ ] Other lecturers tagged
+ [ ] Written in the first person throughout — it is an individual submission
+ [ ] Not a duplicate of any group member's post
+ [ ] All screenshots scrubbed of credentials and personal data
+ [ ] Risk/severity matrix figure created and attached
+ [ ] Test count matches your report
+ [ ] You can defend every number and claim in this post
+
+NOTE ON WHAT IS DELIBERATELY NOT SAID
+--------------------------------------
+Finding 03 is described by class and consequence, not by reproduction steps,
+ticket values or exact request shape. The brief prohibits disclosing exploitable
+system details, and a public post describing precisely how to replay an
+authorisation token is closer to a disclosure than to a portfolio piece.
+
+If asked directly, explain the finding fully in the viva — the write-up and the
+spoken assessment are different contexts, and the oral one is where the technical
+depth belongs.
