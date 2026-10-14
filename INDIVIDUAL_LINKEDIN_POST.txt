@@ -208,15 +208,18 @@ B. SUPPORTING SYSTEM EVIDENCE (1 image)
        Signed authorisation token verification — backs Finding 03.
        Credit the booking/security team if you attach it.
 
-C. MISSING — RECOMMENDED BY THE BRIEF
+C. RISK CLASSIFICATION — created for this submission (1 image)
 
-The brief explicitly encourages "risk assessment charts or vulnerability
-classification diagrams". No such figure exists in the repository yet.
+ 5. evidence/screenshots/student1_fig_risk_matrix.png
+       Severity x likelihood matrix with all seven findings plotted, plus the
+       three-run movement (15 vulnerable / 14 secure / 4 inconclusive, through to
+       33/33 secure). This is the figure the brief asks for under "risk assessment
+       charts or vulnerability classification diagrams".
 
-Worth creating before you post. Suggested content — a 5x5 severity/likelihood
-matrix with your three findings plotted, each labelled with severity and test
-reference. This is one of the scored bonus-marks criteria and it is currently
-the weakest part of the evidence set.
+       Regenerate with:  python3 docs/render_risk_matrix.py
+       The script refuses to render if the plotted run figures contradict
+       evaluation/redteam_evidence.json, so the figure cannot silently drift
+       from the evidence.
 
 D. SCREENSHOT HYGIENE
 
@@ -237,7 +240,7 @@ BEFORE YOU POST — FINAL CHECK
  [ ] Written in the first person throughout — it is an individual submission
  [ ] Not a duplicate of any group member's post
  [ ] All screenshots scrubbed of credentials and personal data
- [ ] Risk/severity matrix figure created and attached
+ [x] Risk/severity matrix figure created and attached
  [ ] Test count matches your report
  [ ] You can defend every number and claim in this post
 
